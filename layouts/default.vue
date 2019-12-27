@@ -1,9 +1,48 @@
 <template>
-  <div>
-    <nuxt />
-  </div>
+  <a-layout>
+    <a-layout-header>
+      <a-menu v-model="current" mode="horizontal">
+        <a-menu-item key="mail">
+          <a-icon type="mail" />Navigation One
+        </a-menu-item>
+        <a-menu-item key="app" disabled>
+          <a-icon type="appstore" />Navigation Two
+        </a-menu-item>
+        <a-sub-menu>
+          <span slot="title" class="submenu-title-wrapper">
+            <a-icon type="setting" />Navigation Three - Submenu
+          </span>
+          <a-menu-item-group title="Item 1">
+            <a-menu-item key="setting:1">Option 1</a-menu-item>
+            <a-menu-item key="setting:2">Option 2</a-menu-item>
+          </a-menu-item-group>
+          <a-menu-item-group title="Item 2">
+            <a-menu-item key="setting:3">Option 3</a-menu-item>
+            <a-menu-item key="setting:4">Option 4</a-menu-item>
+          </a-menu-item-group>
+        </a-sub-menu>
+        <a-menu-item key="alipay">
+          <a href="https://antdv.com" target="_blank">Navigation Four - Link</a>
+        </a-menu-item>
+      </a-menu>
+    </a-layout-header>
+    <a-layout-content style="padding: 0 50px">
+      <nuxt />
+    </a-layout-content>
+    <a-layout-footer style="text-align: center"
+      >Ant Design ©2018 Created by Ant UED</a-layout-footer
+    >
+  </a-layout>
 </template>
-
+<script>
+export default {
+  data() {
+    return {
+      current: ['mail']
+    }
+  }
+}
+</script>
 <style>
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',

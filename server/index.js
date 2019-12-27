@@ -7,6 +7,8 @@ const app = express()
 const config = require('../nuxt.config.js')
 config.dev = process.env.NODE_ENV !== 'production'
 
+const apiRouter = require('../api/test')
+
 async function start() {
   // Init Nuxt.js
   const nuxt = new Nuxt(config)
@@ -21,6 +23,7 @@ async function start() {
     await nuxt.ready()
   }
 
+  app.use('/api', apiRouter)
   // Give nuxt middleware to express
   app.use(nuxt.render)
 
