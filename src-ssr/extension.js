@@ -10,6 +10,7 @@
  * Note: Changes to this file (but not any file it imports!) are picked up by the
  * development server, but such updates are costly since the dev-server needs a reboot.
  */
+const apiRouter = require('./api/test')
 
 module.exports.extendApp = function ({ app, ssr }) {
   /*
@@ -18,4 +19,5 @@ module.exports.extendApp = function ({ app, ssr }) {
 
      Example: app.use(), app.get() etc
   */
+  app.use('/api', apiRouter)
 }

@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh lPr fFf">
     <q-header elevated>
       <q-toolbar>
         <q-btn
@@ -18,7 +18,11 @@
         <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
-
+    <q-footer>
+      <q-toolbar>
+        <q-toolbar-title>Footer</q-toolbar-title>
+      </q-toolbar>
+    </q-footer>
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
