@@ -6,7 +6,16 @@ const routes = [
   {
     path: '/app',
     component: () => import('layouts/MyLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Index.vue') }],
+    children: [
+      {
+        path: '',
+        component: () => import('pages/Index.vue'),
+      },
+      {
+        path: ':server',
+        component: () => import('pages/Server.vue'),
+      },
+    ],
   },
   {
     path: '/app/*',
