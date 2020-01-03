@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
   q-page.flex.flex-center
     img(
       alt='Quasar logo'
@@ -8,6 +8,6 @@
 
 <script>
 export default {
-  name: 'PageIndex'
+  name: 'PageIndex',
 }
 </script>

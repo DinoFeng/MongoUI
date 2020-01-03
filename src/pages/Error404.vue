@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
   .fixed-center.text-center
     p
       img(
@@ -17,6 +17,6 @@
 
 <script>
 export default {
-  name: 'Error404'
+  name: 'Error404',
 }
 </script>

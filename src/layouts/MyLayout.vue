@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
   q-layout(view='hHh lPr fFf')
     q-header(elevated)
       q-toolbar
@@ -15,7 +15,7 @@
     q-footer
       q-toolbar
         q-toolbar-title Footer
-    q-drawer(
+    //- q-drawer(
       v-model='leftDrawerOpen'
       show-if-above
       bordered
@@ -97,10 +97,10 @@
 export default {
   name: 'MyLayout',
 
-  data () {
+  data() {
     return {
-      leftDrawerOpen: false
+      leftDrawerOpen: false,
     }
-  }
+  },
 }
 </script>

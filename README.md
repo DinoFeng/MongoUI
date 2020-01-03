@@ -1,4 +1,4 @@
-# mongodb manager ui (mongo_ui)
+# MongoDB UI (mongo_ui)
 
 mongodb manager ui
 

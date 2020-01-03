@@ -2,7 +2,7 @@
   "name": "mongo_ui",
   "version": "0.0.1",
   "description": "mongodb manager ui",
-  "productName": "mongodb manager ui",
+  "productName": "MongoDB UI",
   "cordovaId": "org.cordova.quasar.app",
   "capacitorId": "",
   "author": "Dino",
@@ -10,7 +10,6 @@
   "scripts": {
     "dev": "quasar dev -m ssr",
     "build": "quasar build -m ssr",
-    "start": "node dist/ssr/index.js",
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0"
   },
@@ -22,7 +21,7 @@
   },
   "devDependencies": {
     "@quasar/app": "^1.0.0",
-    "@vue/eslint-config-standard": "^4.0.0",
+    "@vue/eslint-config-prettier": "^4.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.10.0",
     "eslint-loader": "^2.1.1",
