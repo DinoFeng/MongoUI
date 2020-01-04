@@ -81,7 +81,7 @@
 <script>
 import consola from 'consola'
 export default {
-  name: 'Server',
+  name: 'PageServer',
   data() {
     return {
       leftDrawerOpen: false,

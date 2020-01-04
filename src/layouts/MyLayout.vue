@@ -6,11 +6,11 @@
           flat
           dense
           round
-          @click='leftDrawerOpen = !leftDrawerOpen'
+          @click='setLeftDrawerOpen(!leftDrawerOpen)'
           icon='menu'
           aria-label='Menu'
           )
-        q-toolbar-title Quasar App
+        q-toolbar-title Mongo UI
         div Quasar v{{ $q.version }}
     q-footer
       q-toolbar
@@ -94,13 +94,18 @@
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex'
 export default {
   name: 'MyLayout',
 
   data() {
-    return {
-      leftDrawerOpen: false,
-    }
+    return {}
+  },
+  computed: {
+    ...mapState('master', ['leftDrawerOpen']),
+  },
+  methods: {
+    ...mapMutations('master', ['setLeftDrawerOpen']),
   },
 }
 </script>

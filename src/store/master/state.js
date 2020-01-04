@@ -1,4 +1,8 @@
 const state = {
-  // appHeaderHeight: 0,
+  selectedServer: null,
+  showServerConfigDialog: true,
+  leftDrawerOpen: true,
+  servers: null,
+  editingConfig: null,
 }
 export default state

@@ -10,10 +10,17 @@ const routes = [
       {
         path: '',
         component: () => import('pages/Index.vue'),
-      },
-      {
-        path: ':server',
-        component: () => import('pages/Server.vue'),
+        children: [
+          {
+            path: '',
+            name: 'home',
+            component: () => import('pages/Home.vue'),
+          },
+          {
+            path: ':server',
+            component: () => import('pages/Server.vue'),
+          },
+        ],
       },
     ],
   },

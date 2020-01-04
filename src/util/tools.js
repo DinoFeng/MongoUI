@@ -11,21 +11,19 @@ const tools = {
       return []
     }
   },
-  getCurrentServer() {
-    const currentServer = LocalStorage.getItem('currentServer')
-    if (currentServer) {
-      return JSON.parse(currentServer)
-    } else {
-      return null
-    }
+  // getCurrentServer() {
+  //   const currentServer = LocalStorage.getItem('currentServer')
+  //   if (currentServer) {
+  //     return JSON.parse(currentServer)
+  //   } else {
+  //     return null
+  //   }
+  // },
+  saveServerConfigToLocal(config) {
+    LocalStorage.set('servers', JSON.stringify(config))
   },
-  addServer(data) {
-    const servers = this.getServerList()
-    servers.push(data)
-    LocalStorage.set('servers', JSON.stringify(servers))
-  },
-  setCurrentServer(data) {
-    LocalStorage.set('currentServer', JSON.stringify(data))
-  },
+  // setCurrentServer(data) {
+  //   LocalStorage.set('currentServer', JSON.stringify(data))
+  // },
 }
 export default tools
