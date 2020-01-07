@@ -1,15 +1,10 @@
 const express = require('express')
 const router = express.Router()
-// const consola = require('consola')
-router.post('/test', (req, res) => {
-  // consola.info('req.sessionID', req.sessionID)
-  console.debug({ body: req.body, query: req.query })
-  // Object.keys(req).forEach(k => console.debug({ [k]: req[k] }))
-  res.status(200).json('OK')
-  // const cp = req.app.locals.connectionPool
-  // cp.assignConnection({
-  //   connString: 'mongodb://localhost:27017/',
-  // }).then(({ assignId, client, connection }) => res.status(200).json({ assignId }))
+
+router.post('/test', (req, res, next) => {
+  const { body, params, url, query, headers } = req
+  console.debug({ body, params, url, query, headers })
+  res.status(200).json({ body, params, url, query, headers })
 })
 // router.all('/test2', async (req, res, next) => {
 //   // consola.info('req.sessionID', req.sessionID)

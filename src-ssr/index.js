@@ -12,91 +12,85 @@
  */
 
 const express = require('express')
-// const compression = require('compression')
-const bodyParser = require('body-parser')
+const compression = require('compression')
 
-// const ssr = require('../ssr')
+const ssr = require('../ssr')
 const extension = require('./extension')
 const app = express()
 const port = process.env.PORT || 3000
 
-// app.use(express.bodyParser())
-app.use(bodyParser.json({ limit: '10mb' }))
-app.use(bodyParser.urlencoded({ extended: false }))
-// const serve = (path, cache) =>
-//   express.static(ssr.resolveWWW(path), {
-//     maxAge: cache ? 1000 * 60 * 60 * 24 * 30 : 0,
-//   })
+const serve = (path, cache) => express.static(ssr.resolveWWW(path), {
+  maxAge: cache ? 1000 * 60 * 60 * 24 * 30 : 0
+})
 
 // gzip
-// app.use(compression({ threshold: 0 }))
+app.use(compression({ threshold: 0 }))
 
 // serve this with no cache, if built with PWA:
-// if (ssr.settings.pwa) {
-//   app.use('/service-worker.js', serve('service-worker.js'))
-// }
+if (ssr.settings.pwa) {
+  app.use('/service-worker.js', serve('service-worker.js'))
+}
 
 // serve "www" folder
-// app.use('/', serve('.', true))
+app.use('/', serve('.', true))
 
 // we extend the custom common dev & prod parts here
-// extension.extendApp({ app, ssr })
-extension.extendApp({ app })
+extension.extendApp({ app, ssr })
 
-// // this should be last get(), rendering with SSR
-// app.get('*', (req, res) => {
-//   res.setHeader('Content-Type', 'text/html')
+// this should be last get(), rendering with SSR
+app.get('*', (req, res) => {
+  res.setHeader('Content-Type', 'text/html')
 
-//   // SECURITY HEADERS
-//   // read more about headers here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
-//   // the following headers help protect your site from common XSS attacks in browsers that respect headers
-//   // you will probably want to use .env variables to drop in appropriate URLs below,
-//   // and potentially look here for inspiration:
-//   // https://ponyfoo.com/articles/content-security-policy-in-express-apps
+  // SECURITY HEADERS
+  // read more about headers here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
+  // the following headers help protect your site from common XSS attacks in browsers that respect headers
+  // you will probably want to use .env variables to drop in appropriate URLs below,
+  // and potentially look here for inspiration:
+  // https://ponyfoo.com/articles/content-security-policy-in-express-apps
 
-//   // https://developer.mozilla.org/en-us/docs/Web/HTTP/Headers/X-Frame-Options
-//   // res.setHeader('X-frame-options', 'SAMEORIGIN') // one of DENY | SAMEORIGIN | ALLOW-FROM https://example.com
+  // https://developer.mozilla.org/en-us/docs/Web/HTTP/Headers/X-Frame-Options
+  // res.setHeader('X-frame-options', 'SAMEORIGIN') // one of DENY | SAMEORIGIN | ALLOW-FROM https://example.com
 
-//   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
-//   // res.setHeader('X-XSS-Protection', 1)
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+  // res.setHeader('X-XSS-Protection', 1)
 
-//   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
-//   // res.setHeader('X-Content-Type-Options', 'nosniff')
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+  // res.setHeader('X-Content-Type-Options', 'nosniff')
 
-//   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-//   // res.setHeader('Access-Control-Allow-Origin', '*') // one of '*', '<origin>' where origin is one SINGLE origin
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+  // res.setHeader('Access-Control-Allow-Origin', '*') // one of '*', '<origin>' where origin is one SINGLE origin
 
-//   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-DNS-Prefetch-Control
-//   // res.setHeader('X-DNS-Prefetch-Control', 'off') // may be slower, but stops some leaks
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-DNS-Prefetch-Control
+  // res.setHeader('X-DNS-Prefetch-Control', 'off') // may be slower, but stops some leaks
 
-//   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-//   // res.setHeader('Content-Security-Policy', 'default-src https:')
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+  // res.setHeader('Content-Security-Policy', 'default-src https:')
 
-//   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/sandbox
-//   // res.setHeader('Content-Security-Policy', 'sandbox') // this will lockdown your server!!!
-//   // here are a few that you might like to consider adding to your CSP
-//   // object-src, media-src, script-src, frame-src, unsafe-inline
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/sandbox
+  // res.setHeader('Content-Security-Policy', 'sandbox') // this will lockdown your server!!!
+  // here are a few that you might like to consider adding to your CSP
+  // object-src, media-src, script-src, frame-src, unsafe-inline
 
-//   ssr.renderToString({ req, res }, (err, html) => {
-//     if (err) {
-//       if (err.url) {
-//         res.redirect(err.url)
-//       } else if (err.code === 404) {
-//         res.status(404).send('404 | Page Not Found')
-//       } else {
-//         // Render Error Page or Redirect
-//         res.status(500).send('500 | Internal Server Error')
-//         if (ssr.settings.debug) {
-//           console.error(`500 on ${req.url}`)
-//           console.error(err)
-//           console.error(err.stack)
-//         }
-//       }
-//     } else {
-//       res.send(html)
-//     }
-//   })
-// })
+  ssr.renderToString({ req, res }, (err, html) => {
+    if (err) {
+      if (err.url) {
+        res.redirect(err.url)
+      } else if (err.code === 404) {
+        res.status(404).send('404 | Page Not Found')
+      } else {
+        // Render Error Page or Redirect
+        res.status(500).send('500 | Internal Server Error')
+        if (ssr.settings.debug) {
+          console.error(`500 on ${req.url}`)
+          console.error(err)
+          console.error(err.stack)
+        }
+      }
+    } else {
+      res.send(html)
+    }
+  })
+})
 
 app.listen(port, () => {
   console.log(`Server listening at port ${port}`)
