@@ -1,6 +1,6 @@
 import {
   LocalStorage,
-  // SessionStorage,
+  // SessionStorage ,
 } from 'quasar'
 const tools = {
   getServerList() {
@@ -10,6 +10,10 @@ const tools = {
     } else {
       return []
     }
+  },
+  getSessionId() {
+    // SessionStorage.getIndex(0)
+    // LocalStorage.getAll(0)
   },
   // getCurrentServer() {
   //   const currentServer = LocalStorage.getItem('currentServer')

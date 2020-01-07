@@ -1,5 +1,5 @@
 <template lang="pug">
-  q-layout(view='hHh lPr fFf')
+  main
     q-drawer(
       v-model='leftDrawerOpen'
       show-if-above
@@ -42,7 +42,14 @@
                   q-item-label(caption)
                 q-item-section(top side)
                   .text-grey-8.q-gutter-xs
-                    q-btn.gt-xs(size='10px' flat dense round icon='fas fa-hands-helping')
+                    q-btn.gt-xs(
+                      icon='fas fa-hands-helping'
+                      size='10px' 
+                      flat 
+                      dense 
+                      round 
+                      @click='()=>gotoServerIndex(server.name)'
+                      )
                     q-btn.gt-xs(size='12px' flat dense round icon='more_vert')
                       q-menu(fit anchor='bottom left' self='top left')
                         q-item(clickable)
@@ -100,22 +107,29 @@
                   q-item-label(caption)
     q-page-container
       router-view
+    server-config-dialog(
+      v-model='serverConfigShow'
+      :editData='editingConfig'
+      )
 </template>
 
 <script>
-// import _ from 'lodash'
+import serverConfigDialog from '../components/serverConfigDialog'
 import { mapGetters, mapMutations, mapState } from 'vuex'
 export default {
   name: 'PageIndex',
+  components: { serverConfigDialog },
   data() {
-    return {}
+    return {
+      serverConfigShow: false,
+      editingConfig: null,
+    }
   },
   mounted() {
-    this.loadServerConfig()
     if (this.serverList.length > 0) {
-      this.setShowServerConfigDialog(false)
+      this.serverConfigShow = false
     } else {
-      this.setShowServerConfigDialog(true)
+      this.serverConfigShow = true
     }
   },
   computed: {
@@ -123,24 +137,22 @@ export default {
     ...mapGetters('master', ['serverList', 'selectedServer']),
   },
   methods: {
-    ...mapMutations('master', [
-      'setShowServerConfigDialog',
-      'loadServerConfig',
-      'deleteServerConfig',
-      'setEditingConfig',
-    ]),
+    ...mapMutations('master', ['deleteServerConfig']),
     showServerConfigDialog(create, editData) {
       if (editData) {
-        const { name, connection, options } = editData
+        const { name, connString, options } = editData
         if (create) {
-          this.setEditingConfig({ connection, options })
+          this.editingConfig = { connString, options }
         } else {
-          this.setEditingConfig({ name, connection, options })
+          this.editingConfig = { name, connString, options }
         }
       } else {
-        this.setEditingConfig(null)
+        this.editingConfig = {}
       }
-      this.setShowServerConfigDialog(true)
+      this.serverConfigShow = true
+    },
+    gotoServerIndex(serverName) {
+      window.location.href = `app/${serverName}`
     },
   },
 }

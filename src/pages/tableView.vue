@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import consola from 'consola'
+// import consola from 'consola'
 export default {
   name: 'TableView',
   // preFetch({ store, currentRoute, previousRoute, redirect, ssrContext }) {
@@ -25,7 +25,7 @@ export default {
   //   consola.info({ currentRoute, previousRoute })
   // },
   mounted() {
-    consola.info(this.$route)
+    // consola.info(this.$route)
   },
 }
 </script>

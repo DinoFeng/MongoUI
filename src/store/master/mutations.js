@@ -1,9 +1,6 @@
 import tools from '../../util/tools.js'
 
 const mutations = {
-  setShowServerConfigDialog(state, val) {
-    state.showServerConfigDialog = val
-  },
   setLeftDrawerOpen(state, val) {
     state.leftDrawerOpen = val
   },
@@ -30,8 +27,15 @@ const mutations = {
       }
     }
   },
-  setEditingConfig(state, val) {
-    state.editingConfig = val
+  setSelectedServer(state, serverName) {
+    if (serverName) {
+      const p = state.servers.findIndex(item => item.name === serverName)
+      if (p >= 0) {
+        state.selectedServer = state.servers[p]
+      } else {
+        state.selectedServer = null
+      }
+    }
   },
 }
 export default mutations

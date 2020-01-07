@@ -11,13 +11,19 @@
  * development server, but such updates are costly since the dev-server needs a reboot.
  */
 const apiRouter = require('./api/test')
+// const ConnectionPool = require('./util/connectionPool')
 
-module.exports.extendApp = function ({ app, ssr }) {
+module.exports.extendApp = ({
+  app,
+  //  ssr
+}) => {
   /*
      Extend the parts of the express app that you
      want to use with development server too.
 
      Example: app.use(), app.get() etc
   */
+  // const cp = new ConnectionPool()
+  // app.locals.connectionPool = cp
   app.use('/api', apiRouter)
 }
