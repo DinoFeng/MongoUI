@@ -17,6 +17,7 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
+    "body-parser": "^1.19.0",
     "quasar": "^1.0.0",
     "vue-i18n": "^8.0.0"
   },

@@ -11,15 +11,13 @@
  *   "src-ssr/extension.js"
  */
 
-const
-  express = require('express'),
-  compression = require('compression')
+const express = require('express')
+const compression = require('compression')
 
-const
-  ssr = require('../ssr'),
-  extension = require('./extension'),
-  app = express(),
-  port = process.env.PORT || 3000
+const ssr = require('../ssr')
+const extension = require('./extension')
+const app = express()
+const port = process.env.PORT || 3000
 
 const serve = (path, cache) => express.static(ssr.resolveWWW(path), {
   maxAge: cache ? 1000 * 60 * 60 * 24 * 30 : 0
@@ -36,6 +34,8 @@ if (ssr.settings.pwa) {
 // serve "www" folder
 app.use('/', serve('.', true))
 
+// const apiRouter = require('./api/test')
+// app.use('/api', apiRouter)
 // we extend the custom common dev & prod parts here
 extension.extendApp({ app, ssr })
 
@@ -93,6 +93,9 @@ app.get('*', (req, res) => {
     }
   })
 })
+
+// app.use(bodyParser.json({ limit: '10mb' }))
+// app.use(bodyParser.urlencoded({ extended: false }))
 
 app.listen(port, () => {
   console.log(`Server listening at port ${port}`)
