@@ -7,6 +7,13 @@ const mutations = {
   loadServerConfig(state) {
     state.servers = tools.getServerList()
   },
+  // loadAssignId(state) {
+  //   state.assignId = tools.getAssignId()
+  // },
+  // saveAssignId(state, assignId) {
+  //   state.assignId = assignId
+  //   tools.saveAssignId(state.assignId)
+  // },
   saveServerConfig(state, val) {
     if (val) {
       const p = state.servers.findIndex(item => item.name === val.name)

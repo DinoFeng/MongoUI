@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import axios from 'axios'
 // import keycloak from '../plugins/keycloak'
+import assignManager from './assignManager'
 // import { urlSetting } from '../consts/urlSetting'
 // const myOptions = Symbol('myOptions')
 
@@ -52,7 +53,8 @@ class API {
       method = 'post'
     }
     // headers = _.merge({}, { Authorization: `Bearer ${keycloak.token}` }, headers)
-    headers = _.merge({}, headers)
+    // headers = _.merge({}, headers)
+    headers = _.merge({}, { assignId: assignManager.assignId }, headers)
     // this[myOptions] = _.merge({}, defaultOptions, { url }, { params, data: post, method, headers })
     Object.defineProperty(this, 'option', {
       value: _.merge({}, defaultOptions, { url }, options, { params, data: post, method, headers }),

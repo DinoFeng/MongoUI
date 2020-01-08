@@ -3,6 +3,9 @@ import {
   // SessionStorage ,
 } from 'quasar'
 const tools = {
+  saveServerConfigToLocal(config) {
+    LocalStorage.set('servers', JSON.stringify(config))
+  },
   getServerList() {
     const servers = LocalStorage.getItem('servers')
     if (servers) {
@@ -11,9 +14,11 @@ const tools = {
       return []
     }
   },
-  getSessionId() {
-    // SessionStorage.getIndex(0)
-    // LocalStorage.getAll(0)
+  saveAssignId(id) {
+    LocalStorage.set('assignId', id)
+  },
+  getAssignId() {
+    return LocalStorage.getItem('assignId')
   },
   // getCurrentServer() {
   //   const currentServer = LocalStorage.getItem('currentServer')
@@ -23,9 +28,7 @@ const tools = {
   //     return null
   //   }
   // },
-  saveServerConfigToLocal(config) {
-    LocalStorage.set('servers', JSON.stringify(config))
-  },
+
   // setCurrentServer(data) {
   //   LocalStorage.set('currentServer', JSON.stringify(data))
   // },
