@@ -9,9 +9,10 @@
       q-scroll-area.fit
         q-list
           q-expansion-item(
-            default-opened
             expand-icon-toggle
             expand-separator
+            group="somegroup"
+            :value='!selectedServer'
             :content-inset-level='0.3'
             )
             template(v-slot:header)
@@ -36,7 +37,7 @@
                 :key='server.name'
                 )
                 q-item-section(avatar)
-                  q-icon(name='far fa-hdd')
+                  q-icon(name='fas fa-desktop')
                 q-item-section
                   q-item-label {{server.name}}
                   q-item-label(caption)
@@ -87,24 +88,42 @@
                                 )
           q-expansion-item(
             v-if='selectedServer'
-            default-opened
             expand-icon-toggle
             expand-separator
+            group="somegroup"
+            :value='!!selectedServer'
             :content-inset-level='0.3'
             )
             template(v-slot:header)
               q-item-section(avatar)
-                q-icon(name='fas fa-hdd')
+                q-icon(name='fas fa-desktop')
               q-item-section
                 q-item-label {{selectedServer.name}}
                 q-item-label(caption)
-            q-list                    
-              q-item(clickable)
-                q-item-section(avatar)
-                  q-icon(name='fas fa-database')
-                q-item-section
-                  q-item-label Servers
-                  q-item-label(caption)
+              q-menu(
+                touch-position
+                context-menu
+                )
+                q-list(dense style="min-width: 100px")
+                  q-item(clickable v-close-popup)
+                    q-item-section Refresh
+                  q-separator
+                  q-item(clickable v-close-popup)
+                    q-item-section Create Database
+                  q-item(clickable v-close-popup)
+                    q-item-section Server Status
+                  q-item(clickable v-close-popup)
+                    q-item-section Host Info
+                  q-item(clickable v-close-popup)
+                    q-item-section MongoDB Version
+                  q-separator
+                  q-item(clickable v-close-popup)
+                    q-item-section Show Log
+            database-items(
+              :databases='selectedDatabases'
+              @dbClick='dbClick'
+              @tableClick='tableClick'
+              )
     q-page-container
       router-view
     server-config-dialog(
@@ -114,11 +133,16 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import serverConfigDialog from '../components/serverConfigDialog'
-import { mapGetters, mapMutations, mapState } from 'vuex'
+import databaseItems from '../components/databaseItemsForDrawer'
+import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
 export default {
   name: 'PageIndex',
-  components: { serverConfigDialog },
+  components: {
+    serverConfigDialog,
+    databaseItems,
+  },
   data() {
     return {
       serverConfigShow: false,
@@ -128,16 +152,32 @@ export default {
   mounted() {
     if (this.serverList.length > 0) {
       this.serverConfigShow = false
+      const { server, db, table } = _.get(this.$route, ['params'])
+      console.debug('index mounted', { server, db, table })
+      if (server) {
+        this.connectServer(server)
+        if (db) {
+          if (table) {
+            this.$router.push({ name: 'table', params: { server, db, table } })
+          }
+        }
+      } else {
+        this.$router.push({ name: 'home' })
+      }
     } else {
       this.serverConfigShow = true
     }
   },
   computed: {
-    ...mapState('master', ['leftDrawerOpen']),
-    ...mapGetters('master', ['serverList', 'selectedServer']),
+    ...mapState('master', ['leftDrawerOpen', 'selectedServer']),
+    ...mapGetters('master', ['serverList', 'selectedDatabases']),
+    // selectedServerDBs() {
+    //   return _.get(this.selectedServer, ['dbStatistics', 'databases']) || []
+    // },
   },
   methods: {
-    ...mapMutations('master', ['deleteServerConfig']),
+    ...mapMutations('master', ['deleteServerConfig', 'setSelectedServer']),
+    ...mapActions('master', ['connectServer']),
     showServerConfigDialog(create, editData) {
       if (editData) {
         const { name, connString, options } = editData
@@ -152,7 +192,19 @@ export default {
       this.serverConfigShow = true
     },
     gotoServerIndex(serverName) {
-      window.location.href = `app/${serverName}`
+      this.connectServer(serverName)
+      this.$router.push({ name: 'server', params: { server: serverName } })
+    },
+    dbClick(db) {
+      console.debug('dbName', db)
+      const { name } = this.selectedServer
+      this.$router.push({ name: 'database', params: { server: name, db } })
+    },
+    tableClick(db, table) {
+      console.debug('tableClick', db, table)
+      const { name } = this.selectedServer
+      this.$router.push({ name: 'table', params: { server: name, db, table } })
+      // window.location.href = `app/${name}/${db}/${table}`
     },
   },
 }

@@ -19,13 +19,14 @@ router.post('/:server/:db/:table/:page/aggregate', async (req, res) => {
 })
 
 router.post('/:server/assignInfo', async (req, res) => {
-  const { body, params, url, query, headers } = req
+  const { body } = req
   const client = await req.createMongoClient(body)
   // const assignInfo = req.clientAssignInfo
-  const status = await common.getDBStatus(client)
-  const dbStats = await common.getDBStats(client)
+  const status = await common.getServerStatus(client)
+  const { host, version, process, pid, uptime, localTime } = status
+  const dbStatistics = await common.getDBStats(client)
   // console.debug({ body, client, status, assignInfo })
-  res.status(200).json({ status, dbStats, body, params, url, query, headers })
+  res.status(200).json({ status: { host, version, process, pid, uptime, localTime }, dbStatistics })
 })
 
 module.exports = router

@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import tools from '../../util/tools.js'
 
 const mutations = {
@@ -43,6 +44,10 @@ const mutations = {
         state.selectedServer = null
       }
     }
+  },
+  saveConnectServer(state, data) {
+    const orgData = _.cloneDeep(state.selectedServer)
+    state.selectedServer = _.merge({}, orgData, data)
   },
 }
 export default mutations

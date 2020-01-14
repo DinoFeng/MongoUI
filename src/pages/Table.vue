@@ -1,6 +1,6 @@
 <template lang="pug">
   q-page.flex.flex-center
-    span AAA
+    span Table
     img(
       alt='Quasar logo'
       src='~assets/quasar-logo-full.svg'
@@ -10,7 +10,7 @@
 <script>
 // import consola from 'consola'
 export default {
-  name: 'TableView',
+  name: 'PageTable',
   // preFetch({ store, currentRoute, previousRoute, redirect, ssrContext }) {
   //   // fetch data, validate route and optionally redirect to some other route...
 

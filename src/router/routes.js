@@ -18,7 +18,18 @@ const routes = [
           },
           {
             path: ':server',
+            name: 'server',
             component: () => import('pages/Server.vue'),
+          },
+          {
+            path: ':server/:db',
+            name: 'database',
+            component: () => import('pages/Database.vue'),
+          },
+          {
+            path: ':server/:db/:table',
+            name: 'table',
+            component: () => import('pages/Table.vue'),
           },
         ],
       },

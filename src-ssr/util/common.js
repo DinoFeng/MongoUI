@@ -2,7 +2,7 @@ const { ObjectID } = require('mongodb')
 const _ = require('lodash')
 
 const common = {
-  async getDBStatus(client) {
+  async getServerStatus(client) {
     return client
       .db()
       .admin()

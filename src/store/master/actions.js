@@ -13,6 +13,7 @@ const actions = {
     commit(`setSelectedServer`, serverName)
     const serverConfig = await gobalAction.getServerInfo(state.selectedServer)
     console.info('connectServer', serverConfig, state.selectedServer)
+    commit(`saveConnectServer`, serverConfig)
   },
 }
 export default actions
