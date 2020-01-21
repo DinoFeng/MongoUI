@@ -8,18 +8,18 @@ router.post('/assign', async (req, res) => {
   res.status(200).json(common.genObjectId())
 })
 
-const getCircularReplacer = () => {
-  const seen = new WeakSet()
-  return (key, value) => {
-    if (typeof value === 'object' && value !== null) {
-      if (seen.has(value)) {
-        return
-      }
-      seen.add(value)
-    }
-    return value
-  }
-}
+// const getCircularReplacer = () => {
+//   const seen = new WeakSet()
+//   return (key, value) => {
+//     if (typeof value === 'object' && value !== null) {
+//       if (seen.has(value)) {
+//         return
+//       }
+//       seen.add(value)
+//     }
+//     return value
+//   }
+// }
 class Test {
   constructor(v) {
     this.pre = null

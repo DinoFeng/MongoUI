@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb')
 const DateTime = require('luxon').DateTime
-const _ = require('lodash')
+// const _ = require('lodash')
 
 const pool = Symbol('pool')
 const max = Symbol('max')
@@ -9,6 +9,18 @@ const clearPool = Symbol('clearPool')
 const genConnection = Symbol('genConnection')
 const removeClient = Symbol('removeClient')
 const appendClient = Symbol('appendClient')
+
+const createConnection = (connString, connOptions) =>
+  new Promise((resolve, reject) => {
+    MongoClient.connect(connString, connOptions, (err, database) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(database)
+      }
+    })
+  })
+
 class ConnectionPool {
   constructor() {
     this[max] = 2
@@ -27,14 +39,14 @@ class ConnectionPool {
     }
     console.info(`after removeClient ${id}`, this[pool])
   }
-  [appendClient](id, client) {
-    console.info(`before appendClient ${id}`, this[pool])
+  [appendClient](id, client, connOptions) {
+    // console.info(`before appendClient ${id}`, this[pool])
     if (id && this[pool].has(id)) {
-      const { aId, client: oldClient } = this[pool].get(id)
+      const { aId, client: oldClient, connOptions: oldOptions } = this[pool].get(id)
       if (aId) {
         clearTimeout(aId)
       }
-      if (oldClient) {
+      if (JSON.stringify(connOptions) != JSON.stringify(oldOptions) && oldClient) {
         oldClient.close()
       }
     }
@@ -42,18 +54,18 @@ class ConnectionPool {
     const aId = setTimeout(() => {
       client.close()
       this[removeClient](id)
-      console.debug(`close at ${DateTime.local().toString()}`)
+      // console.debug(`close at ${DateTime.local().toString()}`)
     }, this[expireTime])
-    this[pool].set(id, { client, accessTime, aId })
-    console.debug(`set at ${accessTime.toString()}`)
-    console.info(`after appendClient ${id}`, this[pool])
+    this[pool].set(id, { client, accessTime, aId, connOptions })
+    // console.debug(`set at ${accessTime.toString()}`)
+    // console.info(`after appendClient ${id}`, this[pool])
   }
 
   async [genConnection](assignId, { connString, options }) {
     try {
       // const objID = new ObjectID()
       // const assignId = objID.toHexString().toString()
-      const client = new MongoClient(connString, _.merge({ useUnifiedTopology: true }, options))
+      // const client = new MongoClient(connString, _.merge({ useUnifiedTopology: true, auto_reconnect: true }, options))
       // client.on('close', () => {
       //   this[removeClient](assignId)
       //   console.warn('client closed')
@@ -62,14 +74,19 @@ class ConnectionPool {
       //   this[appendClient](assignId, client)
       //   console.warn('client reconnect')
       // })
-      client.on('error', error => console.error('client error', error))
-      await client.connect()
+      // client.on('error', error => console.error('client error', error))
+      // const connect = await client.connect()
+      const connect = await createConnection(
+        connString,
+        options,
+        // _.merge({ useUnifiedTopology: true, auto_reconnect: true }, options),
+      )
 
       if (this[pool].size >= this[max]) {
         this[clearPool]()
       }
-      this[appendClient](assignId, client)
-      return client
+      this[appendClient](assignId, connect, { connString, options })
+      return connect
     } catch (error) {
       console.error(error)
       throw error
@@ -78,8 +95,8 @@ class ConnectionPool {
 
   async getMongoClient(assignId) {
     if (assignId && this[pool].has(assignId)) {
-      const { client } = this[pool].get(assignId)
-      this[appendClient](assignId, client)
+      const { client, connOptions } = this[pool].get(assignId)
+      this[appendClient](assignId, client, connOptions)
       return client
     } else {
       return null
