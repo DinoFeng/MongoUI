@@ -1,6 +1,8 @@
 <template lang="pug">
-  q-page(:style-fn="myTweak")
+  q-page(:style-fn='myTweak')
     .q-pa-md
+      q-breadcrumbs
+        q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop')
       .q-pa-md
         q-card
           q-card-section Server status
@@ -13,11 +15,11 @@
                 q-item-section {{s.name}}
                 q-item-section {{s.value}}
       .q-pa-md
-        database-info(:databasesInfo='selectedDatabases')
+        database-info(:databasesInfo='selectedServerDBs')
 </template>
 
 <script>
-// import _ from 'lodash'
+import _ from 'lodash'
 import { mapGetters } from 'vuex'
 import databaseInfo from '../components/databaseInfo'
 export default {
@@ -37,7 +39,10 @@ export default {
   //   this.connectServer(_.get(this.$route, ['params', 'server']))
   // },
   computed: {
-    ...mapGetters('master', ['selectedDatabases', 'selectedServerStates']),
+    ...mapGetters('master', ['selectedServerDBs', 'selectedServerStates']),
+    navigation() {
+      return _.get(this.$route, ['params'])
+    },
   },
   methods: {
     myTweak(offset) {

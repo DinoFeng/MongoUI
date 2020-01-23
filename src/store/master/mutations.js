@@ -49,5 +49,11 @@ const mutations = {
     const orgData = _.cloneDeep(state.selectedServer)
     state.selectedServer = _.merge({}, orgData, data)
   },
+  setSelectedDatabase(state, data) {
+    state.selectedDatabase = _.cloneDeep(data)
+  },
+  setTableResult(state, data) {
+    state.tableResult = _.cloneDeep(data)
+  },
 }
 export default mutations

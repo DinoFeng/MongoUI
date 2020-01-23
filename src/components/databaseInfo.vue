@@ -1,10 +1,11 @@
 <template lang="pug">
       q-card
-        q-card-section Connection statistics
+        q-card-section Database statistics
         q-card-section
           q-list
             q-expansion-item(
               v-for='db in databasesInfo'
+              v-if='!!db'
               :key='db.name'
               popup 
               icon='fas fa-database'

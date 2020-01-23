@@ -1,7 +1,7 @@
 <template lang="pug">
   main
     q-drawer(
-      v-model='leftDrawerOpen'
+      :value='leftDrawerOpen'
       show-if-above
       bordered
       content-class='bg-grey-2'
@@ -120,7 +120,7 @@
                   q-item(clickable v-close-popup)
                     q-item-section Show Log
             database-items(
-              :databases='selectedDatabases'
+              :databases='selectedServerDBs'
               @dbClick='dbClick'
               @tableClick='tableClick'
               )
@@ -153,12 +153,16 @@ export default {
     if (this.serverList.length > 0) {
       this.serverConfigShow = false
       const { server, db, table } = _.get(this.$route, ['params'])
-      console.debug('index mounted', { server, db, table })
+      // console.debug('index mounted', { server, db, table })
       if (server) {
         this.connectServer(server)
         if (db) {
           if (table) {
             this.$router.push({ name: 'table', params: { server, db, table } })
+          } else {
+            this.getDatabaseStats({ serverName: server, database: db }).then(() =>
+              this.$router.push({ name: 'database', params: { server, db } }),
+            )
           }
         }
       } else {
@@ -169,15 +173,12 @@ export default {
     }
   },
   computed: {
-    ...mapState('master', ['leftDrawerOpen', 'selectedServer']),
-    ...mapGetters('master', ['serverList', 'selectedDatabases']),
-    // selectedServerDBs() {
-    //   return _.get(this.selectedServer, ['dbStatistics', 'databases']) || []
-    // },
+    ...mapState('master', ['leftDrawerOpen', 'selectedServer', 'selectedDatabase']),
+    ...mapGetters('master', ['serverList', 'selectedServerDBs']),
   },
   methods: {
     ...mapMutations('master', ['deleteServerConfig', 'setSelectedServer']),
-    ...mapActions('master', ['connectServer']),
+    ...mapActions('master', ['connectServer', 'getDatabaseStats', 'findTableData']),
     showServerConfigDialog(create, editData) {
       if (editData) {
         const { name, connString, options } = editData
@@ -192,19 +193,25 @@ export default {
       this.serverConfigShow = true
     },
     gotoServerIndex(serverName) {
-      this.connectServer(serverName)
-      this.$router.push({ name: 'server', params: { server: serverName } })
+      console.debug('gotoServerIndex', serverName)
+      if (_.get(this.selectedServer, 'name') !== serverName) {
+        this.connectServer(serverName).then(() => this.$router.push({ name: 'server', params: { server: serverName } }))
+      } else {
+        console.debug('gotoServerIndex X')
+      }
     },
     dbClick(db) {
-      console.debug('dbName', db)
       const { name } = this.selectedServer
-      this.$router.push({ name: 'database', params: { server: name, db } })
+      this.getDatabaseStats({ serverName: name, database: db }).then(() =>
+        this.$router.push({ name: 'database', params: { server: name, db } }),
+      )
     },
     tableClick(db, table) {
-      console.debug('tableClick', db, table)
+      // console.debug('tableClick', database, table)
       const { name } = this.selectedServer
-      this.$router.push({ name: 'table', params: { server: name, db, table } })
-      // window.location.href = `app/${name}/${db}/${table}`
+      this.findTableData({ page: 1, serverName: name, database: db, table }).then(() =>
+        this.$router.push({ name: 'table', params: { server: name, db, table } }),
+      )
     },
   },
 }
