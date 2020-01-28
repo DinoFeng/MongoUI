@@ -155,16 +155,20 @@ export default {
       const { server, db, table } = _.get(this.$route, ['params'])
       // console.debug('index mounted', { server, db, table })
       if (server) {
-        this.connectServer(server)
-        if (db) {
-          if (table) {
-            this.$router.push({ name: 'table', params: { server, db, table } })
-          } else {
-            this.getDatabaseStats({ serverName: server, database: db }).then(() =>
-              this.$router.push({ name: 'database', params: { server, db } }),
-            )
+        this.connectServer(server).then(() => {
+          if (db) {
+            if (table) {
+              this.findTableData({ page: 1, serverName: server, database: db, table, isReset: true }).then(() =>
+                this.$router.push({ name: 'table', params: { server, db, table } }),
+              )
+              // this.$router.push({ name: 'table', params: { server, db, table } })
+            } else {
+              this.getDatabaseStats({ serverName: server, database: db }).then(() =>
+                this.$router.push({ name: 'database', params: { server, db } }),
+              )
+            }
           }
-        }
+        })
       } else {
         this.$router.push({ name: 'home' })
       }
@@ -194,23 +198,27 @@ export default {
     },
     gotoServerIndex(serverName) {
       console.debug('gotoServerIndex', serverName)
+      // window.location.href = `app/${serverName}`
       if (_.get(this.selectedServer, 'name') !== serverName) {
         this.connectServer(serverName).then(() => this.$router.push({ name: 'server', params: { server: serverName } }))
-      } else {
-        console.debug('gotoServerIndex X')
       }
     },
     dbClick(db) {
+      // const { name } = this.selectedServer
+      // window.location.href = `app/${name}/${db}`
       const { name } = this.selectedServer
       this.getDatabaseStats({ serverName: name, database: db }).then(() =>
         this.$router.push({ name: 'database', params: { server: name, db } }),
       )
     },
     tableClick(db, table) {
-      // console.debug('tableClick', database, table)
+      // const { name } = this.selectedServer
+      // window.location.href = `app/${name}/${db}/${table}`
+      console.debug('tableClick', db, table)
       const { name } = this.selectedServer
-      this.findTableData({ page: 1, serverName: name, database: db, table }).then(() =>
-        this.$router.push({ name: 'table', params: { server: name, db, table } }),
+      this.findTableData({ page: 1, serverName: name, database: db, table, isReset: true }).then(
+        () => this.$router.push({ name: 'table', params: { server: name, db, table } }),
+        // this.findTableData({ page: 1, serverName: name, database: db, table })
       )
     },
   },

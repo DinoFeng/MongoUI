@@ -55,5 +55,20 @@ const mutations = {
   setTableResult(state, data) {
     state.tableResult = _.cloneDeep(data)
   },
+  setPageSize(state, value) {
+    state.pageSize = _.toNumber(value)
+  },
+  setCurrentPage(state, value) {
+    state.currentPage = value
+  },
+  setCommandMode(state, value) {
+    state.commandMode = value
+  },
+  setFindCommand(state, data) {
+    state.find = _.cloneDeep(data)
+  },
+  setAggregateCommand(state, data) {
+    state.aggregate = _.cloneDeep(data)
+  },
 }
 export default mutations

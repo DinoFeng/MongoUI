@@ -30,5 +30,47 @@ const getters = {
       rowsNumber: _.get(state, ['tableResult', 'total']) || 0,
     }
   },
+  resultFields(state) {
+    const rows = _.get(state, ['tableResult', 'rows'])
+    if (rows.length > 0) {
+      const fields = new Set()
+      for (let i = 0; i < rows.length; i++) {
+        const doc = rows[i]
+        for (const key in doc) {
+          if (key === '__v') continue
+          fields.add(key)
+        }
+      }
+      return Array.from(fields)
+    }
+    return []
+  },
+  // resultColumns(state) {
+  //   const rows = _.get(state, ['tableResult', 'rows'])
+  //   if (rows.length > 0) {
+  //     const fields = new Map()
+  //     for (let i = 0; i < rows.length; i++) {
+  //       const doc = rows[i]
+  //       for (const key in doc) {
+  //         // if (key === '__v') continue
+  //         fields.set(key, {
+  //           name: key,
+  //           label: key,
+  //           align: 'left',
+  //           field: row => {
+  //             const type = tools.getType(row[key])
+  //             if (['Object', 'Array'].includes(type)) {
+  //               return type
+  //             } else {
+  //               return row[key]
+  //             }
+  //           },
+  //         })
+  //       }
+  //     }
+  //     return Array.from(fields.values)
+  //   }
+  //   return []
+  // },
 }
 export default getters

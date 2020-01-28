@@ -8,6 +8,22 @@
     row-key='_id'
     hide-bottom
     )
+    template(v-slot:body='props')
+      q-tr(:props='props')
+        q-td(
+          v-for='col in props.cols'
+          :key='col.name'
+          :props="props"
+          ) {{ col.value }}
+        q-menu(
+          touch-position
+          context-menu
+          )
+          q-list(dense style="min-width: 100px")
+            q-item(clickable v-close-popup)
+              q-item-section Update Documents
+            q-item(clickable v-close-popup)
+              q-item-section Remove Documents          
 </template>
 
 <script>
@@ -30,6 +46,7 @@ export default {
   computed: {
     ...mapGetters('master', ['pagination']),
     columns() {
+      // return this.resultColumns
       const row = _.get(this.dataRows, [0]) || {}
       return Object.keys(row).map(name => ({
         name,

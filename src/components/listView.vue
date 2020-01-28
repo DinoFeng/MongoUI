@@ -20,6 +20,16 @@
             q-item-section ({{index+1}}) ObjectId("{{row._id}}") 
             q-item-section {{getDesc(row)}}
             q-item-section {{getType(row)}}
+            q-menu(
+              touch-position
+              context-menu
+              )
+              q-list(dense style="min-width: 100px")
+                q-item(clickable v-close-popup)
+                  q-item-section Update Documents
+                q-item(clickable v-close-popup)
+                  q-item-section Remove Documents
+
           display-list(
             v-if='expandeds[row._id]'
             :data='row'

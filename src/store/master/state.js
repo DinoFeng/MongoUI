@@ -5,10 +5,12 @@ const state = {
   servers: null,
   // assignId: null,
 
-  pageSize: 20,
-  findOptions: {},
-  findQuery: {},
   currentPage: 1,
+  pageSize: 20,
+
+  commandMode: 'find',
+  find: {},
+  aggregate: {},
 
   tableResult: {
     rows: [],

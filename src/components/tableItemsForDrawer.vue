@@ -15,15 +15,15 @@
         context-menu
         )
         q-list(dense style="min-width: 100px")
-          q-item(clickable v-close-popup)
-            q-item-section View Documents
-          q-separator
+          //- q-item(clickable v-close-popup)
+          //-   q-item-section View Documents
+          //- q-separator
           q-item(clickable v-close-popup)
             q-item-section Insert Documents
-          q-item(clickable v-close-popup)
-            q-item-section Update Documents
-          q-item(clickable v-close-popup)
-            q-item-section Remove Documents
+          //- q-item(clickable v-close-popup)
+          //-   q-item-section Update Documents
+          //- q-item(clickable v-close-popup)
+          //-   q-item-section Remove Documents
           q-item(clickable v-close-popup)
             q-item-section Remove All Documents
           q-separator

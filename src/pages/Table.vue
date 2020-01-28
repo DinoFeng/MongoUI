@@ -9,30 +9,32 @@
       
       q-toolbar(ref='toolbar')
         q-btn-group(spread)
-          q-btn(label='search' color='positive')
-          q-btn(label='find' color='info')
-          q-btn(label='aggregate' color='warning')
+          q-btn(label='search' color='positive' @click='openSearchDialog')
+          q-btn(label='find' color='info' @click='openFindDialog')
+          q-btn(label='aggregate' color='warning' @click='openAggregateDialog')
         q-space
         q-icon(name='far fa-clock')
         | 0.002 sec
         q-space
         q-input(
-          v-model='pageSize'
+          v-model='perPageRecord'
           style='width:100px'
           label='Records per page:'
+          debounce='500'
           dense
           )
         q-pagination(
-          v-model='current'
+          :value='currentPage'
           :max='pageMax'
           input
+          @input='changePage'
           )
         q-separator(vertical inset)
         q-btn-toggle(
           v-model='displayMode'
-          flat
-          toggle-color='primary'
           :options='displayModes'
+          toggle-color='primary'
+          flat
           )
           template(v-slot:list)
             q-icon(name='fas fa-list')
@@ -57,18 +59,31 @@
           :dataRows='tableRows'
           :contentHeight='contentHeight'
           )
+    query-dialog(
+      v-model='openQuery'
+      :commandData.sync='commandData'
+      :commandMode='commandMode'
+      @submit='onQuerySubmit'
+      )
+    search-dialog(
+      v-model='openSearch'
+      :commandData.sync='commandData'
+      @submit='onQuerySubmit'
+      )
 </template>
 
 <script>
 import _ from 'lodash'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
 import listView from '../components/listView'
 import documentView from '../components/documentView'
 import tableView from '../components/tableView'
+import queryDialog from '../components/queryDialog'
+import searchDialog from '../components/searchDialog'
 import tools from '../util/tools'
 export default {
   name: 'PageTable',
-  components: { listView, documentView, tableView },
+  components: { listView, documentView, tableView, queryDialog, searchDialog },
   // preFetch({ store, currentRoute, previousRoute, redirect, ssrContext }) {
   //   // fetch data, validate route and optionally redirect to some other route...
 
@@ -86,28 +101,89 @@ export default {
   data() {
     return {
       tab: 'find',
-      current: 1,
-      pageSize: 20,
       displayMode: 'list',
       displayModes: [
         { value: 'list', slot: 'list' },
         { value: 'table', slot: 'table' },
         { value: 'document', slot: 'document' },
       ],
-      aggregate: '',
-      find: '',
       contentHeight: 100,
+      openQuery: false,
+      openSearch: false,
     }
   },
   computed: {
+    ...mapState('master', ['pageSize', 'currentPage', 'commandMode', 'find', 'aggregate']),
     ...mapGetters('master', ['tableRows', 'pageMax']),
     navigation() {
       return _.get(this.$route, ['params'])
     },
+    perPageRecord: {
+      get() {
+        return this.pageSize
+      },
+      set(v) {
+        if (this.pageSize.toString() !== v) {
+          this.setPageSize(v)
+          this.changePageSize(v)
+        }
+      },
+    },
+    commandData: {
+      get() {
+        return _.get(this, [this.commandMode])
+      },
+      set(v) {
+        console.debug(v)
+        if (this.commandMode === 'find') {
+          this.setFindCommand(v)
+        } else {
+          this.setAggregateCommand(v)
+        }
+      },
+    },
   },
   methods: {
+    ...mapMutations('master', ['setPageSize', 'setCommandMode', 'setFindCommand', 'setAggregateCommand']),
+    ...mapActions('master', ['findTableData', 'aggregateTableData']),
+    changePage(page) {
+      if (page !== this.currentPage) {
+        // console.debug('changePage')
+        // const { server, db, table } = _.get(this.$route, ['params'])
+        // this.findTableData({ page, serverName: server, database: db, table })
+        this.loadData(page)
+      }
+    },
+    changePageSize(pageSize) {
+      console.debug('pageSize', pageSize)
+      this.loadData(this.currentPage)
+    },
+    loadData(page) {
+      const { server, db, table } = _.get(this.$route, ['params'])
+      if (this.commandMode === 'find') {
+        this.findTableData({ page, serverName: server, database: db, table })
+      } else {
+        this.aggregateTableData({ page, serverName: server, database: db, table })
+      }
+    },
+    openSearchDialog() {
+      this.openSearch = true
+      this.setCommandMode('find')
+    },
+    openFindDialog() {
+      this.openQuery = true
+      this.setCommandMode('find')
+    },
+    openAggregateDialog() {
+      this.openQuery = true
+      this.setCommandMode('aggregate')
+    },
     myTweak(offset) {
       return { height: offset ? `calc(100vh - ${offset}px)` : '100vh', overflow: 'auto' }
+    },
+    onQuerySubmit() {
+      console.debug('onQuerySubmit')
+      this.loadData(1)
     },
     onResize(size) {
       const mainPadding = tools.getPaddingValue(this.$refs.mainContent)
