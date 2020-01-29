@@ -20,13 +20,13 @@
           )
           q-list(dense style="min-width: 100px")
             q-item(clickable v-close-popup)
-              q-item-section Refresh
+              q-item-section {{$t('menu.refresh')}}
             q-separator
             q-item(clickable v-close-popup)
-              q-item-section Database Statistics
+              q-item-section {{$t('menu.databaseStatistics')}}
             q-separator
             q-item(clickable v-close-popup)
-              q-item-section Drop Database
+              q-item-section {{$t('menu.dropDatabase')}}
       table-items(
         :tables='db.tables'
         @tableClick='table=>$emit("tableClick",db.name,table)'

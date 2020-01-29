@@ -9,17 +9,17 @@
       
       q-toolbar(ref='toolbar')
         q-btn-group(spread)
-          q-btn(label='search' color='positive' @click='openSearchDialog')
+          q-btn(:label='$t("search")' color='positive' @click='openSearchDialog')
           q-btn(label='find' color='info' @click='openFindDialog')
           q-btn(label='aggregate' color='warning' @click='openAggregateDialog')
         q-space
         q-icon(name='far fa-clock')
-        | 0.002 sec
+        | 0.002 {{$t('sec')}}
         q-space
         q-input(
           v-model='perPageRecord'
           style='width:100px'
-          label='Records per page:'
+          :label='$t("pageSizeLabel")'
           debounce='500'
           dense
           )
@@ -48,6 +48,8 @@
           v-if='displayMode==="list"'
           :dataRows='tableRows'
           :contentHeight='contentHeight'
+          @updateItemClick='updateItem'
+          @removeItemClick='removeItem'
           )
         document-view(
           v-if='displayMode==="document"'
@@ -58,6 +60,8 @@
           v-if='displayMode==="table"'
           :dataRows='tableRows'
           :contentHeight='contentHeight'
+          @updateItemClick='updateItem'
+          @removeItemClick='removeItem'
           )
     query-dialog(
       v-model='openQuery'
@@ -177,6 +181,12 @@ export default {
     openAggregateDialog() {
       this.openQuery = true
       this.setCommandMode('aggregate')
+    },
+    updateItem(_id, updated) {
+      console.debug('updateItem', { _id, updated })
+    },
+    removeItem(_id) {
+      console.debug('removeItem', { _id })
     },
     myTweak(offset) {
       return { height: offset ? `calc(100vh - ${offset}px)` : '100vh', overflow: 'auto' }

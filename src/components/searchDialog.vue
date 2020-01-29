@@ -18,7 +18,7 @@
           q-select(
             v-model='selectedField'
             :options='fields'
-            :rules="[ val => val && val.length > 0 || 'Please type something that can JSON parse.']"
+            :rules="[ val => val && val.length > 0 || `${$t('requestTip')}`]"
             label='field'
             debounce='500'
             filled
@@ -26,7 +26,7 @@
             )
           q-input(
             v-model='inputValue'
-            :rules="[ val => val && val.length > 0 || 'Please type something that can JSON parse.']"
+            :rules="[ val => val && val.length > 0 || `${$t('requestTip')}`]"
             label='value'
             debounce='500'
             filled
@@ -36,12 +36,12 @@
           q-toolbar
             q-space
             q-btn.q-ml-sm(
-              label='Search'
+              :label='$t("search")'
               type='submit'
               color='primary'
               )
             q-btn.q-ml-sm(
-              label='Cancel'
+              :label='$t("cancel")'
               type='reset'
               color='primary'
               flat

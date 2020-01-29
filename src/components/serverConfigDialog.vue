@@ -8,7 +8,7 @@
         q-avatar
           img(src='https://cdn.quasar.dev/logo/svg/quasar-logo.svg')
         q-toolbar-title
-          span.text-weight-bold Create new server connection
+          span.text-weight-bold {{$t('serverConfigDialog.title')}}
         //- q-btn(
           flat
           round
@@ -23,24 +23,24 @@
           )
           q-input(
             v-model='name'
-            label='Server name *'
+            :label='$t("serverConfigDialog.nameLabel")'
             filled
             lazy-rules
             :disable='!isCreate'
-            :rules="[ val => val && val.length > 0 || 'Please type something']"
+            :rules="[ val => val && val.length > 0 || `${$t('requestTip')}`]"
             )
           q-input(
             v-model='connString'
             type='textarea'
-            label='Connection string *'
+            :label='$t("serverConfigDialog.valueLabel")'
             filled
             lazy-rules
-            :rules="[ val => val && val.length > 0 || 'Please type something']"
+            :rules="[ val => val && val.length > 0 || `${$t('requestTip')}`]"
             )
           q-input(
             v-model='options'
             type='textarea'
-            label='Connection options'
+            :label='$t("serverConfigDialog.optionsLabel")'
             filled
             lazy-rules
             )
@@ -48,12 +48,12 @@
           q-toolbar
             q-space
             q-btn.q-ml-sm(
-              label='Create'
+              :label='$t("create")'
               type='submit'
               color='primary'
               )
             q-btn.q-ml-sm(
-              label='Cancel'
+              :label='$t("cancel")'
               type='reset'
               color='primary'
               flat

@@ -19,23 +19,23 @@
           //-   q-item-section View Documents
           //- q-separator
           q-item(clickable v-close-popup)
-            q-item-section Insert Documents
+            q-item-section {{$t('menu.insertDocument')}}
           //- q-item(clickable v-close-popup)
           //-   q-item-section Update Documents
           //- q-item(clickable v-close-popup)
           //-   q-item-section Remove Documents
           q-item(clickable v-close-popup)
-            q-item-section Remove All Documents
+            q-item-section {{$t('menu.removeAllDocuments')}}
           q-separator
           q-item(clickable v-close-popup)
-            q-item-section Rename Collection
+            q-item-section {{$t('menu.renameCollection')}}
           q-item(clickable v-close-popup)
-            q-item-section Duplicate Collection
+            q-item-section {{$t('menu.duplicateCollection')}}
           q-item(clickable v-close-popup)
-            q-item-section Drop Collection
+            q-item-section {{$t('menu.dropCollection')}}
           q-separator
           q-item(clickable v-close-popup)
-            q-item-section Statistics
+            q-item-section {{$t('menu.statistics')}}
 </template>
 
 <script>

@@ -5,7 +5,7 @@
         q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop')
       .q-pa-md
         q-card
-          q-card-section Server status
+          q-card-section {{$t('serverStatus')}}
           q-card-section 
             q-list.rounded-borders(bordered separator)
               q-item(

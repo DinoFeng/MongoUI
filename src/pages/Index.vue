@@ -106,19 +106,19 @@
                 )
                 q-list(dense style="min-width: 100px")
                   q-item(clickable v-close-popup)
-                    q-item-section Refresh
+                    q-item-section {{$t('menu.refresh')}}
                   q-separator
                   q-item(clickable v-close-popup)
-                    q-item-section Create Database
+                    q-item-section {{$t('menu.createDatabase')}}
                   q-item(clickable v-close-popup)
-                    q-item-section Server Status
+                    q-item-section {{$t('menu.serverStatus')}}
                   q-item(clickable v-close-popup)
-                    q-item-section Host Info
+                    q-item-section {{$t('menu.hostInfo')}}
                   q-item(clickable v-close-popup)
-                    q-item-section MongoDB Version
+                    q-item-section {{$t('menu.mongoDBVersion')}}
                   q-separator
                   q-item(clickable v-close-popup)
-                    q-item-section Show Log
+                    q-item-section {{$t('menu.showLog')}}
             database-items(
               :databases='selectedServerDBs'
               @dbClick='dbClick'
@@ -158,20 +158,23 @@ export default {
         this.connectServer(server).then(() => {
           if (db) {
             if (table) {
-              this.findTableData({ page: 1, serverName: server, database: db, table, isReset: true }).then(() =>
-                this.$router.push({ name: 'table', params: { server, db, table } }),
-              )
+              this.findTableData({ page: 1, serverName: server, database: db, table, isReset: true })
+              // .then(() =>
+              //   this.$router.push({ name: 'table', params: { server, db, table } }),
+              // )
               // this.$router.push({ name: 'table', params: { server, db, table } })
             } else {
-              this.getDatabaseStats({ serverName: server, database: db }).then(() =>
-                this.$router.push({ name: 'database', params: { server, db } }),
-              )
+              this.getDatabaseStats({ serverName: server, database: db })
+              // .then(() =>
+              //   this.$router.push({ name: 'database', params: { server, db } }),
+              // )
             }
           }
         })
-      } else {
-        this.$router.push({ name: 'home' })
       }
+      // else {
+      //   this.$router.push({ name: 'home' })
+      // }
     } else {
       this.serverConfigShow = true
     }
@@ -207,19 +210,26 @@ export default {
       // const { name } = this.selectedServer
       // window.location.href = `app/${name}/${db}`
       const { name } = this.selectedServer
-      this.getDatabaseStats({ serverName: name, database: db }).then(() =>
-        this.$router.push({ name: 'database', params: { server: name, db } }),
-      )
+      const { server, db: oldDB } = _.get(this.$route, ['params'])
+      if (server !== name || db !== oldDB) {
+        this.getDatabaseStats({ serverName: name, database: db }).then(() =>
+          this.$router.push({ name: 'database', params: { server: name, db } }),
+        )
+      }
     },
     tableClick(db, table) {
       // const { name } = this.selectedServer
       // window.location.href = `app/${name}/${db}/${table}`
-      console.debug('tableClick', db, table)
+      // console.debug('tableClick', db, table)
       const { name } = this.selectedServer
-      this.findTableData({ page: 1, serverName: name, database: db, table, isReset: true }).then(
-        () => this.$router.push({ name: 'table', params: { server: name, db, table } }),
-        // this.findTableData({ page: 1, serverName: name, database: db, table })
-      )
+      const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
+      // console.debug({ server, name, db, oldDB, table, oldTable })
+      if (server !== name || db !== oldDB || table !== oldTable) {
+        this.findTableData({ page: 1, serverName: name, database: db, table, isReset: true }).then(
+          () => this.$router.push({ name: 'table', params: { server: name, db, table } }),
+          // this.findTableData({ page: 1, serverName: name, database: db, table })
+        )
+      }
     },
   },
 }

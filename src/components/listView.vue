@@ -2,11 +2,12 @@
   q-list(bordered)
     q-list(bordered)
       q-item(ref='header' bordered)
-        q-item-section key
+        q-item-section {{$t('key')}}
         q-separator(vertical)
-        q-item-section value
+        q-item-section &emsp;{{$t('value')}}
         q-separator(vertical)
-        q-item-section type
+        q-item-section &emsp;{{$t('type')}}
+        //- q-item-section &ensp;{{$t('type')}} & nbsp; & ensp; & emsp;
     q-scroll-area(:style='`height:${bodyHeight}px`')
       q-list(bordered separator)
         q-expansion-item(
@@ -21,14 +22,23 @@
             q-item-section {{getDesc(row)}}
             q-item-section {{getType(row)}}
             q-menu(
+              v-if='!!row._id'
               touch-position
               context-menu
               )
               q-list(dense style="min-width: 100px")
-                q-item(clickable v-close-popup)
-                  q-item-section Update Documents
-                q-item(clickable v-close-popup)
-                  q-item-section Remove Documents
+                q-item(
+                  clickable 
+                  v-close-popup
+                  @click='$emit("updateItemClick",row._id,row)'
+                  )
+                  q-item-section {{$t('menu.updateDocument')}}
+                q-item(
+                  clickable 
+                  v-close-popup
+                  @click='$emit("removeItemClick",row._id)'
+                  )
+                  q-item-section {{$t('menu.removeDocument')}}
 
           display-list(
             v-if='expandeds[row._id]'

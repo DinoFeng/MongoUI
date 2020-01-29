@@ -17,7 +17,7 @@
           )
           q-input(
             v-model='command'
-            :rules="[ val => val && val.length > 0 && canJsonParse(val) || 'Please type something that can JSON parse.']"
+            :rules="[ val => val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`]"
             :label='`${commandMode} *`'
             type='textarea'
             debounce='500'
@@ -26,7 +26,7 @@
             )
           q-input(
             v-model='options'
-            :rules="[ val => val?(val && val.length > 0 && canJsonParse(val) || 'Please type something that can JSON parse.'):true]"
+            :rules="[ val => val?(val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`):true]"
             type='textarea'
             label='options'
             debounce='500'
@@ -37,12 +37,12 @@
           q-toolbar
             q-space
             q-btn.q-ml-sm(
-              label='Go'
+              :label='$t("run")'
               type='submit'
               color='primary'
               )
             q-btn.q-ml-sm(
-              label='Cancel'
+              :label='$t("cancel")'
               type='reset'
               color='primary'
               flat

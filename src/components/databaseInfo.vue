@@ -1,6 +1,6 @@
 <template lang="pug">
       q-card
-        q-card-section Database statistics
+        q-card-section {{$t('databaseStatistics')}}
         q-card-section
           q-list
             q-expansion-item(
@@ -24,13 +24,13 @@
                   q-item-section(avatar style='padding-right:32px;')
                     q-icon(name='fas fa-hdd')
                   q-item-section
-                    q-item-label(v-if='table.size<1000') Storage: {{table.size}} Bytes
-                    q-item-label(v-else-if='table.size<1000*1000') Storage: {{Math.round(table.size/10)/100}} KB
-                    q-item-label(v-else) Storage: {{Math.round(table.size/1000/10)/100}} MB
+                    q-item-label(v-if='table.size<1000') {{$t('storage')}} {{table.size}} Bytes
+                    q-item-label(v-else-if='table.size<1000*1000') {{$t('storage')}} {{Math.round(table.size/10)/100}} KB
+                    q-item-label(v-else) {{$t('storage')}} {{Math.round(table.size/1000/10)/100}} MB
                   q-item-section(avatar style='padding-right:32px')
                     q-icon(name='fas fa-file')
                   q-item-section
-                    q-item-label Documents: {{table.count}}
+                    q-item-label {{$t('documents')}} {{table.count}}
 
 </template>
 <script>

@@ -12,6 +12,28 @@
           )
         q-toolbar-title Mongo UI
         div Quasar v{{ $q.version }}
+        q-btn-dropdown(
+          label='Language'
+          :icon-right='`img:statics/flag/${language}.png`'
+          flat
+          )
+          q-list
+            q-item(
+              clickable
+              v-close-popup
+              @click='choiseLanguage("en-us")'
+              )
+              q-item-section English
+              q-item-section(avatar)
+                q-icon(name='img:statics/flag/en-us.png')
+            q-item(
+              clickable
+              v-close-popup
+              @click='choiseLanguage("zh-cn")'
+              )
+              q-item-section 简体中文
+              q-item-section(avatar)
+                q-icon(name='img:statics/flag/zh-cn.png')
     q-footer
       q-toolbar
         q-toolbar-title Footer
@@ -25,13 +47,20 @@ export default {
   name: 'MyLayout',
 
   data() {
-    return {}
+    return {
+      language: 'en-us',
+    }
   },
   computed: {
     ...mapState('master', ['leftDrawerOpen']),
   },
   methods: {
     ...mapMutations('master', ['setLeftDrawerOpen']),
+    choiseLanguage(lan) {
+      this.language = lan
+      console.debug('choiseLanguage', lan)
+      this.$i18n.locale = lan
+    },
   },
 }
 </script>
