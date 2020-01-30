@@ -2,166 +2,158 @@ const express = require('express')
 const router = express.Router()
 const common = require('../util/common')
 const wrapAsync = require('./api').wrapAsync
-// const _ = require('lodash')
+const _ = require('lodash')
 
 router.post('/assign', async (req, res) => {
   res.status(200).json(common.genObjectId())
 })
 
 // insert documents
-router.post('/:server/:db/:table/insert', async (req, res) => {
-  try {
+router.post(
+  '/:server/:db/:table/insert',
+  wrapAsync(async req => {
     const { body, params } = req
     const { db, table, server } = params
-    // findQuery = findQuery || {}
     const client = await req.getMongoClient(server)
     if (client) {
       // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      res.status(200).json({ type: 'Insert Documents', db, table, body })
+      return await common.insertData(client, db, table, body)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
 // update document
 router.patch(
   '/:server/:db/:table/:id/update',
   wrapAsync(async req => {
-    // try {
     const { body, params } = req
     const { db, table, id, server } = params
-    // findQuery = findQuery || {}
     const client = await req.getMongoClient(server)
     if (client) {
       // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      return { type: 'Update Document', db, table, id, body }
+      return await common.updateData(client, db, table, id, body)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-    // } catch (error) {
-    //   const { name, message, stack } = error
-    //   res.status(500).json({ error: { name, message, stack } })
-    // }
   }),
 )
 
 // delete (all) document(s)
-router.delete('/:server/:db/:table/:id/delete', async (req, res) => {
-  try {
+router.delete(
+  '/:server/:db/:table/:id/delete',
+  wrapAsync(async req => {
     const { params } = req
     const { db, table, id, server } = params
-    // findQuery = findQuery || {}
     const client = await req.getMongoClient(server)
     if (client) {
-      // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      res.status(200).json({ type: id === '-1' ? 'Remove All Documents' : 'Remove Document', db, table, id })
+      return await common.deleteData(client, db, table, id)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
 // duplicate collection
-router.post('/:server/:db/:table/duplicate', async (req, res) => {
-  try {
-    const { params } = req
-    const { db, table, server } = params
-    // findQuery = findQuery || {}
-    const client = await req.getMongoClient(server)
-    if (client) {
-      // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      res.status(200).json({ type: 'Duplicate Collection', db, table })
-    } else {
-      throw new Error(`Mongo connection is null`)
-    }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
-
-// drop collection
-router.delete('/:server/:db/:table/drop', async (req, res) => {
-  try {
-    const { params } = req
-    const { db, table, server } = params
-    // findQuery = findQuery || {}
-    const client = await req.getMongoClient(server)
-    if (client) {
-      // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      res.status(200).json({ type: 'Drop Collection', db, table })
-    } else {
-      throw new Error(`Mongo connection is null`)
-    }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
-
-// rename collection
-router.patch('/:server/:db/:table/rename', async (req, res) => {
-  try {
+router.post(
+  '/:server/:db/:table/duplicate',
+  wrapAsync(async req => {
     const { params, body } = req
     const { db, table, server } = params
-    // findQuery = findQuery || {}
+    const { newName } = body
+    const client = await req.getMongoClient(server)
+    if (newName && _.isString(newName)) {
+      if (client) {
+        return await common.cloneTable(client, db, table, newName)
+      } else {
+        throw new Error(`Mongo connection is null`)
+      }
+    } else {
+      throw new Error(`Request newName params in body and newName must string.`)
+    }
+  }),
+)
+
+// create collection
+router.post(
+  '/:server/:db/:table/create',
+  wrapAsync(async req => {
+    const { params } = req
+    const { db, table, server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      res.status(200).json({ type: 'Rename Collection', db, table, body })
+      return await common.createTable(client, db, table)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
+
+// drop collection
+router.delete(
+  '/:server/:db/:table/drop',
+  wrapAsync(async req => {
+    const { params } = req
+    const { db, table, server } = params
+    const client = await req.getMongoClient(server)
+    if (client) {
+      return await common.dropTable(client, db, table)
+    } else {
+      throw new Error(`Mongo connection is null`)
+    }
+  }),
+)
+
+// rename collection
+router.patch(
+  '/:server/:db/:table/rename',
+  wrapAsync(async req => {
+    const { params, body } = req
+    const { db, table, server } = params
+    const { newName } = body
+    if (newName && _.isString(newName)) {
+      const client = await req.getMongoClient(server)
+      if (client) {
+        return await common.renameTable(client, db, table, newName)
+      } else {
+        throw new Error(`Mongo connection is null`)
+      }
+    } else {
+      throw new Error(`Request newName params in body and newName must string.`)
+    }
+  }),
+)
 
 // drop database
-router.delete('/:server/:db/drop', async (req, res) => {
-  try {
+router.delete(
+  '/:server/:db/drop',
+  wrapAsync(async req => {
     const { params } = req
     const { db, server } = params
-    // findQuery = findQuery || {}
     const client = await req.getMongoClient(server)
     if (client) {
-      // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      res.status(200).json({ type: 'Drop Database', db })
+      return await common.dropDatabase(client, db)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
 // Create Database
-router.post('/:server/:db/create', async (req, res) => {
-  try {
+router.post(
+  '/:server/:db/create',
+  wrapAsync(async req => {
     const { params } = req
     const { db, server } = params
-    // findQuery = findQuery || {}
     const client = await req.getMongoClient(server)
     if (client) {
-      // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      res.status(200).json({ type: 'Create Database', db })
+      return await common.createDatabase(client, db)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
 router.post(
   '/:server/:db/:table/:page/find',
@@ -169,143 +161,108 @@ router.post(
     const { body, params } = req
     const { findQuery, pageSize, options } = body
     const { db, table, page, server } = params
-    // findQuery = findQuery || {}
     const client = await req.getMongoClient(server)
     if (client) {
       return await common.findData(client, db, table, findQuery || {}, { page, pageSize }, options)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-    // try {
-    //   const { body, params } = req
-    //   let { findQuery, pageSize, options } = body
-    //   const { db, table, page, server } = params
-    //   findQuery = findQuery || {}
-    //   const client = await req.getMongoClient(server)
-    //   if (client) {
-    //     const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-    //     res.status(200).json(data)
-    //   } else {
-    //     throw new Error(`Mongo connection is null`)
-    //   }
-    // } catch (error) {
-    //   const { name, message, stack } = error
-    //   res.status(500).json({ error: { name, message, stack } })
-    // }
   }),
 )
 
-router.post('/:server/:db/:table/:page/aggregate', async (req, res) => {
-  try {
+router.post(
+  '/:server/:db/:table/:page/aggregate',
+  wrapAsync(async req => {
     const { body, params } = req
-    let { aggregate, pageSize, options } = body
+    const { aggregate, pageSize, options } = body
     const { db, table, page, server } = params
     if (!aggregate) {
       throw new Error(`Please post 'aggregate' params`)
     }
     const client = await req.getMongoClient(server)
     if (client) {
-      const data = await common.aggregate(client, db, table, aggregate, { page, pageSize }, options)
-      res.status(200).json(data)
+      return await common.aggregate(client, db, table, aggregate, { page, pageSize }, options)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
 // collection Statistics
-router.post('/:server/:db/:table/stats', async (req, res) => {
-  try {
+router.get(
+  '/:server/:db/:table/stats',
+  wrapAsync(async req => {
     const { params } = req
     const { db, server, table } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      // const dbStatistics = await common.getDBStats(client, db)
-      // res.status(200).json(dbStatistics)
-      res.status(200).json({ type: 'collection Statistics', db, table })
+      return await common.getTableStats(client, db, table)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
-router.post('/:server/:db/stats', async (req, res) => {
-  try {
+router.get(
+  '/:server/:db/stats',
+  wrapAsync(async req => {
     const { params } = req
     const { db, server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      const dbStatistics = await common.getDBStats(client, db)
-      res.status(200).json(dbStatistics)
+      return await common.getDBStats(client, db)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
-router.post('/:server/stats', async (req, res) => {
-  try {
+router.get(
+  '/:server/stats',
+  wrapAsync(async req => {
     const { params } = req
     const { server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      const dbStatistics = await common.getDBStats(client)
-      res.status(200).json(dbStatistics)
+      return await common.getDBStats(client)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
-router.post('/:server/status', async (req, res) => {
-  try {
+router.get(
+  '/:server/status',
+  wrapAsync(async req => {
     const { params } = req
     const { server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      const status = await common.getServerStatus(client)
-      res.status(200).json(status)
+      return await common.getServerStatus(client)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
 // Host Info
-router.post('/:server/info', async (req, res) => {
-  try {
+router.get(
+  '/:server/info',
+  wrapAsync(async req => {
     const { params } = req
     const { server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      // const status = await common.getServerStatus(client)
-      // res.status(200).json(status)
+      return await common.getHostInfo(client)
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
-router.post('/:server/connect', async (req, res) => {
-  try {
+router.post(
+  '/:server/connect',
+  wrapAsync(async req => {
     const { params, body } = req
     const { server } = params
     const client = await req.createMongoClient(body, server)
@@ -319,17 +276,14 @@ router.post('/:server/connect', async (req, res) => {
         empty,
         tables: tables.map(({ name, size, count }) => ({ name, size, count })),
       }))
-      res.status(200).json({
+      return {
         status: { host, version, process, pid, uptime, localTime },
         dbStatistics: { databases, totalSize, ok },
-      })
+      }
     } else {
       throw new Error(`Mongo connection is null`)
     }
-  } catch (error) {
-    const { name, message, stack } = error
-    res.status(500).json({ error: { name, message, stack } })
-  }
-})
+  }),
+)
 
 module.exports = router

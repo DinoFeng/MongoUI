@@ -25,6 +25,7 @@ const wrapAsync = func => async (req, res, next) => {
   } catch (error) {
     const { name, message, stack } = error
     result = { error: { name, message, stack } }
+    res.status(500)
     // next
   } finally {
     const end = process.hrtime(begin)
