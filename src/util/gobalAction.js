@@ -20,13 +20,12 @@ const actions = {
   async getDatabaseStats(pathParams) {
     let data = await new API(`api/{serverName}/{database}/stats`, {
       pathParams,
-      post: {},
     }).fetch(false)
     console.debug(`getDatabaseStats result is:`, data)
     return data
   },
   async getServerInfo(post) {
-    let data = await new API(`api/{serverName}/assignInfo`, {
+    let data = await new API(`api/{serverName}/connect`, {
       pathParams: { serverName: post.name },
       post,
     }).fetch(false)

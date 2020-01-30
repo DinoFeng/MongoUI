@@ -7,9 +7,9 @@ router.post('/:server/:db/:table/:page/find', async (req, res) => {
   try {
     const { body, params } = req
     let { findQuery, pageSize, options } = body
-    const { db, table, page } = params
+    const { db, table, page, server } = params
     findQuery = findQuery || {}
-    const client = await req.getMongoClient()
+    const client = await req.getMongoClient(server)
     if (client) {
       const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
       res.status(200).json(data)
@@ -26,11 +26,11 @@ router.post('/:server/:db/:table/:page/aggregate', async (req, res) => {
   try {
     const { body, params } = req
     let { aggregate, pageSize, options } = body
-    const { db, table, page } = params
+    const { db, table, page, server } = params
     if (!aggregate) {
       throw new Error(`Please post 'aggregate' params`)
     }
-    const client = await req.getMongoClient()
+    const client = await req.getMongoClient(server)
     if (client) {
       const data = await common.aggregate(client, db, table, aggregate, { page, pageSize }, options)
       res.status(200).json(data)
@@ -43,11 +43,11 @@ router.post('/:server/:db/:table/:page/aggregate', async (req, res) => {
   }
 })
 
-router.post('/:server/:db/stats', async (req, res) => {
+router.get('/:server/:db/stats', async (req, res) => {
   try {
     const { params } = req
-    const { db } = params
-    const client = await req.getMongoClient()
+    const { db, server } = params
+    const client = await req.getMongoClient(server)
     if (client) {
       const dbStatistics = await common.getDBStats(client, db)
       res.status(200).json(dbStatistics)
@@ -60,9 +60,11 @@ router.post('/:server/:db/stats', async (req, res) => {
   }
 })
 
-router.post('/:server/stats', async (req, res) => {
+router.get('/:server/stats', async (req, res) => {
   try {
-    const client = await req.getMongoClient()
+    const { params } = req
+    const { server } = params
+    const client = await req.getMongoClient(server)
     if (client) {
       const dbStatistics = await common.getDBStats(client)
       res.status(200).json(dbStatistics)
@@ -75,9 +77,11 @@ router.post('/:server/stats', async (req, res) => {
   }
 })
 
-router.post('/:server/status', async (req, res) => {
+router.get('/:server/status', async (req, res) => {
   try {
-    const client = await req.getMongoClient()
+    const { params } = req
+    const { server } = params
+    const client = await req.getMongoClient(server)
     if (client) {
       const status = await common.getServerStatus(client)
       res.status(200).json(status)
@@ -90,10 +94,11 @@ router.post('/:server/status', async (req, res) => {
   }
 })
 
-router.post('/:server/assignInfo', async (req, res) => {
+router.post('/:server/connect', async (req, res) => {
   try {
-    const { body } = req
-    const client = await req.createMongoClient(body)
+    const { params, body } = req
+    const { server } = params
+    const client = await req.createMongoClient(body, server)
     if (client) {
       const status = await common.getServerStatus(client)
       const { host, version, process, pid, uptime, localTime } = status

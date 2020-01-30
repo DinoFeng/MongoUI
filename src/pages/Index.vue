@@ -49,7 +49,7 @@
                       flat 
                       dense 
                       round 
-                      @click='()=>gotoServerIndex(server.name)'
+                      @click='()=>serverConnect(server.name)'
                       )
                     q-btn.gt-xs(size='12px' flat dense round icon='more_vert')
                       q-menu(fit anchor='bottom left' self='top left')
@@ -199,35 +199,29 @@ export default {
       }
       this.serverConfigShow = true
     },
-    gotoServerIndex(serverName) {
-      console.debug('gotoServerIndex', serverName)
+    serverConnect(serverName) {
       // window.location.href = `app/${serverName}`
       if (_.get(this.selectedServer, 'name') !== serverName) {
         this.connectServer(serverName).then(() => this.$router.push({ name: 'server', params: { server: serverName } }))
       }
     },
-    dbClick(db) {
-      // const { name } = this.selectedServer
+    dbClick(db, table) {
       // window.location.href = `app/${name}/${db}`
       const { name } = this.selectedServer
-      const { server, db: oldDB } = _.get(this.$route, ['params'])
-      if (server !== name || db !== oldDB) {
+      const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
+      if (server !== name || db !== oldDB || table !== oldTable) {
         this.getDatabaseStats({ serverName: name, database: db }).then(() =>
           this.$router.push({ name: 'database', params: { server: name, db } }),
         )
       }
     },
     tableClick(db, table) {
-      // const { name } = this.selectedServer
       // window.location.href = `app/${name}/${db}/${table}`
-      // console.debug('tableClick', db, table)
       const { name } = this.selectedServer
       const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
-      // console.debug({ server, name, db, oldDB, table, oldTable })
       if (server !== name || db !== oldDB || table !== oldTable) {
-        this.findTableData({ page: 1, serverName: name, database: db, table, isReset: true }).then(
-          () => this.$router.push({ name: 'table', params: { server: name, db, table } }),
-          // this.findTableData({ page: 1, serverName: name, database: db, table })
+        this.findTableData({ page: 1, serverName: name, database: db, table, isReset: true }).then(() =>
+          this.$router.push({ name: 'table', params: { server: name, db, table } }),
         )
       }
     },

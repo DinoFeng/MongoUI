@@ -30,24 +30,15 @@ module.exports.extendApp = ({
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use((req, res, next) => {
     req.getMongoClient = async () => {
-      // const { headers } = req
       const { assignid } = req.headers
-      // console.debug({ assignId: assignid, body, params, url, query, headers })
-      // console.debug({ body, params, url, query, headers, assignInfo })
       const connectionPool = req.app.locals.connectionPool
       const client = await connectionPool.getMongoClient(assignid)
-      // req.clientAssignInfo = info
       return client
     }
     req.createMongoClient = async serverInfo => {
-      // const { body, params, url, query, headers } = req
-      // const { assignid } = headers
-      // console.debug({ assignId: assignid, body, params, url, query, headers })
       const { assignid } = req.headers
-      // console.debug({ body, params, url, query, headers, assignInfo })
       const connectionPool = req.app.locals.connectionPool
       const client = await connectionPool.createMongoClient(assignid, serverInfo)
-      // req.clientAssignInfo = info
       return client
     }
     next()

@@ -112,20 +112,6 @@ class ConnectionPool {
       return null
     }
   }
-  // async assignConnection(agv) {
-  //   const { assignId: id, connString, options, name } = agv
-  //   if (id && this[pool].has(id)) {
-  //     const { client } = this[pool].get(id)
-  //     this[appendClient](id, client)
-  //     return {
-  //       assignInfo: { assignId: id, connString, options, name },
-  //       client,
-  //     }
-  //   } else {
-  //     const { assignId, client } = await this[genConnection](connString, options)
-  //     return { assignInfo: { assignId, connString, options, name }, client }
-  //   }
-  // }
 }
 
 module.exports = ConnectionPool
