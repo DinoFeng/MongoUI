@@ -12,7 +12,7 @@
  */
 const bodyParser = require('body-parser')
 const mongoAccessRouter = require('./api/mongoAccess')
-const apiRouter = require('./api/api')
+// const apiRouter = require('./api/api')
 const ConnectionPool = require('./util/connectionPool')
 
 module.exports.extendApp = ({
@@ -44,5 +44,5 @@ module.exports.extendApp = ({
     next()
   })
   app.use('/api', mongoAccessRouter)
-  app.use('/api', apiRouter)
+  // app.use('/api', apiRouter)
 }

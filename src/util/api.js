@@ -67,7 +67,10 @@ class API {
   async fetch(withValidate = true) {
     return axios
       .request(this.option)
-      .then(response => response.data)
+      .then(response => {
+        this.durationMs = _.get(response, ['headers', 'durationms'])
+        return response.data
+      })
       .then(data => {
         if (withValidate) {
           return this.validateResult(data)

@@ -4,10 +4,6 @@
 // const router = express.Router()
 // const common = require('../util/common')
 
-// router.post('/assign', async (req, res) => {
-//   res.status(200).json(common.genObjectId())
-// })
-
 // // const getCircularReplacer = () => {
 // //   const seen = new WeakSet()
 // //   return (key, value) => {

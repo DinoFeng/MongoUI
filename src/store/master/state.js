@@ -16,5 +16,6 @@ const state = {
     rows: [],
     total: 0,
   },
+  durationMs: 0,
 }
 export default state

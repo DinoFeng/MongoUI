@@ -14,7 +14,7 @@
           q-btn(label='aggregate' color='warning' @click='openAggregateDialog')
         q-space
         q-icon(name='far fa-clock')
-        | 0.002 {{$t('sec')}}
+        | {{duration}} {{$t('sec')}}
         q-space
         q-input(
           v-model='perPageRecord'
@@ -118,7 +118,7 @@ export default {
   },
   computed: {
     ...mapState('master', ['pageSize', 'currentPage', 'commandMode', 'find', 'aggregate']),
-    ...mapGetters('master', ['tableRows', 'pageMax']),
+    ...mapGetters('master', ['tableRows', 'pageMax', 'duration']),
     navigation() {
       return _.get(this.$route, ['params'])
     },

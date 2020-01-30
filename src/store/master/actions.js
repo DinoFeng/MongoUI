@@ -30,6 +30,7 @@ const actions = {
       commit('setFindCommand', {})
       commit('setCommandMode', 'find')
     }
+    let context = {}
     const result = await gobalAction.findTableData(
       { page, serverName, database, table },
       {
@@ -37,9 +38,11 @@ const actions = {
         options: _.get(state, ['find', 'options']),
         pageSize: state.pageSize,
       },
+      context,
     )
     commit('setCurrentPage', page)
     commit(`setTableResult`, result)
+    commit('setDurationMs', _.get(context, ['durationMs']))
   },
   async aggregateTableData({ commit, state }, params) {
     // const { assignId } = state
@@ -49,6 +52,7 @@ const actions = {
       commit('setAggregateCommand', {})
       commit('setCommandMode', 'aggregate')
     }
+    let context = {}
     const result = await gobalAction.aggregateTableData(
       { page, serverName, database, table },
       {
@@ -56,9 +60,11 @@ const actions = {
         options: _.get(state, ['aggregate', 'options']),
         pageSize: state.pageSize,
       },
+      context,
     )
     commit('setCurrentPage', page)
     commit(`setTableResult`, result)
+    commit('setDurationMs', _.get(context, ['durationMs']))
   },
 }
 export default actions

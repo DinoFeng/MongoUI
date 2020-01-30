@@ -70,5 +70,8 @@ const mutations = {
   setAggregateCommand(state, data) {
     state.aggregate = _.cloneDeep(data)
   },
+  setDurationMs(state, value) {
+    state.durationMs = _.toNumber(value)
+  },
 }
 export default mutations

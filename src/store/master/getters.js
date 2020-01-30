@@ -45,6 +45,10 @@ const getters = {
     }
     return []
   },
+  duration(state) {
+    const ms = state.durationMs
+    return Math.round(ms) / 1e3
+  },
   // resultColumns(state) {
   //   const rows = _.get(state, ['tableResult', 'rows'])
   //   if (rows.length > 0) {
