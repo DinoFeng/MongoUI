@@ -26,7 +26,7 @@ const actions = {
     return data
   },
   async getServerInfo(post) {
-    let data = await new API(`api/{serverName}/assignInfo`, {
+    let data = await new API(`api/{serverName}/connect`, {
       pathParams: { serverName: post.name },
       post,
     }).fetch(false)

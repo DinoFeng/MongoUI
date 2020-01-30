@@ -40,8 +40,10 @@ const tools = {
       (_.isPlainObject(v) && 'Object') ||
       (_.isDate(v) && 'Date') ||
       (_.isInteger(v) && 'Integer') ||
+      (_.isNumber(v) && 'Number') ||
       (_.isBoolean(v) && 'Boolean') ||
-      (_.isString(v) && 'String')
+      (_.isString(v) && 'String') ||
+      (_.isNull(v) && 'Null')
     )
   },
   getDataDesc(data) {

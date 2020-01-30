@@ -1,64 +1,35 @@
-require('../util/cycle')
-
-const express = require('express')
-const router = express.Router()
-const common = require('../util/common')
-
-router.post('/assign', async (req, res) => {
-  res.status(200).json(common.genObjectId())
-})
-
-// const getCircularReplacer = () => {
-//   const seen = new WeakSet()
-//   return (key, value) => {
-//     if (typeof value === 'object' && value !== null) {
-//       if (seen.has(value)) {
-//         return
-//       }
-//       seen.add(value)
-//     }
-//     return value
-//   }
-// }
-class Test {
-  constructor(v) {
-    this.pre = null
-    this.next = null
-    this.id = v
+const NS_PER_SEC = 1e9
+const MS_PER_SEC = 1e6
+const wrapAsync = func => async (req, res, next) => {
+  const begin = process.hrtime()
+  let result = null
+  try {
+    result = await func(req, res, next)
+    res.status(200)
+    // return Promise.resolve(func(req, res, next))
+    //   .then(result => {
+    //     log.info(`${apiName} done`)
+    //     log.profile(`${apiName}`)
+    //     return res.json(responseFormat(null, result))
+    //   })
+    //   .catch(error => {
+    //     let result = responseFormat(error)
+    //     let body = req.body
+    //     // let query = req.query
+    //     let url = req.url
+    //     log.error(`${apiName} promise error is:\n${JSON.stringify(result)}!\nInput data is:\n${JSON.stringify({ body, url })}`)
+    //     log.profile(`${apiName}`)
+    //     return res.json(result)
+    //   })
+    //   .catch(next)
+  } catch (error) {
+    const { name, message, stack } = error
+    result = { error: { name, message, stack } }
+    // next
+  } finally {
+    const end = process.hrtime(begin)
+    res.append('durationMs', (end[0] * NS_PER_SEC + end[1]) / MS_PER_SEC)
+    res.json(result)
   }
 }
-router.all('/test', async (req, res) => {
-  const t1 = new Test(1)
-  const t2 = new Test(2)
-  const t3 = new Test(3)
-  t1.pre = t3
-  t1.next = t2
-  t2.pre = t1
-  t2.next = t3
-  t3.pre = t2
-  t3.next = t1
-
-  res.status(200).send(JSON.stringify(JSON.decycle(t1)))
-})
-
-// router.post('/test', async (req, res, next) => {
-//   // const { body, params, url, query, headers } = req
-//   // console.debug({ body, params, url, query, headers })
-//   const { body } = req
-//   const connectionPool = req.app.locals.connectionPool
-//   const { assignId } = await connectionPool.assignConnection(body)
-//   // console.debug('assignConnection outter', { assignId })
-//   const result = _.merge({}, body, { assignId })
-//   // console.debug(result)
-//   res.status(200).json(result)
-// })
-// router.post('/test2', async (req, res, next) => {
-//   const { body, params, url, query, headers } = req
-//   console.debug({ body, params, url, query, headers })
-
-//   const cp = req.app.locals.connectionPool
-//   const { client } = await cp.assignConnection(body)
-//   client.close()
-//   res.status(200).json('OK')
-// })
-module.exports = router
+module.exports = { wrapAsync }
