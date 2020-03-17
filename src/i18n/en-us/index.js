@@ -19,6 +19,10 @@ export default {
   key: 'Key',
   value: 'Value',
   type: 'Type',
+  field: 'field',
+  record: 'record',
+  modify: 'modify',
+  save: 'save',
   serverConfigDialog: {
     title: 'Create new server connection',
     nameLabel: 'Server name *',

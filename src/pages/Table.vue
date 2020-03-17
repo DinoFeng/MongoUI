@@ -64,15 +64,24 @@
           @removeItemClick='removeItem'
           )
     query-dialog(
+      v-if='openQuery'
       v-model='openQuery'
       :commandData.sync='commandData'
       :commandMode='commandMode'
       @submit='onQuerySubmit'
       )
     search-dialog(
+      v-if='openSearch'
       v-model='openSearch'
       :commandData.sync='commandData'
       @submit='onQuerySubmit'
+      )
+    edit-dialog(
+      v-if='openEdit'
+      v-model='openEdit'
+      :editKey='editing._id'
+      :editData='editing'
+      @submit='editSave'
       )
 </template>
 
@@ -84,10 +93,11 @@ import documentView from '../components/documentView'
 import tableView from '../components/tableView'
 import queryDialog from '../components/queryDialog'
 import searchDialog from '../components/searchDialog'
+import editDialog from '../components/editDialog'
 import tools from '../util/tools'
 export default {
   name: 'PageTable',
-  components: { listView, documentView, tableView, queryDialog, searchDialog },
+  components: { listView, documentView, tableView, queryDialog, searchDialog, editDialog },
   // preFetch({ store, currentRoute, previousRoute, redirect, ssrContext }) {
   //   // fetch data, validate route and optionally redirect to some other route...
 
@@ -114,6 +124,9 @@ export default {
       contentHeight: 100,
       openQuery: false,
       openSearch: false,
+      openEdit: false,
+
+      editing: null,
     }
   },
   computed: {
@@ -184,9 +197,14 @@ export default {
     },
     updateItem(_id, updated) {
       console.debug('updateItem', { _id, updated })
+      this.openEdit = true
+      this.editing = updated
     },
     removeItem(_id) {
       console.debug('removeItem', { _id })
+    },
+    editSave(_id, data) {
+      console.debug('editSave', { _id, data })
     },
     myTweak(offset) {
       return { height: offset ? `calc(100vh - ${offset}px)` : '100vh', overflow: 'auto' }

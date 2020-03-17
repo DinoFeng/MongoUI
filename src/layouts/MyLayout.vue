@@ -45,21 +45,38 @@
 import { mapMutations, mapState } from 'vuex'
 export default {
   name: 'MyLayout',
-
+  mounted() {
+    this.language = window.navigator.language.toLowerCase()
+  },
   data() {
     return {
-      language: 'en-us',
+      language: null,
     }
   },
   computed: {
     ...mapState('master', ['leftDrawerOpen']),
+    // language: {
+    //   get() {
+    //     return this.lang || window.navigator.language.toLowerCase()
+    //   },
+    //   set(v) {
+    //     this.lang = v
+    //   },
+    // },
   },
   methods: {
     ...mapMutations('master', ['setLeftDrawerOpen']),
     choiseLanguage(lan) {
       this.language = lan
       console.debug('choiseLanguage', lan)
-      this.$i18n.locale = lan
+      // this.$i18n.locale = lan
+    },
+  },
+  watch: {
+    language: {
+      handler(val) {
+        this.$i18n.locale = val
+      },
     },
   },
 }

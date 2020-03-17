@@ -73,5 +73,8 @@ const mutations = {
   setDurationMs(state, value) {
     state.durationMs = _.toNumber(value)
   },
+  setInsertDocumentEvent(state) {
+    state.insertDocumentEvent = !state.insertDocumentEvent
+  },
 }
 export default mutations

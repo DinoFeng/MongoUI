@@ -19,6 +19,10 @@ export default {
   key: '键',
   value: '值',
   type: '类型',
+  field: '字段',
+  record: '记录',
+  modify: '修改',
+  save: '保存',
   serverConfigDialog: {
     title: '新建服务器连接',
     nameLabel: '服务器名 *',
@@ -26,7 +30,7 @@ export default {
     optionsLabel: '连接可选配置',
   },
   menu: {
-    updateDocument: '更新记录',
+    updateDocument: '修改记录',
     removeDocument: '删除记录',
     refresh: '刷新',
     databaseStatistics: '数据库统计数据',

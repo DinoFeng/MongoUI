@@ -17,5 +17,7 @@ const state = {
     total: 0,
   },
   durationMs: 0,
+
+  insertDocumentEvent: false,
 }
 export default state

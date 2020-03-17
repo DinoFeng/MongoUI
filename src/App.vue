@@ -8,6 +8,10 @@ import assignManager from './util/assignManager'
 import { mapMutations } from 'vuex'
 export default {
   name: 'App',
+  mounted() {
+    const version = window.navigator.language
+    console.debug(version)
+  },
   created() {
     this.loadServerConfig()
     assignManager.init()

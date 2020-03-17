@@ -123,6 +123,7 @@
               :databases='selectedServerDBs'
               @dbClick='dbClick'
               @tableClick='tableClick'
+              @menuInsertDoc='menuInsertDoc'
               )
     q-page-container
       router-view
@@ -130,23 +131,34 @@
       v-model='serverConfigShow'
       :editData='editingConfig'
       )
+    edit-dialog(
+      v-if='openEdit'
+      v-model='openEdit'
+      :editKey='editing._id'
+      :editData='editing'
+      @submit='editSave'
+      )
 </template>
 
 <script>
 import _ from 'lodash'
 import serverConfigDialog from '../components/serverConfigDialog'
 import databaseItems from '../components/databaseItemsForDrawer'
+import editDialog from '../components/editDialog'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
 export default {
   name: 'PageIndex',
   components: {
     serverConfigDialog,
     databaseItems,
+    editDialog,
   },
   data() {
     return {
       serverConfigShow: false,
       editingConfig: null,
+      openEdit: false,
+      editing: false,
     }
   },
   mounted() {
@@ -184,7 +196,7 @@ export default {
     ...mapGetters('master', ['serverList', 'selectedServerDBs']),
   },
   methods: {
-    ...mapMutations('master', ['deleteServerConfig', 'setSelectedServer']),
+    ...mapMutations('master', ['deleteServerConfig', 'setSelectedServer', 'setInsertDocumentEvent']),
     ...mapActions('master', ['connectServer', 'getDatabaseStats', 'findTableData']),
     showServerConfigDialog(create, editData) {
       if (editData) {
@@ -224,6 +236,14 @@ export default {
           this.$router.push({ name: 'table', params: { server: name, db, table } }),
         )
       }
+    },
+    menuInsertDoc(table) {
+      console.debug('menuInsertDoc', table)
+      this.openEdit = true
+      this.editing = {}
+    },
+    editSave(_id, data) {
+      console.debug('editSave', { _id, data })
     },
   },
 }

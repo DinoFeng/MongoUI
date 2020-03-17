@@ -18,7 +18,11 @@
           //- q-item(clickable v-close-popup)
           //-   q-item-section View Documents
           //- q-separator
-          q-item(clickable v-close-popup)
+          q-item(
+            clickable 
+            v-close-popup
+            @click='$emit("menuInsertDoc",table.name)'
+            )
             q-item-section {{$t('menu.insertDocument')}}
           //- q-item(clickable v-close-popup)
           //-   q-item-section Update Documents

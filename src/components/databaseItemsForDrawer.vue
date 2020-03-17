@@ -30,6 +30,7 @@
       table-items(
         :tables='db.tables'
         @tableClick='table=>$emit("tableClick",db.name,table)'
+        @menuInsertDoc='table=>$emit("menuInsertDoc",table)'
         )
     
 </template>

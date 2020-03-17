@@ -69,5 +69,8 @@ const tools = {
     const w = width(ele)
     return { height: h, width: w }
   },
+  // getSystemVersion(){
+  //   var version = navigator.userAgent
+  // },
 }
 export default tools

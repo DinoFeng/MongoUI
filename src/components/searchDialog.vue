@@ -19,7 +19,7 @@
             v-model='selectedField'
             :options='fields'
             :rules="[ val => val && val.length > 0 || `${$t('requestTip')}`]"
-            label='field'
+            :label='$t("field")'
             debounce='500'
             filled
             lazy-rules
@@ -27,7 +27,7 @@
           q-input(
             v-model='inputValue'
             :rules="[ val => val && val.length > 0 || `${$t('requestTip')}`]"
-            label='value'
+            :label='$t("value")'
             debounce='500'
             filled
             lazy-rules
