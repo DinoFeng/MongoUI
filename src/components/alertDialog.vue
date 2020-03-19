@@ -1,0 +1,133 @@
+<template lang="pug">
+  q-dialog(
+    ref='dialog' 
+    :position='position'
+    @hide='onDialogHide')
+    q-card.q-dialog-plugin
+      q-card-section
+        .text-h6 {{title}}
+      q-card-section
+        .row
+          .col-1.q-ma-sm(v-if='!!type')
+            q-icon(
+              v-if='!!type' 
+              :name='icon'
+              :class='`text-${type}`'
+              style='font-size: 32px;'
+              )
+          .col.q-ma-sm.text-body1 {{message}}
+      q-card-section(v-if='!!detail' align='right')
+        a(
+          href='javascript:void()'
+          @click='()=>detailShow=!detailShow'
+          ) detail
+      q-card-section(v-if='!!detail && detailShow')
+        .row.q-ma-sm.text-caption {{detail}}
+      //- buttons example
+      q-card-actions(align='right')
+        q-btn(
+          color='primary'
+          :label='okLabel'
+          @click='onOKClick')
+        //- q-btn(color='primary', label='Cancel', @click='onCancelClick')
+</template>
+
+<script>
+export default {
+  props: {
+    title: String,
+    message: String,
+    type: String,
+    position: String,
+    detail: String,
+    closeTime: Number,
+  },
+  mounted() {
+    if (this.closeTime > 0) {
+      this.timer = this.closeTime
+      const interval = setInterval(() => {
+        --this.timer
+        if (this.timer <= 0) {
+          clearInterval(interval)
+        }
+      }, 1000)
+    }
+  },
+  data() {
+    return {
+      timer: 0,
+      detailShow: false,
+    }
+  },
+  computed: {
+    icon() {
+      const i = {
+        positive: 'check_circle',
+        negative: 'cancel',
+        warning: 'warning',
+        info: 'info',
+      }
+      return i[this.type]
+    },
+    okLabel() {
+      return this.closeTime > 0 ? `OK (${this.timer})` : 'OK'
+    },
+  },
+  methods: {
+    // following method is REQUIRED
+    // (don't change its name --> "show")
+    show() {
+      this.$refs.dialog.show()
+    },
+    // following method is REQUIRED
+    // (don't change its name --> "hide")
+    hide() {
+      this.$refs.dialog.hide()
+    },
+    onDialogHide() {
+      // required to be emitted
+      // when QDialog emits "hide" event
+      this.$emit('hide')
+    },
+    onOKClick() {
+      // on OK, it is REQUIRED to
+      // emit "ok" event (with optional payload)
+      // before hiding the QDialog
+      this.$emit('ok')
+      // or with payload: this.$emit('ok', { ... })
+
+      // then hiding dialog
+      this.hide()
+    },
+    onCancelClick() {
+      // we just need to hide dialog
+      this.hide()
+    },
+  },
+}
+</script>
+<style lang="stylus" scoped>
+.q-dialog-plugin {
+  width: 500px;
+  max-width: 80vw;
+}
+
+a:link {
+  text-decoration: none;
+  color: blue;
+}
+
+a:active {
+  text-decoration: blink;
+}
+
+a:hover {
+  text-decoration: none;
+  color: red;
+}
+
+a:visited {
+  text-decoration: none;
+  color: green;
+}
+</style>

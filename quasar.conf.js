@@ -43,7 +43,7 @@ module.exports = ctx => {
       directives: [],
 
       // Quasar plugins
-      plugins: ['LocalStorage', 'SessionStorage'],
+      plugins: ['LocalStorage', 'SessionStorage', 'Dialog', 'Notify'],
     },
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
@@ -82,7 +82,7 @@ module.exports = ctx => {
     devServer: {
       https: false,
       port: 8080,
-      open: false // opens browser window automatically
+      open: false, // opens browser window automatically
     },
 
     // animations: 'all', // --- includes all animations

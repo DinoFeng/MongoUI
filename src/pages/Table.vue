@@ -95,8 +95,10 @@ import queryDialog from '../components/queryDialog'
 import searchDialog from '../components/searchDialog'
 import editDialog from '../components/editDialog'
 import tools from '../util/tools'
+import notify from '../mixin/notify.js'
 export default {
   name: 'PageTable',
+  mixins: [notify],
   components: { listView, documentView, tableView, queryDialog, searchDialog, editDialog },
   // preFetch({ store, currentRoute, previousRoute, redirect, ssrContext }) {
   //   // fetch data, validate route and optionally redirect to some other route...
@@ -162,7 +164,7 @@ export default {
   },
   methods: {
     ...mapMutations('master', ['setPageSize', 'setCommandMode', 'setFindCommand', 'setAggregateCommand']),
-    ...mapActions('master', ['findTableData', 'aggregateTableData']),
+    ...mapActions('master', ['findTableData', 'aggregateTableData', 'deleteData', 'updateData']),
     changePage(page) {
       if (page !== this.currentPage) {
         // console.debug('changePage')
@@ -201,10 +203,40 @@ export default {
       this.editing = updated
     },
     removeItem(_id) {
-      console.debug('removeItem', { _id })
+      const { server, db, table } = _.get(this.$route, ['params'])
+      console.debug('removeItem', { server, db, table, _id })
+      this.deleteData({ serverName: server, database: db, table, id: _id }).then(() => {
+        this.$q.notify({
+          type: 'positive',
+          message: `Record (${_id}) delete success!`,
+        })
+        this.loadData(this.currentPage)
+        // const alertOption = {
+        //   title: 'Correct',
+        //   type: 'positive',
+        //   autoClose: 1.5,
+        //   message: `Record (${_id}) delete success!`,
+        // }
+        // this.showAlert(alertOption).onDismiss(() => this.loadData(this.currentPage))
+      })
     },
     editSave(_id, data) {
-      console.debug('editSave', { _id, data })
+      const { server, db, table } = _.get(this.$route, ['params'])
+      console.debug('editSave', { server, db, table, _id, data })
+      this.updateData({ serverName: server, database: db, table, id: _id, data }).then(() => {
+        this.$q.notify({
+          type: 'positive',
+          message: `Record (${_id}) update success!`,
+        })
+        this.loadData(this.currentPage)
+        // const alertOption = {
+        //   title: 'Correct',
+        //   type: 'positive',
+        //   autoClose: 1.5,
+        //   message: `Record (${_id}) delete success!`,
+        // }
+        // this.showAlert(alertOption).onDismiss(() => this.loadData(this.currentPage))
+      })
     },
     myTweak(offset) {
       return { height: offset ? `calc(100vh - ${offset}px)` : '100vh', overflow: 'auto' }

@@ -196,7 +196,7 @@ export default {
     ...mapGetters('master', ['serverList', 'selectedServerDBs']),
   },
   methods: {
-    ...mapMutations('master', ['deleteServerConfig', 'setSelectedServer', 'setInsertDocumentEvent']),
+    ...mapMutations('master', ['deleteServerConfig', 'setInsertDocumentEvent']),
     ...mapActions('master', ['connectServer', 'getDatabaseStats', 'findTableData']),
     showServerConfigDialog(create, editData) {
       if (editData) {

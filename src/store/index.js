@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 // import example from './module-example'
 import master from './master'
+import errorHandle from './errorHandle'
 Vue.use(Vuex)
 
 /*
@@ -17,6 +18,7 @@ const store = new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production', // refrence:https://vuex.vuejs.org/zh/guide/strict.html
   modules: {
     master,
+    errorHandle,
   },
 })
 // export default (/* { ssrContext } */) => {

@@ -43,6 +43,8 @@ const mutations = {
       } else {
         state.selectedServer = null
       }
+    } else {
+      state.selectedServer = null
     }
   },
   saveConnectServer(state, data) {

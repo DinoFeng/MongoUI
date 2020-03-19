@@ -9,12 +9,24 @@ const actions = {
   //     commit('saveAssignId', assignId)
   //   }
   // },
-  async connectServer({ commit, state }, serverName) {
-    // const { assignId } = state
-    commit(`setSelectedServer`, serverName)
-    const serverConfig = await gobalAction.getServerInfo(state.selectedServer)
-    console.info('connectServer', serverConfig, state.selectedServer)
-    commit(`saveConnectServer`, serverConfig)
+  async connectServer({ commit, state, dispatch }, serverName) {
+    try {
+      // const { assignId } = state
+      commit(`setSelectedServer`, serverName)
+      const serverConfig = await gobalAction.getServerInfo(state.selectedServer)
+      console.info('connectServer', serverConfig, state.selectedServer)
+      commit(`saveConnectServer`, serverConfig)
+    } catch (error) {
+      dispatch(
+        'errorHandle/doPushError',
+        {
+          error,
+        },
+        { root: true },
+      )
+      commit(`setSelectedServer`, null)
+      throw error
+    }
   },
   async getDatabaseStats({ commit }, params) {
     // const { assignId } = state
@@ -65,6 +77,24 @@ const actions = {
     commit('setCurrentPage', page)
     commit(`setTableResult`, result)
     commit('setDurationMs', _.get(context, ['durationMs']))
+  },
+  async deleteData(content, params) {
+    const { serverName, database, table, id } = params
+    let context = {}
+    const result = await gobalAction.deleteTableData({ serverName, database, table, id }, context)
+    console.debug({ result, context })
+  },
+  async updateData({ dispatch }, params) {
+    try {
+      const { serverName, database, table, id, data } = params
+      let context = {}
+      const result = await gobalAction.updateTableData({ serverName, database, table, id }, data, context)
+      console.debug({ result, context })
+    } catch (error) {
+      console.error(error)
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
   },
 }
 export default actions

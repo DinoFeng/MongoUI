@@ -41,6 +41,31 @@ const actions = {
     console.debug(`getServerInfo result is:`, data)
     return data
   },
+  async deleteTableData(pathParams, context) {
+    const api = new API(`api/{serverName}/{database}/{table}/{id}/delete`, {
+      pathParams,
+      method: 'DELETE',
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`deleteTableData durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
+  async updateTableData(pathParams, post, context) {
+    const api = new API(`api/{serverName}/{database}/{table}/{id}/update`, {
+      pathParams,
+      post,
+      method: 'PATCH',
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`updateTableData durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
   // async testUrl() {
   //   let data = await new API(`${baseHost}/api/test`, {
   //     post: {
