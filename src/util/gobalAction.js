@@ -66,6 +66,18 @@ const actions = {
     console.debug(`updateTableData durationMs:${api.durationMs} result is:`, data)
     return data
   },
+  async insertTableData(pathParams, post, context) {
+    const api = new API(`api/{serverName}/{database}/{table}/insert`, {
+      pathParams,
+      post,
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`insertTableData durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
   // async testUrl() {
   //   let data = await new API(`${baseHost}/api/test`, {
   //     post: {

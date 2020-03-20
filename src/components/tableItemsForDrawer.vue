@@ -28,7 +28,11 @@
           //-   q-item-section Update Documents
           //- q-item(clickable v-close-popup)
           //-   q-item-section Remove Documents
-          q-item(clickable v-close-popup)
+          q-item(
+            clickable 
+            v-close-popup
+            @click='$emit("menuRemoveAllDoc",table.name)'
+            )
             q-item-section {{$t('menu.removeAllDocuments')}}
           q-separator
           q-item(clickable v-close-popup)
@@ -38,7 +42,11 @@
           q-item(clickable v-close-popup)
             q-item-section {{$t('menu.dropCollection')}}
           q-separator
-          q-item(clickable v-close-popup)
+          q-item(
+            clickable 
+            v-close-popup
+            @click='$emit("menuStatistics",table.name)'
+            )
             q-item-section {{$t('menu.statistics')}}
 </template>
 

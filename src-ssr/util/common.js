@@ -51,6 +51,7 @@ const common = {
 
   async updateData(client, db, collection, _id, data) {
     const table = client.db(db).collection(collection)
+    delete data['_id']
     return await table.update({ _id: ObjectID(_id) }, data)
   },
 
@@ -73,7 +74,11 @@ const common = {
     if (_.toNumber(_id) === -1) {
       return await table.deleteMany({})
     } else {
-      return await table.deleteOne({ _id: ObjectID(_id) })
+      if (ObjectID.isValid(_id)) {
+        return await table.deleteOne({ _id: ObjectID(_id) })
+      } else {
+        return await table.deleteOne({ _id })
+      }
     }
   },
 

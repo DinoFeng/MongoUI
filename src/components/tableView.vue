@@ -33,6 +33,13 @@
               @click='$emit("removeItemClick",props.row._id)'
               )
               q-item-section {{$t('menu.removeDocument')}}
+            q-separator  
+            q-item(
+              clickable 
+              v-close-popup
+              @click='$emit("refreshItemClick")'
+              )
+              q-item-section {{$t('menu.refresh')}}
 </template>
 
 <script>
@@ -56,7 +63,9 @@ export default {
     ...mapGetters('master', ['pagination']),
     columns() {
       // return this.resultColumns
-      const row = _.get(this.dataRows, [0]) || {}
+      const row = this.dataRows.reduce((pre, cur) => {
+        return _.merge(pre, cur)
+      }, {}) //  _.get(this.dataRows, [0]) || {}
       return Object.keys(row).map(name => ({
         name,
         label: name, //_.startCase(name),

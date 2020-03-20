@@ -50,11 +50,13 @@
           :contentHeight='contentHeight'
           @updateItemClick='updateItem'
           @removeItemClick='removeItem'
+          @refreshItemClick='refreshPage'
           )
         document-view(
           v-if='displayMode==="document"'
           :dataRows='tableRows'
           :contentHeight='contentHeight'
+          @refreshItemClick='refreshPage'
           )
         table-view(
           v-if='displayMode==="table"'
@@ -62,6 +64,7 @@
           :contentHeight='contentHeight'
           @updateItemClick='updateItem'
           @removeItemClick='removeItem'
+          @refreshItemClick='refreshPage'
           )
     query-dialog(
       v-if='openQuery'
@@ -79,6 +82,7 @@
     edit-dialog(
       v-if='openEdit'
       v-model='openEdit'
+      :editTable='navigation.table'
       :editKey='editing._id'
       :editData='editing'
       @submit='editSave'
@@ -175,6 +179,9 @@ export default {
     },
     changePageSize(pageSize) {
       console.debug('pageSize', pageSize)
+      this.refreshPage()
+    },
+    refreshPage() {
       this.loadData(this.currentPage)
     },
     loadData(page) {
@@ -208,16 +215,16 @@ export default {
       this.deleteData({ serverName: server, database: db, table, id: _id }).then(() => {
         this.$q.notify({
           type: 'positive',
-          message: `Record (${_id}) delete success!`,
+          message: _.template(this.$t('document_delete_success'))({ id: _id }),
         })
-        this.loadData(this.currentPage)
+        this.refreshPage()
         // const alertOption = {
         //   title: 'Correct',
         //   type: 'positive',
         //   autoClose: 1.5,
         //   message: `Record (${_id}) delete success!`,
         // }
-        // this.showAlert(alertOption).onDismiss(() => this.loadData(this.currentPage))
+        // this.showAlert(alertOption).onDismiss(() => this.refreshPage()
       })
     },
     editSave(_id, data) {
@@ -226,24 +233,24 @@ export default {
       this.updateData({ serverName: server, database: db, table, id: _id, data }).then(() => {
         this.$q.notify({
           type: 'positive',
-          message: `Record (${_id}) update success!`,
+          message: _.template(this.$t('document_update_success'))({ id: _id }),
         })
-        this.loadData(this.currentPage)
+        this.refreshPage()
         // const alertOption = {
         //   title: 'Correct',
         //   type: 'positive',
         //   autoClose: 1.5,
         //   message: `Record (${_id}) delete success!`,
         // }
-        // this.showAlert(alertOption).onDismiss(() => this.loadData(this.currentPage))
+        // this.showAlert(alertOption).onDismiss(() => this.refreshPage()
       })
+    },
+    onQuerySubmit() {
+      // console.debug('onQuerySubmit')
+      this.loadData(1)
     },
     myTweak(offset) {
       return { height: offset ? `calc(100vh - ${offset}px)` : '100vh', overflow: 'auto' }
-    },
-    onQuerySubmit() {
-      console.debug('onQuerySubmit')
-      this.loadData(1)
     },
     onResize(size) {
       const mainPadding = tools.getPaddingValue(this.$refs.mainContent)

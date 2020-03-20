@@ -39,7 +39,13 @@
                   @click='$emit("removeItemClick",row._id)'
                   )
                   q-item-section {{$t('menu.removeDocument')}}
-
+                q-separator  
+                q-item(
+                  clickable 
+                  v-close-popup
+                  @click='$emit("refreshItemClick")'
+                  )
+                  q-item-section {{$t('menu.refresh')}}
           display-list(
             v-if='expandeds[row._id]'
             :data='row'

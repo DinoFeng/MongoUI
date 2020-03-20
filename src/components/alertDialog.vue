@@ -1,6 +1,8 @@
 <template lang="pug">
   q-dialog(
     ref='dialog' 
+    :seamless='seamless'
+    :persistent='persistent'
     :position='position'
     @hide='onDialogHide')
     q-card.q-dialog-plugin
@@ -13,7 +15,7 @@
               v-if='!!type' 
               :name='icon'
               :class='`text-${type}`'
-              style='font-size: 32px;'
+              style='font-size: 36px;'
               )
           .col.q-ma-sm.text-body1 {{message}}
       q-card-section(v-if='!!detail' align='right')
@@ -22,7 +24,7 @@
           @click='()=>detailShow=!detailShow'
           ) detail
       q-card-section(v-if='!!detail && detailShow')
-        .row.q-ma-sm.text-caption {{detail}}
+        q-scroll-area.q-dialog-detail-section.text-caption {{detail}}
       //- buttons example
       q-card-actions(align='right')
         q-btn(
@@ -41,6 +43,8 @@ export default {
     position: String,
     detail: String,
     closeTime: Number,
+    seamless: Boolean,
+    persistent: Boolean,
   },
   mounted() {
     if (this.closeTime > 0) {
@@ -110,6 +114,15 @@ export default {
 .q-dialog-plugin {
   width: 500px;
   max-width: 80vw;
+}
+
+.q-dialog-detail-section {
+  width: 100%;
+  height: 200px;
+  max-height: 500px;
+  // white-space: normal;
+  word-wrap: break-word;
+  // word-break: break-all;
 }
 
 a:link {

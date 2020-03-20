@@ -3,7 +3,7 @@ import alertDialog from '../components/alertDialog.vue'
 
 export default {
   methods: {
-    showAlert({ title, type, message, position, detail, autoClose }) {
+    showAlert({ title, type, message, position, detail, autoClose, persistent, seamless }) {
       let isClosed = false
       const defaultTimeout = 5
       const closeTime = autoClose ? (_.isNumber(autoClose) ? _.toNumber(autoClose) : defaultTimeout) : undefined
@@ -28,6 +28,8 @@ export default {
           position,
           detail,
           closeTime,
+          persistent,
+          seamless,
           // ...more.props...
         })
         .onDismiss(() => {
@@ -81,5 +83,13 @@ export default {
 
       return dialog
     },
+    // showQuestion({ title, message, position, autoClose, persistent, seamless, defaultValue }) {
+    //   const dialog = this.$q.dialog
+    //   return dialog
+    // },
+    // showPrompt({ title, message, position, autoClose, persistent, seamless, defaultValue }) {
+    //   const dialog = this.$q.dialog
+    //   return dialog
+    // },
   },
 }

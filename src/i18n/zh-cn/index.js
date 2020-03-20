@@ -23,6 +23,9 @@ export default {
   record: '记录',
   modify: '修改',
   save: '保存',
+  document_insert_success: '成功插入文档',
+  document_update_success: '成功更新文档(<%=id%>)',
+  document_delete_success: '成功删除文档(<%=id%>)',
   serverConfigDialog: {
     title: '新建服务器连接',
     nameLabel: '服务器名 *',

@@ -69,13 +69,7 @@ class API {
       .request(this.option)
       .then(response => {
         this.durationMs = _.get(response, ['headers', 'durationms'])
-        const { error, data } = response
-        // return response.data
-        if (error) {
-          throw error
-        } else {
-          return data
-        }
+        return response.data
       })
       .then(data => {
         if (withValidate) {
@@ -85,8 +79,17 @@ class API {
         }
       })
       .catch(error => {
-        console.error(error)
-
+        const { response, name, message, stack, config, request } = error
+        if (response) {
+          const { data, status, headers } = response
+          const { error } = data
+          if (error) {
+            console.debug({ status, headers })
+            console.error(error)
+            throw error
+          }
+        }
+        console.debug({ name, message, stack, config, request })
         throw error
       })
   }

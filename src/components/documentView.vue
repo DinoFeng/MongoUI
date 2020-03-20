@@ -10,6 +10,17 @@
     standout 
     readonly
     )
+    q-menu(
+      touch-position
+      context-menu
+      )
+      q-list(dense style="min-width: 100px")
+        q-item(
+          clickable 
+          v-close-popup
+          @click='$emit("refreshItemClick")'
+          )
+          q-item-section {{$t('menu.refresh')}}
 </template>
 
 <script>

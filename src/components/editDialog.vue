@@ -9,7 +9,8 @@
         q-avatar
           img(src='https://cdn.quasar.dev/logo/svg/quasar-logo.svg')
         q-toolbar-title
-          span.text-uppercase.text-weight-bold {{title}}
+          .text-uppercase.text-weight-bold {{title}}
+          .text-caption {{editTable}}
       q-card-section
         q-form(
           @submit='onSubmit'
@@ -27,6 +28,10 @@
             )
           hr(style='filter: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15);')
           q-toolbar
+            //- q-btn.q-ml-sm(
+            //-   :label='$t("validate")'
+            //-   color='primary'
+            //-   )
             q-space
             q-btn.q-ml-sm(
               :label='$t("save")'
@@ -49,6 +54,7 @@ export default {
   name: 'queryDialog',
   props: {
     value: Boolean,
+    editTable: String,
     editKey: String,
     editData: Object,
   },
@@ -62,7 +68,7 @@ export default {
   },
   computed: {
     title() {
-      return this.editKey ? this.$t('modify') : this.$t('create')
+      return `${this.editKey ? this.$t('modify') : this.$t('create')}`
     },
   },
   methods: {
@@ -76,7 +82,7 @@ export default {
     },
     onSubmit() {
       this.$emit('input', false)
-      this.$emit('submit', this.editKey, JSON.parse(this.editing))
+      this.$emit('submit', this.editKey, JSON.parse(this.editing), this.editTable)
     },
     onReset() {
       this.$emit('input', false)

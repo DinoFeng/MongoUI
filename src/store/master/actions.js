@@ -16,6 +16,7 @@ const actions = {
       const serverConfig = await gobalAction.getServerInfo(state.selectedServer)
       console.info('connectServer', serverConfig, state.selectedServer)
       commit(`saveConnectServer`, serverConfig)
+      return serverConfig
     } catch (error) {
       dispatch(
         'errorHandle/doPushError',
@@ -28,70 +29,103 @@ const actions = {
       throw error
     }
   },
-  async getDatabaseStats({ commit }, params) {
-    // const { assignId } = state
-    // commit(`setSelectedDatabase`, { name: params.database })
-    const dbStats = await gobalAction.getDatabaseStats(params)
-    commit(`setSelectedDatabase`, { name: params.database, tables: dbStats })
-  },
-  async findTableData({ commit, state }, params) {
-    // const { assignId } = state
-    // commit(`setSelectedDatabase`, { name: params.database })
-    const { page, serverName, database, table, isReset } = params
-    if (isReset) {
-      commit('setFindCommand', {})
-      commit('setCommandMode', 'find')
+  async getDatabaseStats({ commit, dispatch }, params) {
+    try {
+      // const { assignId } = state
+      // commit(`setSelectedDatabase`, { name: params.database })
+      const dbStats = await gobalAction.getDatabaseStats(params)
+      commit(`setSelectedDatabase`, { name: params.database, tables: dbStats })
+      return dbStats
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
     }
-    let context = {}
-    const result = await gobalAction.findTableData(
-      { page, serverName, database, table },
-      {
-        findQuery: _.get(state, ['find', 'command']),
-        options: _.get(state, ['find', 'options']),
-        pageSize: state.pageSize,
-      },
-      context,
-    )
-    commit('setCurrentPage', page)
-    commit(`setTableResult`, result)
-    commit('setDurationMs', _.get(context, ['durationMs']))
   },
-  async aggregateTableData({ commit, state }, params) {
-    // const { assignId } = state
-    // commit(`setSelectedDatabase`, { name: params.database })
-    const { page, serverName, database, table, isReset } = params
-    if (isReset) {
-      commit('setAggregateCommand', {})
-      commit('setCommandMode', 'aggregate')
+  async findTableData({ commit, state, dispatch }, params) {
+    try {
+      // const { assignId } = state
+      // commit(`setSelectedDatabase`, { name: params.database })
+      const { page, serverName, database, table, isReset } = params
+      if (isReset) {
+        commit('setFindCommand', {})
+        commit('setCommandMode', 'find')
+      }
+      let context = {}
+      const result = await gobalAction.findTableData(
+        { page, serverName, database, table },
+        {
+          findQuery: _.get(state, ['find', 'command']),
+          options: _.get(state, ['find', 'options']),
+          pageSize: state.pageSize,
+        },
+        context,
+      )
+      commit('setCurrentPage', page)
+      commit(`setTableResult`, result)
+      commit('setDurationMs', _.get(context, ['durationMs']))
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
     }
-    let context = {}
-    const result = await gobalAction.aggregateTableData(
-      { page, serverName, database, table },
-      {
-        aggregate: _.get(state, ['aggregate', 'command']),
-        options: _.get(state, ['aggregate', 'options']),
-        pageSize: state.pageSize,
-      },
-      context,
-    )
-    commit('setCurrentPage', page)
-    commit(`setTableResult`, result)
-    commit('setDurationMs', _.get(context, ['durationMs']))
   },
-  async deleteData(content, params) {
-    const { serverName, database, table, id } = params
-    let context = {}
-    const result = await gobalAction.deleteTableData({ serverName, database, table, id }, context)
-    console.debug({ result, context })
+  async aggregateTableData({ commit, state, dispatch }, params) {
+    try {
+      // const { assignId } = state
+      // commit(`setSelectedDatabase`, { name: params.database })
+      const { page, serverName, database, table, isReset } = params
+      if (isReset) {
+        commit('setAggregateCommand', {})
+        commit('setCommandMode', 'aggregate')
+      }
+      let context = {}
+      const result = await gobalAction.aggregateTableData(
+        { page, serverName, database, table },
+        {
+          aggregate: _.get(state, ['aggregate', 'command']),
+          options: _.get(state, ['aggregate', 'options']),
+          pageSize: state.pageSize,
+        },
+        context,
+      )
+      commit('setCurrentPage', page)
+      commit(`setTableResult`, result)
+      commit('setDurationMs', _.get(context, ['durationMs']))
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async deleteData({ dispatch }, params) {
+    try {
+      const { serverName, database, table, id } = params
+      let context = {}
+      const result = await gobalAction.deleteTableData({ serverName, database, table, id }, context)
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
   },
   async updateData({ dispatch }, params) {
     try {
       const { serverName, database, table, id, data } = params
       let context = {}
       const result = await gobalAction.updateTableData({ serverName, database, table, id }, data, context)
-      console.debug({ result, context })
+      return result
     } catch (error) {
-      console.error(error)
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async insertData({ dispatch }, params) {
+    try {
+      const { serverName, database, table, data } = params
+      let context = {}
+      const result = await gobalAction.insertTableData({ serverName, database, table }, data, context)
+      return result
+    } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     }

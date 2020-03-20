@@ -30,7 +30,9 @@
       table-items(
         :tables='db.tables'
         @tableClick='table=>$emit("tableClick",db.name,table)'
-        @menuInsertDoc='table=>$emit("menuInsertDoc",table)'
+        @menuInsertDoc='table=>$emit("menuInsertDoc",db.name,table)'
+        @menuRemoveAllDoc='table=>$emit("menuRemoveAllDoc",db.name,table)'
+        @menuStatistics='table=>$emit("menuStatistics",db.name,table)'
         )
     
 </template>

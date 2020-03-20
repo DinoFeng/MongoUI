@@ -124,6 +124,8 @@
               @dbClick='dbClick'
               @tableClick='tableClick'
               @menuInsertDoc='menuInsertDoc'
+              @menuRemoveAllDoc='menuRemoveAllDoc'
+              @menuStatistics='menuStatistics'
               )
     q-page-container
       router-view
@@ -134,6 +136,7 @@
     edit-dialog(
       v-if='openEdit'
       v-model='openEdit'
+      :editTable='editingTable'
       :editKey='editing._id'
       :editData='editing'
       @submit='editSave'
@@ -159,6 +162,7 @@ export default {
       editingConfig: null,
       openEdit: false,
       editing: false,
+      editingTable: null,
     }
   },
   mounted() {
@@ -197,7 +201,7 @@ export default {
   },
   methods: {
     ...mapMutations('master', ['deleteServerConfig', 'setInsertDocumentEvent']),
-    ...mapActions('master', ['connectServer', 'getDatabaseStats', 'findTableData']),
+    ...mapActions('master', ['connectServer', 'getDatabaseStats', 'findTableData', 'insertData']),
     showServerConfigDialog(create, editData) {
       if (editData) {
         const { name, connString, options } = editData
@@ -229,21 +233,51 @@ export default {
     },
     tableClick(db, table) {
       // window.location.href = `app/${name}/${db}/${table}`
+      const routeName = _.get(this.$route, ['name'])
       const { name } = this.selectedServer
       const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
-      if (server !== name || db !== oldDB || table !== oldTable) {
+      if (routeName != 'table' || server !== name || db !== oldDB || table !== oldTable) {
         this.findTableData({ page: 1, serverName: name, database: db, table, isReset: true }).then(() =>
           this.$router.push({ name: 'table', params: { server: name, db, table } }),
         )
       }
     },
-    menuInsertDoc(table) {
-      console.debug('menuInsertDoc', table)
+    menuStatistics(db, table) {
+      console.debug('menuStatistics', table)
+      const routeName = _.get(this.$route, ['name'])
+      const { name } = this.selectedServer
+      const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
+      if (routeName != 'statistics' || server !== name || db !== oldDB || table !== oldTable) {
+        // this.findTableData({ page: 1, serverName: name, database: db, table, isReset: true }).then(() =>
+        this.$router.push({ name: 'statistics', params: { server: name, db, table } })
+        // )
+      }
+    },
+    menuRemoveAllDoc(db, table) {
+      console.debug('menuRemoveAllDoc', table)
+    },
+    menuInsertDoc(db, table) {
+      // console.debug('menuInsertDoc', table)
       this.openEdit = true
       this.editing = {}
+      this.editingTable = table
     },
-    editSave(_id, data) {
-      console.debug('editSave', { _id, data })
+    editSave(_id, data, table) {
+      const { server, db } = _.get(this.$route, ['params'])
+      console.debug('editSave', { _id, data, server, db, table })
+      this.insertData({ serverName: server, database: db, table, data }).then(() => {
+        this.$q.notify({
+          type: 'positive',
+          message: this.$t('document_insert_success'),
+        })
+        // const alertOption = {
+        //   title: 'Correct',
+        //   type: 'positive',
+        //   autoClose: 1.5,
+        //   message: this.$t('document_insert_success'),
+        // }
+        // this.showAlert(alertOption).onDismiss(() => this.loadData(this.currentPage))
+      })
     },
   },
 }

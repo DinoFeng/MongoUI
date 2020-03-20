@@ -23,6 +23,9 @@ export default {
   record: 'record',
   modify: 'modify',
   save: 'save',
+  document_insert_success: 'Document inserted successfully.',
+  document_update_success: 'Document(<%=id%>) updated successfully.',
+  document_delete_success: 'Document(<%=id%>) deleted successfully.',
   serverConfigDialog: {
     title: 'Create new server connection',
     nameLabel: 'Server name *',

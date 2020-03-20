@@ -31,6 +31,11 @@ const routes = [
             name: 'table',
             component: () => import('pages/Table.vue'),
           },
+          {
+            path: ':server/:db/:table/Statistics',
+            name: 'statistics',
+            component: () => import('pages/Statistics.vue'),
+          },
         ],
       },
     ],
