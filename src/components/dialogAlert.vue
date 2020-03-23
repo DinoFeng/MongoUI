@@ -4,7 +4,8 @@
     :seamless='seamless'
     :persistent='persistent'
     :position='position'
-    @hide='onDialogHide')
+    @hide='onDialogHide'
+    )
     q-card.q-dialog-plugin
       q-card-section
         .text-h6 {{title}}
@@ -29,8 +30,10 @@
       q-card-actions(align='right')
         q-btn(
           color='primary'
+          flat
           :label='okLabel'
-          @click='onOKClick')
+          @click='onOKClick'
+          )
         //- q-btn(color='primary', label='Cancel', @click='onCancelClick')
 </template>
 

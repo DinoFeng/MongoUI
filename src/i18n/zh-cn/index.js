@@ -26,6 +26,14 @@ export default {
   document_insert_success: '成功插入文档',
   document_update_success: '成功更新文档(<%=id%>)',
   document_delete_success: '成功删除文档(<%=id%>)',
+  rename_collection: {
+    title: '重命名集合',
+    message: '新集合名称:',
+  },
+  duplicate_collection: {
+    title: '复制集合',
+    message: '新集合名称',
+  },
   serverConfigDialog: {
     title: '新建服务器连接',
     nameLabel: '服务器名 *',

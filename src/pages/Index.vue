@@ -123,8 +123,14 @@
               :databases='selectedServerDBs'
               @dbClick='dbClick'
               @tableClick='tableClick'
+
+              @menuDatabaseRefresh='menuDatabaseRefresh'
+
               @menuInsertDoc='menuInsertDoc'
               @menuRemoveAllDoc='menuRemoveAllDoc'
+              @menuRenameCollection='menuRenameCollection'
+              @menuDuplicateCollection='menuDuplicateCollection'
+              @menuDropCollection='menuDropCollection'
               @menuStatistics='menuStatistics'
               )
     q-page-container
@@ -148,6 +154,7 @@ import _ from 'lodash'
 import serverConfigDialog from '../components/serverConfigDialog'
 import databaseItems from '../components/databaseItemsForDrawer'
 import editDialog from '../components/editDialog'
+import notify from '../mixin/notify.js'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
 export default {
   name: 'PageIndex',
@@ -156,6 +163,7 @@ export default {
     databaseItems,
     editDialog,
   },
+  mixins: [notify],
   data() {
     return {
       serverConfigShow: false,
@@ -201,7 +209,16 @@ export default {
   },
   methods: {
     ...mapMutations('master', ['deleteServerConfig', 'setInsertDocumentEvent']),
-    ...mapActions('master', ['connectServer', 'getDatabaseStats', 'findTableData', 'insertData']),
+    ...mapActions('master', [
+      'connectServer',
+      'getDatabaseStats',
+      'findTableData',
+      'insertData',
+      'getTabelStats',
+      'duplicateTable',
+      'dropTable',
+      'deleteData',
+    ]),
     showServerConfigDialog(create, editData) {
       if (editData) {
         const { name, connString, options } = editData
@@ -242,19 +259,78 @@ export default {
         )
       }
     },
+    menuDatabaseRefresh(db) {
+      console.debug('menuDatabaseRefresh', db)
+      const { server } = _.get(this.$route, ['params'])
+      this.getDatabaseStats({ serverName: server, database: db })
+    },
+    menuRenameCollection(db, table) {
+      console.debug('menuRenameCollection', { db, table })
+      this.showPrompt({
+        title: this.$t('rename_collection.title'),
+        message: this.$t('rename_collection.message'),
+        defaultValue: table,
+        persistent: true,
+      }).onOk(data => console.debug('your input is:', data))
+    },
+    menuDuplicateCollection(db, table) {
+      console.debug('menuDuplicateCollection', { db, table })
+      this.showPrompt({
+        title: this.$t('duplicate_collection.title'),
+        message: this.$t('duplicate_collection.message'),
+        defaultValue: table,
+        persistent: true,
+      }).onOk(newName => {
+        console.debug('your input is:', newName)
+        const { server } = _.get(this.$route, ['params'])
+        this.duplicateTable({ serverName: server, database: db, table, newName }).then(() => {
+          this.getDatabaseStats({ serverName: server, database: db })
+          this.$q.notify({
+            type: 'positive',
+            message: this.$t('duplicate_collection.success'),
+          })
+        })
+      })
+    },
+    menuDropCollection(db, table) {
+      console.debug('menuDropCollection', { db, table })
+      // this.showPrompt({
+      //   title: this.$t('duplicate_collection.title'),
+      //   message: this.$t('duplicate_collection.message'),
+      //   defaultValue: table,
+      //   persistent: true,
+      // }).onOk(newName => {
+      // console.debug('your input is:', newName)
+      const { server } = _.get(this.$route, ['params'])
+      this.dropTable({ serverName: server, database: db, table }).then(() => {
+        this.getDatabaseStats({ serverName: server, database: db })
+        this.$q.notify({
+          type: 'positive',
+          message: this.$t('drop_collection.success'),
+        })
+      })
+      // })
+    },
     menuStatistics(db, table) {
       console.debug('menuStatistics', table)
       const routeName = _.get(this.$route, ['name'])
       const { name } = this.selectedServer
       const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
       if (routeName != 'statistics' || server !== name || db !== oldDB || table !== oldTable) {
-        // this.findTableData({ page: 1, serverName: name, database: db, table, isReset: true }).then(() =>
-        this.$router.push({ name: 'statistics', params: { server: name, db, table } })
-        // )
+        this.getTabelStats({ serverName: name, database: db, table }).then(() =>
+          this.$router.push({ name: 'statistics', params: { server: name, db, table } }),
+        )
       }
     },
     menuRemoveAllDoc(db, table) {
-      console.debug('menuRemoveAllDoc', table)
+      console.debug('menuRemoveAllDoc', { db, table })
+      const { server } = _.get(this.$route, ['params'])
+      this.deleteData({ serverName: server, database: db, table, id: -1 }).then(() => {
+        this.$q.notify({
+          type: 'positive',
+          message: this.$t('delete_all_doc.success'),
+        })
+      })
     },
     menuInsertDoc(db, table) {
       // console.debug('menuInsertDoc', table)

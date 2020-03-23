@@ -26,6 +26,14 @@ export default {
   document_insert_success: 'Document inserted successfully.',
   document_update_success: 'Document(<%=id%>) updated successfully.',
   document_delete_success: 'Document(<%=id%>) deleted successfully.',
+  rename_collection: {
+    title: 'Rename Collection',
+    message: 'New Collection Name:',
+  },
+  duplicate_collection: {
+    title: 'Duplicate Collection',
+    message: 'New Collection Name:',
+  },
   serverConfigDialog: {
     title: 'Create new server connection',
     nameLabel: 'Server name *',

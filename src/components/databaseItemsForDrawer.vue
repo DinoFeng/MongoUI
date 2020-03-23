@@ -19,7 +19,11 @@
           context-menu
           )
           q-list(dense style="min-width: 100px")
-            q-item(clickable v-close-popup)
+            q-item(
+            clickable 
+            v-close-popup
+            @click='$emit("menuDatabaseRefresh",db.name)'
+            )
               q-item-section {{$t('menu.refresh')}}
             q-separator
             q-item(clickable v-close-popup)
@@ -32,6 +36,9 @@
         @tableClick='table=>$emit("tableClick",db.name,table)'
         @menuInsertDoc='table=>$emit("menuInsertDoc",db.name,table)'
         @menuRemoveAllDoc='table=>$emit("menuRemoveAllDoc",db.name,table)'
+        @menuRenameCollection='table=>$emit("menuRenameCollection",db.name,table)'
+        @menuDuplicateCollection='table=>$emit("menuDuplicateCollection",db.name,table)'
+        @menuDropCollection='table=>$emit("menuDropCollection",db.name,table)'
         @menuStatistics='table=>$emit("menuStatistics",db.name,table)'
         )
     

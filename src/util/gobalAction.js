@@ -78,6 +78,41 @@ const actions = {
     console.debug(`insertTableData durationMs:${api.durationMs} result is:`, data)
     return data
   },
+  async getTabelStats(pathParams, context) {
+    const api = new API(`api/{serverName}/{database}/{table}/stats`, {
+      pathParams,
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`getTabelStats durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
+  async duplicateTable(pathParams, newName, context) {
+    const api = new API(`api/{serverName}/{database}/{table}/duplicate`, {
+      pathParams,
+      post: { newName },
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`duplicateTable durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
+  async dropTable(pathParams, context) {
+    const api = new API(`api/{serverName}/{database}/{table}/drop`, {
+      pathParams,
+      method: 'DELETE',
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`dropTable durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
   // async testUrl() {
   //   let data = await new API(`${baseHost}/api/test`, {
   //     post: {

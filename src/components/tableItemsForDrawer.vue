@@ -35,11 +35,23 @@
             )
             q-item-section {{$t('menu.removeAllDocuments')}}
           q-separator
-          q-item(clickable v-close-popup)
+          q-item(
+            clickable 
+            v-close-popup
+            @click='$emit("menuRenameCollection",table.name)'
+            )
             q-item-section {{$t('menu.renameCollection')}}
-          q-item(clickable v-close-popup)
+          q-item(
+            clickable 
+            v-close-popup
+            @click='$emit("menuDuplicateCollection",table.name)'
+            )
             q-item-section {{$t('menu.duplicateCollection')}}
-          q-item(clickable v-close-popup)
+          q-item(
+            clickable 
+            v-close-popup
+            @click='$emit("menuDropCollection",table.name)'
+            )
             q-item-section {{$t('menu.dropCollection')}}
           q-separator
           q-item(

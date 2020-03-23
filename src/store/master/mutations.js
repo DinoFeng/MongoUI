@@ -53,6 +53,10 @@ const mutations = {
   },
   setSelectedDatabase(state, data) {
     state.selectedDatabase = _.cloneDeep(data)
+    const db = state.selectedServer.dbStatistics.databases.find(item => item.name === data.name)
+    if (db) {
+      _.set(db, 'tables', data.tables)
+    }
   },
   setTableResult(state, data) {
     state.tableResult = _.cloneDeep(data)

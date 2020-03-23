@@ -130,5 +130,39 @@ const actions = {
       throw error
     }
   },
+  async getTabelStats({ dispatch, commit }, params) {
+    try {
+      const { serverName, database, table } = params
+      let context = {}
+      const result = await gobalAction.getTabelStats({ serverName, database, table }, context)
+      commit(`setTableResult`, { rows: [result], total: 1 })
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async duplicateTable({ dispatch }, params) {
+    try {
+      const { serverName, database, table, newName } = params
+      let context = {}
+      const result = await gobalAction.duplicateTable({ serverName, database, table }, newName, context)
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async dropTable({ dispatch }, params) {
+    try {
+      const { serverName, database, table } = params
+      let context = {}
+      const result = await gobalAction.dropTable({ serverName, database, table }, context)
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
 }
 export default actions

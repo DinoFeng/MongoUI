@@ -11,13 +11,13 @@
         list-view(
           :dataRows='tableRows'
           :contentHeight='contentHeight'
-          @refreshItemClick='refreshPage'
           )
 </template>
 
 <script>
 import _ from 'lodash'
 import tools from '../util/tools'
+import { mapGetters } from 'vuex'
 import listView from '../components/listView'
 export default {
   name: 'PageStatistics',
@@ -30,15 +30,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('master', ['tableRows']),
     navigation() {
       return _.get(this.$route, ['params'])
     },
-    tableRows() {
-      return []
-    },
   },
   methods: {
-    refreshPage() {},
     myTweak(offset) {
       return { height: offset ? `calc(100vh - ${offset}px)` : '100vh', overflow: 'auto' }
     },
