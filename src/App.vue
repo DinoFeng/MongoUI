@@ -36,7 +36,6 @@ export default {
             message: message || error.message,
             detail: error.stack,
             autoClose: timeout,
-            persistent: true,
           })
           this.shiftError()
         }

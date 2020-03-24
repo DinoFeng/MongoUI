@@ -113,6 +113,19 @@ const actions = {
     console.debug(`dropTable durationMs:${api.durationMs} result is:`, data)
     return data
   },
+  async renameTable(pathParams, newName, context) {
+    const api = new API(`api/{serverName}/{database}/{table}/rename`, {
+      pathParams,
+      post: { newName },
+      method: 'patch',
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`renameTable durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
   // async testUrl() {
   //   let data = await new API(`${baseHost}/api/test`, {
   //     post: {

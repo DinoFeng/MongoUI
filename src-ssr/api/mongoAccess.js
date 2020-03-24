@@ -260,6 +260,21 @@ router.get(
   }),
 )
 
+// Mongo version
+router.get(
+  '/:server/logs',
+  wrapAsync(async req => {
+    const { params } = req
+    const { server } = params
+    const client = await req.getMongoClient(server)
+    if (client) {
+      return await common.getLogs(client)
+    } else {
+      throw new Error(`Mongo connection is null`)
+    }
+  }),
+)
+
 router.post(
   '/:server/connect',
   wrapAsync(async req => {

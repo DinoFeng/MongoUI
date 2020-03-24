@@ -16,31 +16,37 @@
           q-input.col(
             v-model='text'
             debounce='500'
-            autofocus
+            :autofocus='!defaultValue'
             @focus='onFocus'
             )
       //- buttons example
       q-card-actions(align='right')
         q-btn(
           color='primary'
-          label='OK'
           flat
+          :label='labelOK'
+          :autofocus='!defaultCancel'
           @click='onOKClick')
         q-btn(
           color='primary'
-          label='Cancel'
           flat
+          :label='labelCancel'
+          :autofocus='defaultCancel',
           @click='onCancelClick'
           )
 </template>
 
 <script>
+import _ from 'lodash'
 export default {
   props: {
     closeTime: Number,
     title: String,
     message: String,
     defaultValue: String,
+    defaultCancel: Boolean,
+    okLabel: String,
+    cancelLabel: String,
     position: String,
     seamless: Boolean,
     persistent: Boolean,
@@ -48,12 +54,27 @@ export default {
   mounted() {
     if (this.closeTime > 0) {
       this.timer = this.closeTime
-      const interval = setInterval(() => {
+      this.timerIntrval = setInterval(() => {
         --this.timer
-        if (this.timer <= 0) {
-          clearInterval(interval)
+        if (this.timer <= 0 && !_.isNil(this.timerIntrval)) {
+          clearInterval(this.timerIntrval)
+          this.timerIntrval = null
         }
       }, 1000)
+
+      this.closeTimeout = setTimeout(() => {
+        if (this.$refs.dialog) {
+          if (this.defaultCancel) {
+            this.hide()
+          } else {
+            this.onOKClick()
+          }
+        }
+        if (!_.isNil(this.closeTimeout)) {
+          clearTimeout(this.closeTimeout)
+          this.closeTimeout = null
+        }
+      }, this.closeTime * 1000)
     }
     this.text = this.defaultValue || ''
   },
@@ -61,9 +82,20 @@ export default {
     return {
       timer: 0,
       text: '',
+      closeTimeout: null,
+      timerIntrval: null,
     }
   },
-  computed: {},
+  computed: {
+    labelOK() {
+      const label = this.okLabel || this.$t('ok')
+      return this.timerIntrval && this.closeTime > 0 && !this.defaultCancel ? `${label} (${this.timer})` : label
+    },
+    labelCancel() {
+      const label = this.cancelLabel || this.$t('cancel')
+      return this.timerIntrval && this.closeTime > 0 && this.defaultCancel ? `${label} (${this.timer})` : label
+    },
+  },
   methods: {
     // following method is REQUIRED
     // (don't change its name --> "show")
@@ -97,6 +129,15 @@ export default {
     onFocus(evt) {
       // console.debug(evt)
       evt.target.select()
+      if (!_.isNil(this.timerIntrval)) {
+        clearInterval(this.timerIntrval)
+        this.timerIntrval = null
+      }
+
+      if (!_.isNil(this.closeTimeout)) {
+        clearTimeout(this.closeTimeout)
+        this.closeTimeout = null
+      }
     },
   },
 }

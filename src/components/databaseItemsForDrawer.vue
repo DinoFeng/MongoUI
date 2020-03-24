@@ -20,16 +20,24 @@
           )
           q-list(dense style="min-width: 100px")
             q-item(
-            clickable 
-            v-close-popup
-            @click='$emit("menuDatabaseRefresh",db.name)'
-            )
+              clickable 
+              v-close-popup
+              @click='$emit("menuDatabaseRefresh",db.name)'
+              )
               q-item-section {{$t('menu.refresh')}}
             q-separator
-            q-item(clickable v-close-popup)
+            q-item(
+              clickable 
+              v-close-popup
+              @click='$emit("menuDatabaseStatistics",db.name)'
+              )
               q-item-section {{$t('menu.databaseStatistics')}}
             q-separator
-            q-item(clickable v-close-popup)
+            q-item(
+              clickable 
+              v-close-popup
+              @click='$emit("menuDropDatabase",db.name)'
+              )
               q-item-section {{$t('menu.dropDatabase')}}
       table-items(
         :tables='db.tables'
@@ -39,7 +47,7 @@
         @menuRenameCollection='table=>$emit("menuRenameCollection",db.name,table)'
         @menuDuplicateCollection='table=>$emit("menuDuplicateCollection",db.name,table)'
         @menuDropCollection='table=>$emit("menuDropCollection",db.name,table)'
-        @menuStatistics='table=>$emit("menuStatistics",db.name,table)'
+        @menuStatistics='table=>$emit("menuCollectionStatistics",db.name,table)'
         )
     
 </template>

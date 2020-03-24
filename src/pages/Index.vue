@@ -105,19 +105,43 @@
                 context-menu
                 )
                 q-list(dense style="min-width: 100px")
-                  q-item(clickable v-close-popup)
+                  q-item(
+                    clickable 
+                    v-close-popup
+                    @click='()=>menuServerRefresh(selectedServer.name)'
+                    )
                     q-item-section {{$t('menu.refresh')}}
                   q-separator
-                  q-item(clickable v-close-popup)
+                  q-item(
+                    clickable 
+                    v-close-popup
+                    @click='()=>menuCreateDatabase(selectedServer.name)'
+                    )
                     q-item-section {{$t('menu.createDatabase')}}
-                  q-item(clickable v-close-popup)
+                  q-item(
+                    clickable 
+                    v-close-popup
+                    @click='()=>menuServerStatus(selectedServer.name)'
+                    )
                     q-item-section {{$t('menu.serverStatus')}}
-                  q-item(clickable v-close-popup)
+                  q-item(
+                    clickable 
+                    v-close-popup
+                    @click='()=>menuHostInfo(selectedServer.name)'
+                    )
                     q-item-section {{$t('menu.hostInfo')}}
-                  q-item(clickable v-close-popup)
+                  q-item(
+                    clickable 
+                    v-close-popup
+                    @click='()=>menuMongoVersion(selectedServer.name)'
+                    )
                     q-item-section {{$t('menu.mongoDBVersion')}}
                   q-separator
-                  q-item(clickable v-close-popup)
+                  q-item(
+                    clickable 
+                    v-close-popup
+                    @click='()=>menuShowLog(selectedServer.name)'
+                    )
                     q-item-section {{$t('menu.showLog')}}
             database-items(
               :databases='selectedServerDBs'
@@ -125,13 +149,15 @@
               @tableClick='tableClick'
 
               @menuDatabaseRefresh='menuDatabaseRefresh'
+              @menuDatabaseStatistics='menuDatabaseStatistics'
+              @menuDropDatabase='menuDropDatabase'
 
               @menuInsertDoc='menuInsertDoc'
               @menuRemoveAllDoc='menuRemoveAllDoc'
               @menuRenameCollection='menuRenameCollection'
               @menuDuplicateCollection='menuDuplicateCollection'
               @menuDropCollection='menuDropCollection'
-              @menuStatistics='menuStatistics'
+              @menuCollectionStatistics='menuCollectionStatistics'
               )
     q-page-container
       router-view
@@ -218,6 +244,7 @@ export default {
       'duplicateTable',
       'dropTable',
       'deleteData',
+      'renameTable',
     ]),
     showServerConfigDialog(create, editData) {
       if (editData) {
@@ -259,60 +286,114 @@ export default {
         )
       }
     },
+    menuServerRefresh(serverName) {
+      console.debug('menuServerRefresh', serverName)
+    },
+    menuCreateDatabase(serverName) {
+      console.debug('menuCreateDatabase', serverName)
+    },
+    menuServerStatus(serverName) {
+      console.debug('menuServerStatus', serverName)
+    },
+    menuHostInfo(serverName) {
+      console.debug('menuHostInfo', serverName)
+    },
+    menuMongoVersion(serverName) {
+      console.debug('menuMongoVersion', serverName)
+    },
+    menuShowLog(serverName) {
+      console.debug('menuShowLog', serverName)
+    },
+    menuDropDatabase(db) {
+      console.debug('menuDropDatabase', db)
+    },
     menuDatabaseRefresh(db) {
-      console.debug('menuDatabaseRefresh', db)
+      // console.debug('menuDatabaseRefresh', db)
       const { server } = _.get(this.$route, ['params'])
       this.getDatabaseStats({ serverName: server, database: db })
     },
+    menuDatabaseStatistics(db) {
+      console.debug('menuDatabaseStatistics', db)
+      // const routeName = _.get(this.$route, ['name'])
+      // const { name } = this.selectedServer
+      // const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
+      // if (routeName != 'statistics' || server !== name || db !== oldDB || table !== oldTable) {
+      //   this.getTabelStats({ serverName: name, database: db, table }).then(() =>
+      //     this.$router.push({ name: 'statistics', params: { server: name, db, table } }),
+      //   )
+      // }
+    },
     menuRenameCollection(db, table) {
-      console.debug('menuRenameCollection', { db, table })
+      // console.debug('menuRenameCollection', { db, table })
       this.showPrompt({
         title: this.$t('rename_collection.title'),
         message: this.$t('rename_collection.message'),
         defaultValue: table,
-        persistent: true,
-      }).onOk(data => console.debug('your input is:', data))
+        autoClose: 30,
+      }).onOk(newName => {
+        if (newName !== table) {
+          const { server } = _.get(this.$route, ['params'])
+          this.renameTable({ serverName: server, database: db, table, newName }).then(() => {
+            this.getDatabaseStats({ serverName: server, database: db })
+            this.$q.notify({
+              type: 'positive',
+              message: _.template(this.$t('rename_collection.success'))({ table: newName }),
+            })
+          })
+        } else {
+          this.$q.notify({
+            type: 'warning',
+            message: this.$t('rename_collection.warning'),
+          })
+        }
+      })
     },
     menuDuplicateCollection(db, table) {
-      console.debug('menuDuplicateCollection', { db, table })
+      // console.debug('menuDuplicateCollection', { db, table })
       this.showPrompt({
         title: this.$t('duplicate_collection.title'),
         message: this.$t('duplicate_collection.message'),
-        defaultValue: table,
-        persistent: true,
+        defaultValue: `${table}_copy`,
+        autoClose: 30,
       }).onOk(newName => {
-        console.debug('your input is:', newName)
+        if (newName !== table) {
+          const { server } = _.get(this.$route, ['params'])
+          this.duplicateTable({ serverName: server, database: db, table, newName }).then(() => {
+            this.getDatabaseStats({ serverName: server, database: db })
+            this.$q.notify({
+              type: 'positive',
+              message: _.template(this.$t('duplicate_collection.success'))({ table: newName }),
+            })
+          })
+        } else {
+          this.$q.notify({
+            type: 'warning',
+            message: this.$t('duplicate_collection.warning'),
+          })
+        }
+      })
+    },
+    menuDropCollection(db, table) {
+      // console.debug('menuDropCollection', { db, table })
+      this.showConfirm({
+        title: this.$t('drop_collection.title'),
+        message: _.template(this.$t('drop_collection.message'))({ table }),
+        defaultCancel: true,
+        okLabel: this.$t('drop_collection.ok'),
+        cancelLabel: this.$t('drop_collection.cancel'),
+      }).onOk(() => {
         const { server } = _.get(this.$route, ['params'])
-        this.duplicateTable({ serverName: server, database: db, table, newName }).then(() => {
+        this.dropTable({ serverName: server, database: db, table }).then(() => {
           this.getDatabaseStats({ serverName: server, database: db })
           this.$q.notify({
             type: 'positive',
-            message: this.$t('duplicate_collection.success'),
+            message: _.template(this.$t('drop_collection.success'))({ table }),
           })
         })
       })
     },
-    menuDropCollection(db, table) {
-      console.debug('menuDropCollection', { db, table })
-      // this.showPrompt({
-      //   title: this.$t('duplicate_collection.title'),
-      //   message: this.$t('duplicate_collection.message'),
-      //   defaultValue: table,
-      //   persistent: true,
-      // }).onOk(newName => {
-      // console.debug('your input is:', newName)
-      const { server } = _.get(this.$route, ['params'])
-      this.dropTable({ serverName: server, database: db, table }).then(() => {
-        this.getDatabaseStats({ serverName: server, database: db })
-        this.$q.notify({
-          type: 'positive',
-          message: this.$t('drop_collection.success'),
-        })
-      })
-      // })
-    },
-    menuStatistics(db, table) {
-      console.debug('menuStatistics', table)
+    menuCollectionStatistics(db, table) {
+      // console.debug('menuStatistics', table)
       const routeName = _.get(this.$route, ['name'])
       const { name } = this.selectedServer
       const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
@@ -323,12 +404,20 @@ export default {
       }
     },
     menuRemoveAllDoc(db, table) {
-      console.debug('menuRemoveAllDoc', { db, table })
-      const { server } = _.get(this.$route, ['params'])
-      this.deleteData({ serverName: server, database: db, table, id: -1 }).then(() => {
-        this.$q.notify({
-          type: 'positive',
-          message: this.$t('delete_all_doc.success'),
+      // console.debug('menuRemoveAllDoc', { db, table })
+      this.showConfirm({
+        title: this.$t('delete_all_doc.title'),
+        message: _.template(this.$t('delete_all_doc.message'))({ table }),
+        defaultCancel: true,
+        okLabel: this.$t('delete_all_doc.ok'),
+        cancelLabel: this.$t('delete_all_doc.cancel'),
+      }).onOk(() => {
+        const { server } = _.get(this.$route, ['params'])
+        this.deleteData({ serverName: server, database: db, table, id: -1 }).then(() => {
+          this.$q.notify({
+            type: 'positive',
+            message: _.template(this.$t('delete_all_doc.success'))({ table }),
+          })
         })
       })
     },

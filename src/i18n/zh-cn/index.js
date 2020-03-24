@@ -6,6 +6,8 @@ export default {
   // success: 'Action was successful',
   search: '搜寻',
   sec: '秒',
+  detail: '详情',
+  ok: '确定',
   cancel: '取消',
   create: '新建',
   run: '执行',
@@ -29,10 +31,28 @@ export default {
   rename_collection: {
     title: '重命名集合',
     message: '新集合名称:',
+    success: '已成功重命名集合，新名称为"<%=table%>"',
+    warning: '新名称与旧名称一致',
   },
   duplicate_collection: {
     title: '复制集合',
     message: '新集合名称',
+    success: '已成功复制集合，新集合为"<%=table%>"',
+    warning: '新集合名称与旧名称一致',
+  },
+  drop_collection: {
+    title: '删除集合',
+    message: '请确认是否删除集合"<%=table%>"?',
+    success: '已成功删除集合"<%=table%>"',
+    ok: '确认',
+    cancel: '取消',
+  },
+  delete_all_doc: {
+    title: '删除所有记录',
+    message: '请确认是否删除集合"<%=table%>"下所有记录?',
+    success: '已成功删除集合"<%=table%>"下所有记录',
+    ok: '确认',
+    cancel: '取消',
   },
   serverConfigDialog: {
     title: '新建服务器连接',

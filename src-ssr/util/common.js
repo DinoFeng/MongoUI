@@ -117,13 +117,12 @@ const common = {
 
   async getHostInfo(client) {
     const database = client.db().admin()
-    // const [serverInfo, buildInfo, profilingInfo] = await Promise.all([
-    //   database.serverInfo(),
-    //   database.buildInfo(),
-    //   client.db().profilingInfo(),
-    // ])
-    // return { serverInfo, buildInfo, profilingInfo }
-    return await database.serverInfo()
+    return await database.command({ hostInfo: 1 })
+  },
+
+  async getLogs(client) {
+    const database = client.db().admin()
+    return await database.command({ getLog: 'global' })
   },
 
   async findData(client, db, collection, query, pageOptoins, options) {

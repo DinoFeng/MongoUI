@@ -164,5 +164,16 @@ const actions = {
       throw error
     }
   },
+  async renameTable({ dispatch }, params) {
+    try {
+      const { serverName, database, table, newName } = params
+      let context = {}
+      const result = await gobalAction.renameTable({ serverName, database, table }, newName, context)
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
 }
 export default actions

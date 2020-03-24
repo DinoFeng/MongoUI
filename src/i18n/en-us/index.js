@@ -6,6 +6,8 @@ export default {
   // success: 'Action was successful',
   search: 'search',
   sec: 'sec',
+  detail: 'Detail',
+  ok: 'OK',
   cancel: 'cancel',
   create: 'create',
   run: 'run',
@@ -29,10 +31,28 @@ export default {
   rename_collection: {
     title: 'Rename Collection',
     message: 'New Collection Name:',
+    success: 'Rename collection success. New name is "<%=table%>".',
+    warning: 'The new name is the same as the old one.',
   },
   duplicate_collection: {
     title: 'Duplicate Collection',
     message: 'New Collection Name:',
+    success: 'Duplicate collection success. New collection name is "<%=table%>".',
+    warning: 'The new name is the same as the old one.',
+  },
+  drop_collection: {
+    title: 'Drop Collection',
+    message: 'Are you sure drop "<%=table%>" collection?',
+    success: 'Drop collection "<%=table%>" success.',
+    ok: 'Confirm',
+    cancel: 'Cancel',
+  },
+  delete_all_doc: {
+    title: 'Remove All Document',
+    message: 'Are you sure remove "<%=table%>" all document?',
+    success: 'Remove "<%=table%>" all document success.',
+    ok: 'Confirm',
+    cancel: 'Cancel',
   },
   serverConfigDialog: {
     title: 'Create new server connection',
