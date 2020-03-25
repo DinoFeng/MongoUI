@@ -29,11 +29,11 @@ const actions = {
       throw error
     }
   },
-  async getDatabaseStats({ commit, dispatch }, params) {
+  async getDatabaseCollections({ commit, dispatch }, params) {
     try {
       // const { assignId } = state
       // commit(`setSelectedDatabase`, { name: params.database })
-      const dbStats = await gobalAction.getDatabaseStats(params)
+      const dbStats = await gobalAction.getDatabaseCollections(params)
       commit(`setSelectedDatabase`, { name: params.database, tables: dbStats })
       return dbStats
     } catch (error) {
@@ -164,11 +164,70 @@ const actions = {
       throw error
     }
   },
+  async createTable({ dispatch }, params) {
+    try {
+      const { serverName, database, table } = params
+      let context = {}
+      const result = await gobalAction.createTable({ serverName, database, table }, context)
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
   async renameTable({ dispatch }, params) {
     try {
       const { serverName, database, table, newName } = params
       let context = {}
       const result = await gobalAction.renameTable({ serverName, database, table }, newName, context)
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async getDatabaseStats({ dispatch, commit }, params) {
+    try {
+      const { serverName, database } = params
+      let context = {}
+      const result = await gobalAction.getDatabaseStats({ serverName, database }, context)
+      commit(`setTableResult`, { rows: [result], total: 1 })
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async getServerStatus({ dispatch, commit }, params) {
+    try {
+      const { serverName } = params
+      let context = {}
+      const result = await gobalAction.getServerStatus({ serverName }, context)
+      commit(`setTableResult`, { rows: [result], total: 1 })
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async getServerHostInfo({ dispatch, commit }, params) {
+    try {
+      const { serverName } = params
+      let context = {}
+      const result = await gobalAction.getServerHostInfo({ serverName }, context)
+      commit(`setTableResult`, { rows: [result], total: 1 })
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async getServerLogs({ dispatch, commit }, params) {
+    try {
+      const { serverName } = params
+      let context = {}
+      const result = await gobalAction.getServerLogs({ serverName }, context)
+      commit(`setTableResult`, { rows: [result], total: 1 })
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })

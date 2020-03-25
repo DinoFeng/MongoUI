@@ -11,6 +11,7 @@ export default {
   cancel: 'cancel',
   create: 'create',
   run: 'run',
+  error: 'Error',
   pageSizeLabel: 'Records per page:',
   requestJsonParseTip: 'Please type something that can JSON parse.',
   requestTip: 'Please type something.',
@@ -28,6 +29,12 @@ export default {
   document_insert_success: 'Document inserted successfully.',
   document_update_success: 'Document(<%=id%>) updated successfully.',
   document_delete_success: 'Document(<%=id%>) deleted successfully.',
+  create_collection: {
+    title: 'Create Collection',
+    message: 'Collection Name:',
+    success: 'Create collection success. name is "<%=table%>".',
+    validateMSG: 'Collection Name is required',
+  },
   rename_collection: {
     title: 'Rename Collection',
     message: 'New Collection Name:',
@@ -69,6 +76,7 @@ export default {
     duplicateCollection: 'Duplicate Collection',
     dropCollection: 'Drop Collection',
     renameCollection: 'Rename Collection',
+    createCollection: 'Create Collection',
     statistics: 'Statistics',
     createDatabase: 'Create Database',
     dropDatabase: 'Drop Database',

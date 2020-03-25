@@ -29,9 +29,9 @@
             q-item(
               clickable 
               v-close-popup
-              @click='$emit("menuDatabaseStatistics",db.name)'
+              @click='$emit("menuCreateCollection",db.name)'
               )
-              q-item-section {{$t('menu.databaseStatistics')}}
+              q-item-section {{$t('menu.createCollection')}}
             q-separator
             q-item(
               clickable 
@@ -39,6 +39,13 @@
               @click='$emit("menuDropDatabase",db.name)'
               )
               q-item-section {{$t('menu.dropDatabase')}}
+            q-separator
+            q-item(
+              clickable 
+              v-close-popup
+              @click='$emit("menuDatabaseStatistics",db.name)'
+              )
+              q-item-section {{$t('menu.databaseStatistics')}}
       table-items(
         :tables='db.tables'
         @tableClick='table=>$emit("tableClick",db.name,table)'

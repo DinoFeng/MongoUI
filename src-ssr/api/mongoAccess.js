@@ -204,6 +204,20 @@ router.get(
 )
 
 router.get(
+  '/:server/:db/collections',
+  wrapAsync(async req => {
+    const { params } = req
+    const { db, server } = params
+    const client = await req.getMongoClient(server)
+    if (client) {
+      return await common.getDBCollectionsStats(client, db)
+    } else {
+      throw new Error(`Mongo connection is null`)
+    }
+  }),
+)
+
+router.get(
   '/:server/:db/stats',
   wrapAsync(async req => {
     const { params } = req
@@ -217,19 +231,19 @@ router.get(
   }),
 )
 
-router.get(
-  '/:server/stats',
-  wrapAsync(async req => {
-    const { params } = req
-    const { server } = params
-    const client = await req.getMongoClient(server)
-    if (client) {
-      return await common.getDBStats(client)
-    } else {
-      throw new Error(`Mongo connection is null`)
-    }
-  }),
-)
+// router.get(
+//   '/:server/stats',
+//   wrapAsync(async req => {
+//     const { params } = req
+//     const { server } = params
+//     const client = await req.getMongoClient(server)
+//     if (client) {
+//       return await common.getDBCollectionsStats(client)
+//     } else {
+//       throw new Error(`Mongo connection is null`)
+//     }
+//   }),
+// )
 
 router.get(
   '/:server/status',
@@ -284,7 +298,7 @@ router.post(
     if (client) {
       const status = await common.getServerStatus(client)
       const { host, version, process, pid, uptime, localTime } = status
-      const { databases: dbs, totalSize, ok } = await common.getDBStats(client)
+      const { databases: dbs, totalSize, ok } = await common.getDBCollectionsStats(client)
       const databases = dbs.map(({ name, sizeOnDisk, empty, tables }) => ({
         name,
         sizeOnDisk,

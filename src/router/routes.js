@@ -17,6 +17,31 @@ const routes = [
             component: () => import('pages/Home.vue'),
           },
           {
+            path: ':server/_Logs',
+            name: 'serverLogs',
+            component: () => import('pages/Logs.vue'),
+          },
+          {
+            path: ':server/_Statistics',
+            name: 'serverStatistics',
+            component: () => import('pages/Statistics.vue'),
+          },
+          {
+            path: ':server/:db/_Statistics',
+            name: 'databaseStatistics',
+            component: () => import('pages/Statistics.vue'),
+          },
+          {
+            path: ':server/:db/:table/_Statistics',
+            name: 'tableStatistics',
+            component: () => import('pages/Statistics.vue'),
+          },
+          {
+            path: ':server/_HostInfo',
+            name: 'serverHost',
+            component: () => import('pages/Statistics.vue'),
+          },
+          {
             path: ':server',
             name: 'server',
             component: () => import('pages/Server.vue'),
@@ -30,11 +55,6 @@ const routes = [
             path: ':server/:db/:table',
             name: 'table',
             component: () => import('pages/Table.vue'),
-          },
-          {
-            path: ':server/:db/:table/Statistics',
-            name: 'statistics',
-            component: () => import('pages/Statistics.vue'),
           },
         ],
       },

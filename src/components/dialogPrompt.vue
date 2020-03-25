@@ -6,34 +6,44 @@
     :position='position'
     @hide='onDialogHide'
     )
+    q-form(
+      @submit='onOKClick'
+      @reset='onCancelClick'
+      )
     q-card.q-dialog-plugin
-      q-card-section
-        .text-h6 {{title}}
-      q-card-section
-        .row
-          .col.q-ma-sm.text-body1 {{message}}
-        .row
-          q-input.col(
-            v-model='text'
-            debounce='500'
-            :autofocus='!defaultValue'
-            @focus='onFocus'
+      q-form(
+        @submit='onOKClick'
+        @reset='onCancelClick'
+        )
+        q-card-section
+          .text-h6 {{title}}
+        q-card-section
+          .row
+            .col.q-ma-sm.text-body1 {{message}}
+          .row
+            q-input.col(
+              v-model='text'
+              debounce='500'
+              :autofocus='!defaultValue'
+              :rules='rules'
+              @focus='onFocus'
+              )
+        //- buttons example
+        q-card-actions(align='right')
+          q-btn(
+            type='submit'
+            color='primary'
+            flat
+            :label='labelOK'
+            :autofocus='!defaultCancel'
             )
-      //- buttons example
-      q-card-actions(align='right')
-        q-btn(
-          color='primary'
-          flat
-          :label='labelOK'
-          :autofocus='!defaultCancel'
-          @click='onOKClick')
-        q-btn(
-          color='primary'
-          flat
-          :label='labelCancel'
-          :autofocus='defaultCancel',
-          @click='onCancelClick'
-          )
+          q-btn(
+            type='reset'
+            color='primary'
+            flat
+            :label='labelCancel'
+            :autofocus='defaultCancel',
+            )
 </template>
 
 <script>
@@ -50,6 +60,7 @@ export default {
     position: String,
     seamless: Boolean,
     persistent: Boolean,
+    validate: Function,
   },
   mounted() {
     if (this.closeTime > 0) {
@@ -95,6 +106,9 @@ export default {
       const label = this.cancelLabel || this.$t('cancel')
       return this.timerIntrval && this.closeTime > 0 && this.defaultCancel ? `${label} (${this.timer})` : label
     },
+    rules() {
+      return this.validate ? [this.validate] : undefined
+    },
   },
   methods: {
     // following method is REQUIRED
@@ -118,7 +132,6 @@ export default {
       // before hiding the QDialog
       this.$emit('ok', this.text)
       // or with payload: this.$emit('ok', { ... })
-
       // then hiding dialog
       this.hide()
     },

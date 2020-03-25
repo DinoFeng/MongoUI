@@ -11,6 +11,7 @@ export default {
   cancel: '取消',
   create: '新建',
   run: '执行',
+  error: '错误',
   pageSizeLabel: '每页记录:',
   requestJsonParseTip: '必须输入JSON格式对象内容.',
   requestTip: '必须输入内容.',
@@ -28,6 +29,12 @@ export default {
   document_insert_success: '成功插入文档',
   document_update_success: '成功更新文档(<%=id%>)',
   document_delete_success: '成功删除文档(<%=id%>)',
+  create_collection: {
+    title: '新建集合',
+    message: '集合名称',
+    success: '已成功新建集合，名称为"<%=table%>"',
+    validateMSG: '集合名称为必填项',
+  },
   rename_collection: {
     title: '重命名集合',
     message: '新集合名称:',
@@ -71,6 +78,7 @@ export default {
     renameCollection: '重命名集合',
     duplicateCollection: '复制集合',
     dropCollection: '删除集合',
+    createCollection: '新建集合',
     statistics: '统计数据',
     createDatabase: '新建数据库',
     serverStatus: '服务器状态',

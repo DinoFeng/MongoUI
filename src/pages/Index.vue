@@ -118,6 +118,7 @@
                     @click='()=>menuCreateDatabase(selectedServer.name)'
                     )
                     q-item-section {{$t('menu.createDatabase')}}
+                  q-separator
                   q-item(
                     clickable 
                     v-close-popup
@@ -130,12 +131,6 @@
                     @click='()=>menuHostInfo(selectedServer.name)'
                     )
                     q-item-section {{$t('menu.hostInfo')}}
-                  q-item(
-                    clickable 
-                    v-close-popup
-                    @click='()=>menuMongoVersion(selectedServer.name)'
-                    )
-                    q-item-section {{$t('menu.mongoDBVersion')}}
                   q-separator
                   q-item(
                     clickable 
@@ -151,6 +146,7 @@
               @menuDatabaseRefresh='menuDatabaseRefresh'
               @menuDatabaseStatistics='menuDatabaseStatistics'
               @menuDropDatabase='menuDropDatabase'
+              @menuCreateCollection='menuCreateCollection'
 
               @menuInsertDoc='menuInsertDoc'
               @menuRemoveAllDoc='menuRemoveAllDoc'
@@ -200,6 +196,8 @@ export default {
     }
   },
   mounted() {
+    // const routeName = _.get(this.$route, ['name'])
+    // console.debug({ routeName })
     if (this.serverList.length > 0) {
       this.serverConfigShow = false
       const { server, db, table } = _.get(this.$route, ['params'])
@@ -214,7 +212,7 @@ export default {
               // )
               // this.$router.push({ name: 'table', params: { server, db, table } })
             } else {
-              this.getDatabaseStats({ serverName: server, database: db })
+              this.getDatabaseCollections({ serverName: server, database: db })
               // .then(() =>
               //   this.$router.push({ name: 'database', params: { server, db } }),
               // )
@@ -237,7 +235,7 @@ export default {
     ...mapMutations('master', ['deleteServerConfig', 'setInsertDocumentEvent']),
     ...mapActions('master', [
       'connectServer',
-      'getDatabaseStats',
+      'getDatabaseCollections',
       'findTableData',
       'insertData',
       'getTabelStats',
@@ -245,6 +243,11 @@ export default {
       'dropTable',
       'deleteData',
       'renameTable',
+      'createTable',
+      'getDatabaseStats',
+      'getServerStatus',
+      'getServerHostInfo',
+      'getServerLogs',
     ]),
     showServerConfigDialog(create, editData) {
       if (editData) {
@@ -270,7 +273,7 @@ export default {
       const { name } = this.selectedServer
       const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
       if (server !== name || db !== oldDB || table !== oldTable) {
-        this.getDatabaseStats({ serverName: name, database: db }).then(() =>
+        this.getDatabaseCollections({ serverName: name, database: db }).then(() =>
           this.$router.push({ name: 'database', params: { server: name, db } }),
         )
       }
@@ -293,35 +296,75 @@ export default {
       console.debug('menuCreateDatabase', serverName)
     },
     menuServerStatus(serverName) {
-      console.debug('menuServerStatus', serverName)
+      // console.debug('menuServerStatus', serverName)
+      const { table, db } = {}
+      const routeName = _.get(this.$route, ['name'])
+      const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
+      if (routeName != 'serverStatistics' || server !== serverName || db !== oldDB || table !== oldTable) {
+        this.getServerStatus({ serverName }).then(() =>
+          this.$router.push({ name: 'serverStatistics', params: { server: serverName } }),
+        )
+      }
     },
     menuHostInfo(serverName) {
-      console.debug('menuHostInfo', serverName)
-    },
-    menuMongoVersion(serverName) {
-      console.debug('menuMongoVersion', serverName)
+      // console.debug('menuHostInfo', serverName)
+      const { table, db } = {}
+      const routeName = _.get(this.$route, ['name'])
+      const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
+      if (routeName != 'serverHost' || server !== serverName || db !== oldDB || table !== oldTable) {
+        this.getServerHostInfo({ serverName }).then(() =>
+          this.$router.push({ name: 'serverHost', params: { server: serverName } }),
+        )
+      }
     },
     menuShowLog(serverName) {
       console.debug('menuShowLog', serverName)
+      const { table, db } = {}
+      const routeName = _.get(this.$route, ['name'])
+      const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
+      if (routeName != 'serverLogs' || server !== serverName || db !== oldDB || table !== oldTable) {
+        this.getServerLogs({ serverName }).then(() =>
+          this.$router.push({ name: 'serverLogs', params: { server: serverName } }),
+        )
+      }
     },
     menuDropDatabase(db) {
       console.debug('menuDropDatabase', db)
     },
+    menuCreateCollection(db) {
+      // console.debug('menuCreateCollection', db)
+      this.showPrompt({
+        title: this.$t('create_collection.title'),
+        message: this.$t('create_collection.message'),
+        validate: val => !!val || this.$t('create_collection.validateMSG'),
+      }).onOk(table => {
+        // console.debug('your enter is:', table)
+        const { server } = _.get(this.$route, ['params'])
+        this.createTable({ serverName: server, database: db, table }).then(() => {
+          this.getDatabaseCollections({ serverName: server, database: db })
+          this.$q.notify({
+            type: 'positive',
+            message: _.template(this.$t('create_collection.success'))({ table }),
+          })
+        })
+      })
+    },
     menuDatabaseRefresh(db) {
       // console.debug('menuDatabaseRefresh', db)
       const { server } = _.get(this.$route, ['params'])
-      this.getDatabaseStats({ serverName: server, database: db })
+      this.getDatabaseCollections({ serverName: server, database: db })
     },
     menuDatabaseStatistics(db) {
-      console.debug('menuDatabaseStatistics', db)
-      // const routeName = _.get(this.$route, ['name'])
-      // const { name } = this.selectedServer
-      // const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
-      // if (routeName != 'statistics' || server !== name || db !== oldDB || table !== oldTable) {
-      //   this.getTabelStats({ serverName: name, database: db, table }).then(() =>
-      //     this.$router.push({ name: 'statistics', params: { server: name, db, table } }),
-      //   )
-      // }
+      const table = null
+      // console.debug('menuDatabaseStatistics', db)
+      const routeName = _.get(this.$route, ['name'])
+      const { name } = this.selectedServer
+      const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
+      if (routeName != 'databaseStatistics' || server !== name || db !== oldDB || table !== oldTable) {
+        this.getDatabaseStats({ serverName: name, database: db }).then(() =>
+          this.$router.push({ name: 'databaseStatistics', params: { server: name, db } }),
+        )
+      }
     },
     menuRenameCollection(db, table) {
       // console.debug('menuRenameCollection', { db, table })
@@ -334,7 +377,7 @@ export default {
         if (newName !== table) {
           const { server } = _.get(this.$route, ['params'])
           this.renameTable({ serverName: server, database: db, table, newName }).then(() => {
-            this.getDatabaseStats({ serverName: server, database: db })
+            this.getDatabaseCollections({ serverName: server, database: db })
             this.$q.notify({
               type: 'positive',
               message: _.template(this.$t('rename_collection.success'))({ table: newName }),
@@ -359,7 +402,7 @@ export default {
         if (newName !== table) {
           const { server } = _.get(this.$route, ['params'])
           this.duplicateTable({ serverName: server, database: db, table, newName }).then(() => {
-            this.getDatabaseStats({ serverName: server, database: db })
+            this.getDatabaseCollections({ serverName: server, database: db })
             this.$q.notify({
               type: 'positive',
               message: _.template(this.$t('duplicate_collection.success'))({ table: newName }),
@@ -384,7 +427,7 @@ export default {
       }).onOk(() => {
         const { server } = _.get(this.$route, ['params'])
         this.dropTable({ serverName: server, database: db, table }).then(() => {
-          this.getDatabaseStats({ serverName: server, database: db })
+          this.getDatabaseCollections({ serverName: server, database: db })
           this.$q.notify({
             type: 'positive',
             message: _.template(this.$t('drop_collection.success'))({ table }),
@@ -397,9 +440,9 @@ export default {
       const routeName = _.get(this.$route, ['name'])
       const { name } = this.selectedServer
       const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
-      if (routeName != 'statistics' || server !== name || db !== oldDB || table !== oldTable) {
+      if (routeName != 'tableStatistics' || server !== name || db !== oldDB || table !== oldTable) {
         this.getTabelStats({ serverName: name, database: db, table }).then(() =>
-          this.$router.push({ name: 'statistics', params: { server: name, db, table } }),
+          this.$router.push({ name: 'tableStatistics', params: { server: name, db, table } }),
         )
       }
     },

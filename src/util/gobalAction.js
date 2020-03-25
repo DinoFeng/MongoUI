@@ -26,11 +26,11 @@ const actions = {
     console.debug(`aggregateTableData durationMs:${api.durationMs} `, data)
     return data
   },
-  async getDatabaseStats(pathParams) {
-    let data = await new API(`api/{serverName}/{database}/stats`, {
+  async getDatabaseCollections(pathParams) {
+    let data = await new API(`api/{serverName}/{database}/collections`, {
       pathParams,
     }).fetch(false)
-    console.debug(`getDatabaseStats result is:`, data)
+    console.debug(`getDatabaseCollections result is:`, data)
     return data
   },
   async getServerInfo(post) {
@@ -113,6 +113,18 @@ const actions = {
     console.debug(`dropTable durationMs:${api.durationMs} result is:`, data)
     return data
   },
+  async createTable(pathParams, context) {
+    const api = new API(`api/{serverName}/{database}/{table}/create`, {
+      pathParams,
+      post: {},
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`createTable durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
   async renameTable(pathParams, newName, context) {
     const api = new API(`api/{serverName}/{database}/{table}/rename`, {
       pathParams,
@@ -124,6 +136,50 @@ const actions = {
       _.merge(context, { durationMs: api.durationMs })
     }
     console.debug(`renameTable durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
+  async getDatabaseStats(pathParams, context) {
+    const api = new API(`api/{serverName}/{database}/stats`, {
+      pathParams,
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`getDatabaseStats durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
+  async getServerStatus(pathParams, context) {
+    const api = new API(`api/{serverName}/status`, {
+      pathParams,
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`getServerStatus durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
+  async getServerHostInfo(pathParams, context) {
+    const api = new API(`api/{serverName}/info`, {
+      pathParams,
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`getServerHostInfo durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
+  async getServerLogs(pathParams, context) {
+    const api = new API(`api/{serverName}/logs`, {
+      pathParams,
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`getServerLogs durationMs:${api.durationMs} result is:`, data)
     return data
   },
   // async testUrl() {

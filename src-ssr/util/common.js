@@ -9,7 +9,12 @@ const common = {
       .serverStatus()
   },
 
+  // client.db().stats()
   async getDBStats(client, dbName) {
+    return client.db(dbName).stats()
+  },
+
+  async getDBCollectionsStats(client, dbName) {
     if (!dbName) {
       const adminDB = client.db().admin()
       const dbList = await adminDB.listDatabases()
@@ -19,7 +24,7 @@ const common = {
         const databases = await Promise.all(
           dbs
             .filter(db => !skippedDBs.includes(db.name.toLowerCase()))
-            .map(db => this.getDBStats(client, db.name).then(result => _.merge({}, db, { tables: result }))),
+            .map(db => this.getDBCollectionsStats(client, db.name).then(result => _.merge({}, db, { tables: result }))),
         )
         return { databases, totalSize, ok }
       }
@@ -27,13 +32,13 @@ const common = {
       const db = client.db(dbName)
       const collList = await db.listCollections().toArray()
       const collStats = await Promise.all(
-        collList.map(coll =>
-          client
-            .db(dbName)
-            .collection(coll.name)
-            .stats()
-            .then(data => _.merge({ name: coll.name }, data)),
-        ),
+        collList.map(coll => this.getTableStats(client, dbName, coll.name)),
+        // client
+        //   .db(dbName)
+        //   .collection(coll.name)
+        //   .stats()
+        //   .then(data => _.merge({ name: coll.name }, data)),
+        // ),
       )
       return collStats
     }
@@ -41,7 +46,7 @@ const common = {
 
   async getTableStats(client, db, collection) {
     const table = client.db(db).collection(collection)
-    return await table.stats()
+    return await table.stats().then(data => _.merge({ name: collection }, data))
   },
 
   genObjectId() {
@@ -84,14 +89,34 @@ const common = {
 
   async cloneTable(client, db, source, target) {
     const table = client.db(db).collection(source)
-    await table.aggregate([{ $match: {} }, { $out: target }]).next()
-    return true
+    if (table) {
+      if (await this.tableIsExists(client, db, target)) {
+        throw new Error('Collection with same name already exists.')
+      } else {
+        const newTable = await table.aggregate([{ $match: {} }, { $out: target }]).next()
+        return !!newTable
+      }
+    } else {
+      throw new Error(`Source collection is't exists.`)
+    }
+  },
+
+  async tableIsExists(client, db, collection) {
+    const list = await client
+      .db(db)
+      .listCollections({ name: collection }, { nameOnly: true })
+      .toArray()
+    return list.length > 0
   },
 
   async createTable(client, db, collection, options) {
-    const database = client.db(db)
-    await database.createCollection(collection, options)
-    return true
+    if (await this.tableIsExists(client, db, collection)) {
+      throw new Error('Collection with same name already exists.')
+    } else {
+      const database = client.db(db)
+      const table = await database.createCollection(collection, options)
+      return !!table
+    }
   },
 
   async dropTable(client, db, collection, options) {
@@ -101,8 +126,8 @@ const common = {
 
   async renameTable(client, db, collection, newName, options) {
     const database = client.db(db)
-    await database.renameCollection(collection, newName, options)
-    return true
+    const table = await database.renameCollection(collection, newName, options)
+    return !!table
   },
 
   async dropDatabase(client, db, options) {

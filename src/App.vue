@@ -31,7 +31,7 @@ export default {
         if (val) {
           const { error, title, timeout, message } = val || {}
           this.showAlert({
-            title: title || 'Error',
+            title: title || this.$t('error'),
             type: 'negative',
             message: message || error.message,
             detail: error.stack,

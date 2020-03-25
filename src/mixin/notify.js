@@ -85,46 +85,5 @@ export default {
         cancelLabel,
       })
     },
-    // showAlert2({ title, type, message, position, autoClose }) {
-    //   const defaultTimeout = 5
-    //   let isClosed = false
-    //   const icon = {
-    //     positive: `<i aria-hidden="true" role="presentation" class="text-positive material-icons q-icon notranslate" style="font-size: 32px;">check_circle</i>`, //_outline
-    //     negative: `<i aria-hidden="true" role="presentation" class="text-negative material-icons q-icon notranslate" style="font-size: 32px;">cancel</i>`,
-    //     warning: `<i aria-hidden="true" role="presentation" class="text-warning material-icons q-icon notranslate" style="font-size: 32px;">warning</i>`,
-    //     info: `<i aria-hidden="true" role="presentation" class="text-info material-icons q-icon notranslate" style="font-size: 32px;">info</i>`,
-    //   }
-    //   const html =
-    //     type && icon[type]
-    //       ? `<div class="row"><div class="col-1 q-ma-sm">${icon[type]}</div><div class="col q-ma-sm" style="white-space: pre-wrap;">${message}</div></div>`
-    //       : `<div class="row"><div class="col q-ma-sm" style="white-space: pre-wrap;">${message}</div>`
-    //   const dialog = this.$q
-    //     .dialog({
-    //       title,
-    //       message: html,
-    //       position,
-    //       persistent: true,
-    //       html: true,
-    //     })
-    //     .onDismiss(() => {
-    //       isClosed = true
-    //     })
-
-    //   if (autoClose) {
-    //     const closeTime = _.isNumber(autoClose) ? _.toNumber(autoClose) : defaultTimeout
-    //     const closeTimer = setTimeout(() => {
-    //       if (!isClosed) {
-    //         dialog.hide()
-    //       }
-    //       clearTimeout(closeTimer)
-    //     }, closeTime * 1000)
-    //   }
-
-    //   return dialog
-    // },
-    // showQuestion({ title, message, position, autoClose, persistent, seamless, defaultValue }) {
-    //   const dialog = this.$q.dialog
-    //   return dialog
-    // },
   },
 }

@@ -6,45 +6,76 @@
         q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop' :to='`/app/${navigation.server}`')
         q-breadcrumbs-el(v-if='!!navigation.db' :label='navigation.db' icon='fas fa-database' :to='`/app/${navigation.server}/${navigation.db}`')
         q-breadcrumbs-el(v-if='!!navigation.table' :label='navigation.table' icon='fas fa-table' :to='`/app/${navigation.server}/${navigation.db}/${navigation.table}`')
-        q-breadcrumbs-el(:label='label' icon='list_alt')
+        q-breadcrumbs-el(label='Logs' icon='list_alt')
       .q-pa-md(ref='bodyContent')
-        list-view(
-          :dataRows='tableRows'
-          :contentHeight='contentHeight'
+        q-input(
+          ref='content'
+          :value='datas'
+          :rows='maxRows'
+          :style='`height:${contentHeight}px;`'
+          type='textarea'
+          filled
+          outlined
+          standout 
+          readonly
           )
+          //- q-menu(
+            touch-position
+            context-menu
+            )
+            q-list(dense style="min-width: 100px")
+              q-item(
+                clickable 
+                v-close-popup
+                @click='$emit("refreshItemClick")'
+                )
+                q-item-section {{$t('menu.refresh')}}
 </template>
 
 <script>
 import _ from 'lodash'
+import { dom } from 'quasar'
 import tools from '../util/tools'
 import { mapGetters } from 'vuex'
-import listView from '../components/listView'
 export default {
-  name: 'PageStatistics',
-  components: {
-    listView,
-  },
+  name: 'PageLogs',
+  components: {},
   data() {
     return {
       contentHeight: 100,
+      maxRows: 10,
     }
+  },
+  mounted() {
+    this.maxRows = this.calcMaxRows(this.contentHeight)
   },
   computed: {
     ...mapGetters('master', ['tableRows']),
     navigation() {
       return _.get(this.$route, ['params'])
     },
-    label() {
-      const n = {
-        serverHost: 'HostInfo',
-        serverStatistics: 'Statics',
-        databaseStatistics: 'Statics',
-        tableStatistics: 'Statics',
+    datas() {
+      const logs = _.get(this.tableRows, [0, 'log'])
+      if (logs) {
+        return logs.join('\r\n\r\n')
+      } else {
+        return ''
       }
-      return n[_.get(this.$route, ['name'])]
     },
   },
   methods: {
+    getLineHeight() {
+      if (this.$refs.content) {
+        const { style } = dom
+        return _.toNumber(_.trimEnd(style(this.$refs.content.$el, 'line-height'), 'px'))
+      } else {
+        return 10
+      }
+    },
+    calcMaxRows(contentHeight) {
+      const x = this.getLineHeight()
+      return Math.ceil(contentHeight / x) + 6
+    },
     myTweak(offset) {
       return { height: offset ? `calc(100vh - ${offset}px)` : '100vh', overflow: 'auto' }
     },
@@ -64,5 +95,17 @@ export default {
           bodyPadding.bottom)
     },
   },
+  watch: {
+    contentHeight: {
+      handler(val) {
+        this.maxRows = this.calcMaxRows(val)
+      },
+    },
+  },
 }
 </script>
+<style lang="stylus" scoped>
+>>>textarea {
+  white-space: pre !important;
+}
+</style>
