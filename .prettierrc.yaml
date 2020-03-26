@@ -1,0 +1,7 @@
+# .prettierrc
+singleQuote: true
+semi: false
+printWidth: 120
+trailingComma: all
+# parser: flow
+# overrides:

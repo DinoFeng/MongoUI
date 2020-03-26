@@ -1,24 +1,43 @@
 module.exports = {
   root: true,
+
+  parserOptions: {
+    parser: 'babel-eslint',
+    sourceType: 'module'
+  },
+
   env: {
     browser: true,
     node: true
   },
-  parserOptions: {
-    parser: 'babel-eslint'
-  },
+
   extends: [
-    '@nuxtjs',
-    'prettier',
-    'prettier/vue',
-    'plugin:prettier/recommended',
-    'plugin:nuxt/recommended'
+    // https://eslint.vuejs.org/rules/#priority-a-essential-error-prevention
+    // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
+    'plugin:vue/essential',
+    '@vue/prettier'
   ],
+
+  // required to lint *.vue files
   plugins: [
-    'prettier'
+    'vue'
   ],
+
+  globals: {
+    'ga': true, // Google Analytics
+    'cordova': true,
+    '__statics': true,
+    'process': true,
+    'Capacitor': true,
+    'chrome': true
+  },
+
   // add your custom rules here
   rules: {
-    'nuxt/no-cjs-in-config': 'off'
+    'prefer-promise-reject-errors': 'off',
+    'no-console': process.env.NODE_ENV === 'production' ? ['off', { allow: ['warn', 'error'] }] : 'off',
+
+    // allow debugger during development only
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }
 }
