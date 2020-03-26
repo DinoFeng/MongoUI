@@ -1,12 +1,42 @@
 {
   "name": "mongo_ui",
   "version": "0.0.1",
-  "description": "mongodb manager ui",
+  "description": "mongodb manager web ui. make with vue and quasar",
   "productName": "MongoDB UI",
   "cordovaId": "org.cordova.quasar.app",
   "capacitorId": "",
-  "author": "Dino",
-  "private": true,
+  "author": "Dino Fung <dino_f@21cn.com>",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DinoFeng/MongoUI"
+  },
+  "bugs": {
+    "url": "https://github.com/DinoFeng/MongoUI/issues"
+  },
+  "license": "GPL",
+  "keywords": [
+    "mongo",
+    "mongodb",
+    "web",
+    "ui",
+    "UI",
+    "gui",
+    "GUI",
+    "DB",
+    "database",
+    "user",
+    "manage",
+    "manager",
+    "interface",
+    "document",
+    "collection",
+    "express",
+    "open source",
+    "vue",
+    "quasar",
+    "ssr"
+  ],
   "scripts": {
     "dev": "quasar dev -m ssr",
     "build": "quasar build -m ssr",
