@@ -1,13 +1,15 @@
-FROM  node:alpine
+FROM  node:dubnium
 
-USER root
-RUN npm install -g @quasar/cli && \
-    npm install -g @vue/cli && \
-    npm install -g @vue/cli-init 
+RUN yarn global add @quasar/cli
 
-RUN mkdir /home/node/app
+RUN mkdir -p /usr/src/
+COPY . /usr/src/
+COPY package.json /usr/src/
 
-# VOLUME [ "/home/node/app" ]
-WORKDIR /home/node/app
+WORKDIR /usr/src/
+RUN yarn install
+RUN yarn build
 
-CMD /bin/sh
+WORKDIR /usr/src/dist/ssr
+
+CMD yarn start
