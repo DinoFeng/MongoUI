@@ -130,7 +130,6 @@ if (typeof JSON.retrocycle !== 'function') {
     //      return JSON.retrocycle(JSON.parse(s));
     // produces an array containing a single element which is the array itself.
 
-    // eslint-disable-next-line no-control-regex
     var px = /^\$(?:\[(?:\d+|"(?:[^\\"\u0000-\u001f]|\\(?:[\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*")\])*$/
 
     ;(function rez(value) {
