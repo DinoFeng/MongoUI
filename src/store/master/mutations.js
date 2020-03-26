@@ -48,8 +48,27 @@ const mutations = {
     }
   },
   saveConnectServer(state, data) {
-    const orgData = _.cloneDeep(state.selectedServer)
-    state.selectedServer = _.merge({}, orgData, data)
+    const { connString, name, options } = _.cloneDeep(state.selectedServer)
+    state.selectedServer = _.merge({ connString, name, options }, data)
+    const existsDatabases = _.get(state.selectedServer, ['dbStatistics', 'databases'])
+    let i = 0
+    while (i < state.newDatabase.length) {
+      if (existsDatabases.findIndex(db => db.name === state.newDatabase[i]) >= 0) {
+        state.newDatabase.splice(i, 1)
+      } else {
+        ++i
+      }
+    }
+  },
+  addNewDatabase(state, database) {
+    const newDB = new Set(state.newDatabase)
+    newDB.add(database)
+    state.newDatabase = Array.from(newDB)
+  },
+  removeNewDatabase(state, database) {
+    const newDB = new Set(state.newDatabase)
+    newDB.delete(database)
+    state.newDatabase = Array.from(newDB)
   },
   setSelectedDatabase(state, data) {
     state.selectedDatabase = _.cloneDeep(data)

@@ -29,6 +29,19 @@ export default {
   document_insert_success: '成功插入文档',
   document_update_success: '成功更新文档(<%=id%>)',
   document_delete_success: '成功删除文档(<%=id%>)',
+  create_database: {
+    title: '新建数据库',
+    message: '数据库名称',
+    success: '已成功新建集合，名称为"<%=database%>"',
+    validateMSG: '数据库名称为必填项',
+  },
+  drop_database: {
+    title: '删除数据库',
+    message: '请确认是否删除数据库"<%=database%>"?',
+    success: '已成功删除数据库"<%=database%>"',
+    ok: '确认',
+    cancel: '取消',
+  },
   create_collection: {
     title: '新建集合',
     message: '集合名称',

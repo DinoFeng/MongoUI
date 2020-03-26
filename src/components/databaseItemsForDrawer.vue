@@ -11,7 +11,7 @@
       template(v-slot:header)
         q-item-section(avatar)
           q-icon(name='fas fa-database')
-        q-item-section.cursor-pointer(@click='$emit("dbClick",db.name)')
+        q-item-section.cursor-pointer(@click='$emit("databaseClick",db.name)')
           q-item-label
             | {{db.name}}
         q-menu(

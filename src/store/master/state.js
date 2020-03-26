@@ -1,6 +1,7 @@
 const state = {
   selectedServer: null,
   selectedDatabase: null,
+  newDatabase: [],
   leftDrawerOpen: true,
   servers: null,
   // assignId: null,

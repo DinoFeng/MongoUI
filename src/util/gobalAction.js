@@ -33,12 +33,12 @@ const actions = {
     console.debug(`getDatabaseCollections result is:`, data)
     return data
   },
-  async getServerInfo(post) {
+  async connectServer(post) {
     let data = await new API(`api/{serverName}/connect`, {
       pathParams: { serverName: post.name },
       post,
     }).fetch(false)
-    console.debug(`getServerInfo result is:`, data)
+    console.debug(`connectServer result is:`, data)
     return data
   },
   async deleteTableData(pathParams, context) {
@@ -180,6 +180,41 @@ const actions = {
       _.merge(context, { durationMs: api.durationMs })
     }
     console.debug(`getServerLogs durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
+  async getServerStats(pathParams, context) {
+    const api = new API(`api/{serverName}/stats`, {
+      pathParams,
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`getServerStats durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
+  async createDatabase(pathParams, context) {
+    const api = new API(`api/{serverName}/{database}/create`, {
+      pathParams,
+      post: {},
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`createDatabase durationMs:${api.durationMs} result is:`, data)
+    return data
+  },
+  async dropDatabase(pathParams, context) {
+    const api = new API(`api/{serverName}/{database}/drop`, {
+      pathParams,
+      method: 'DELETE',
+    })
+    const data = await api.fetch(false)
+    if (context) {
+      _.merge(context, { durationMs: api.durationMs })
+    }
+    console.debug(`dropDatabase durationMs:${api.durationMs} result is:`, data)
     return data
   },
   // async testUrl() {

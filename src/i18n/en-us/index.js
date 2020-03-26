@@ -29,6 +29,19 @@ export default {
   document_insert_success: 'Document inserted successfully.',
   document_update_success: 'Document(<%=id%>) updated successfully.',
   document_delete_success: 'Document(<%=id%>) deleted successfully.',
+  create_database: {
+    title: 'Create Database',
+    message: 'Database Name:',
+    success: 'Create database success. name is "<%=database%>".',
+    validateMSG: 'Database Name is required',
+  },
+  drop_database: {
+    title: 'Drop Database',
+    message: 'Are you sure drop "<%=database%>" database?',
+    success: 'Drop database "<%=database%>" success.',
+    ok: 'Confirm',
+    cancel: 'Cancel',
+  },
   create_collection: {
     title: 'Create Collection',
     message: 'Collection Name:',

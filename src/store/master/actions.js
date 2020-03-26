@@ -13,7 +13,7 @@ const actions = {
     try {
       // const { assignId } = state
       commit(`setSelectedServer`, serverName)
-      const serverConfig = await gobalAction.getServerInfo(state.selectedServer)
+      const serverConfig = await gobalAction.connectServer(state.selectedServer)
       console.info('connectServer', serverConfig, state.selectedServer)
       commit(`saveConnectServer`, serverConfig)
       return serverConfig
@@ -147,6 +147,7 @@ const actions = {
       const { serverName, database, table, newName } = params
       let context = {}
       const result = await gobalAction.duplicateTable({ serverName, database, table }, newName, context)
+      dispatch('getDatabaseCollections', { serverName, database })
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -158,17 +159,25 @@ const actions = {
       const { serverName, database, table } = params
       let context = {}
       const result = await gobalAction.dropTable({ serverName, database, table }, context)
+      dispatch('getDatabaseCollections', { serverName, database })
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     }
   },
-  async createTable({ dispatch }, params) {
+  async createTable({ dispatch, state }, params) {
     try {
       const { serverName, database, table } = params
       let context = {}
       const result = await gobalAction.createTable({ serverName, database, table }, context)
+      if (state.newDatabase.includes(database)) {
+        dispatch('getServerStats', { serverName }).then(() =>
+          dispatch('getDatabaseCollections', { serverName, database }),
+        )
+      } else {
+        dispatch('getDatabaseCollections', { serverName, database })
+      }
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -180,6 +189,7 @@ const actions = {
       const { serverName, database, table, newName } = params
       let context = {}
       const result = await gobalAction.renameTable({ serverName, database, table }, newName, context)
+      dispatch('getDatabaseCollections', { serverName, database })
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -228,6 +238,43 @@ const actions = {
       let context = {}
       const result = await gobalAction.getServerLogs({ serverName }, context)
       commit(`setTableResult`, { rows: [result], total: 1 })
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async getServerStats({ dispatch, commit }, serverName) {
+    try {
+      // const { assignId } = state
+      const serverConfig = await gobalAction.getServerStats(serverName)
+      commit(`saveConnectServer`, serverConfig)
+      return serverConfig
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async createDatabase({ dispatch, commit }, params) {
+    try {
+      const { serverName, database } = params
+      let context = {}
+      const result = await gobalAction.createDatabase({ serverName, database }, context)
+      commit('addNewDatabase', database)
+      dispatch('getServerStats', { serverName })
+      return result
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
+  async dropDatabase({ dispatch, commit }, params) {
+    try {
+      const { serverName, database } = params
+      let context = {}
+      const result = await gobalAction.dropDatabase({ serverName, database }, context)
+      commit('removeNewDatabase', database)
+      dispatch('getServerStats', { serverName })
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })

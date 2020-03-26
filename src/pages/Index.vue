@@ -97,7 +97,7 @@
             template(v-slot:header)
               q-item-section(avatar)
                 q-icon(name='fas fa-desktop')
-              q-item-section
+              q-item-section.cursor-pointer(@click='serverClick(selectedServer.name)')
                 q-item-label {{selectedServer.name}}
                 q-item-label(caption)
               q-menu(
@@ -140,7 +140,7 @@
                     q-item-section {{$t('menu.showLog')}}
             database-items(
               :databases='selectedServerDBs'
-              @dbClick='dbClick'
+              @databaseClick='databaseClick'
               @tableClick='tableClick'
 
               @menuDatabaseRefresh='menuDatabaseRefresh'
@@ -248,6 +248,9 @@ export default {
       'getServerStatus',
       'getServerHostInfo',
       'getServerLogs',
+      'getServerStats',
+      'createDatabase',
+      'dropDatabase',
     ]),
     showServerConfigDialog(create, editData) {
       if (editData) {
@@ -268,7 +271,16 @@ export default {
         this.connectServer(serverName).then(() => this.$router.push({ name: 'server', params: { server: serverName } }))
       }
     },
-    dbClick(db, table) {
+    serverClick(serverName) {
+      const { db, table } = {}
+      const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
+      if (server !== serverName || db !== oldDB || table !== oldTable) {
+        this.getServerStats({ serverName }).then(() =>
+          this.$router.push({ name: 'server', params: { server: serverName } }),
+        )
+      }
+    },
+    databaseClick(db, table) {
       // window.location.href = `app/${name}/${db}`
       const { name } = this.selectedServer
       const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
@@ -290,10 +302,23 @@ export default {
       }
     },
     menuServerRefresh(serverName) {
-      console.debug('menuServerRefresh', serverName)
+      this.getServerStats({ serverName })
     },
     menuCreateDatabase(serverName) {
       console.debug('menuCreateDatabase', serverName)
+      this.showPrompt({
+        title: this.$t('create_database.title'),
+        message: this.$t('create_database.message'),
+        validate: val => !!val || this.$t('create_database.validateMSG'),
+      }).onOk(database => {
+        // console.debug('your enter is:', dbName)
+        this.createDatabase({ serverName, database }).then(() => {
+          this.$q.notify({
+            type: 'positive',
+            message: _.template(this.$t('create_database.success'))({ database }),
+          })
+        })
+      })
     },
     menuServerStatus(serverName) {
       // console.debug('menuServerStatus', serverName)
@@ -318,7 +343,7 @@ export default {
       }
     },
     menuShowLog(serverName) {
-      console.debug('menuShowLog', serverName)
+      // console.debug('menuShowLog', serverName)
       const { table, db } = {}
       const routeName = _.get(this.$route, ['name'])
       const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
@@ -328,8 +353,23 @@ export default {
         )
       }
     },
-    menuDropDatabase(db) {
-      console.debug('menuDropDatabase', db)
+    menuDropDatabase(database) {
+      // console.debug('menuDropDatabase', db)
+      this.showConfirm({
+        title: this.$t('drop_database.title'),
+        message: _.template(this.$t('drop_database.message'))({ database }),
+        defaultCancel: true,
+        okLabel: this.$t('drop_database.ok'),
+        cancelLabel: this.$t('drop_database.cancel'),
+      }).onOk(() => {
+        const { server } = _.get(this.$route, ['params'])
+        this.dropDatabase({ serverName: server, database }).then(() => {
+          this.$q.notify({
+            type: 'positive',
+            message: _.template(this.$t('drop_database.success'))({ database }),
+          })
+        })
+      })
     },
     menuCreateCollection(db) {
       // console.debug('menuCreateCollection', db)
@@ -341,7 +381,7 @@ export default {
         // console.debug('your enter is:', table)
         const { server } = _.get(this.$route, ['params'])
         this.createTable({ serverName: server, database: db, table }).then(() => {
-          this.getDatabaseCollections({ serverName: server, database: db })
+          // this.getDatabaseCollections({ serverName: server, database: db })
           this.$q.notify({
             type: 'positive',
             message: _.template(this.$t('create_collection.success'))({ table }),
@@ -377,7 +417,7 @@ export default {
         if (newName !== table) {
           const { server } = _.get(this.$route, ['params'])
           this.renameTable({ serverName: server, database: db, table, newName }).then(() => {
-            this.getDatabaseCollections({ serverName: server, database: db })
+            // this.getDatabaseCollections({ serverName: server, database: db })
             this.$q.notify({
               type: 'positive',
               message: _.template(this.$t('rename_collection.success'))({ table: newName }),
@@ -402,7 +442,7 @@ export default {
         if (newName !== table) {
           const { server } = _.get(this.$route, ['params'])
           this.duplicateTable({ serverName: server, database: db, table, newName }).then(() => {
-            this.getDatabaseCollections({ serverName: server, database: db })
+            // this.getDatabaseCollections({ serverName: server, database: db })
             this.$q.notify({
               type: 'positive',
               message: _.template(this.$t('duplicate_collection.success'))({ table: newName }),
@@ -427,7 +467,7 @@ export default {
       }).onOk(() => {
         const { server } = _.get(this.$route, ['params'])
         this.dropTable({ serverName: server, database: db, table }).then(() => {
-          this.getDatabaseCollections({ serverName: server, database: db })
+          // this.getDatabaseCollections({ serverName: server, database: db })
           this.$q.notify({
             type: 'positive',
             message: _.template(this.$t('drop_collection.success'))({ table }),

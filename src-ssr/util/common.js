@@ -1,7 +1,27 @@
 const { ObjectID } = require('mongodb')
 const _ = require('lodash')
 
+const COLLECTION_EXISTS = 'Collection with same name already exists.'
+const SOURCE_NOT_EXISTS = `Source collection is't exists.`
+const DATABASE_EXISTS = `<%=db%>.temp already exists.`
+
 const common = {
+  async getServerStatusAndCollections(client) {
+    const status = await this.getServerStatus(client)
+    const { host, version, process, pid, uptime, localTime } = status
+    const { databases: dbs, totalSize, ok } = await this.getDBCollectionsStats(client)
+    const databases = dbs.map(({ name, sizeOnDisk, empty, tables }) => ({
+      name,
+      sizeOnDisk,
+      empty,
+      tables: tables.map(({ name, size, count }) => ({ name, size, count })),
+    }))
+    return {
+      status: { host, version, process, pid, uptime, localTime },
+      dbStatistics: { databases, totalSize, ok },
+    }
+  },
+
   async getServerStatus(client) {
     return client
       .db()
@@ -91,13 +111,13 @@ const common = {
     const table = client.db(db).collection(source)
     if (table) {
       if (await this.tableIsExists(client, db, target)) {
-        throw new Error('Collection with same name already exists.')
+        throw new Error(COLLECTION_EXISTS)
       } else {
         const newTable = await table.aggregate([{ $match: {} }, { $out: target }]).next()
         return !!newTable
       }
     } else {
-      throw new Error(`Source collection is't exists.`)
+      throw new Error(SOURCE_NOT_EXISTS)
     }
   },
 
@@ -111,7 +131,7 @@ const common = {
 
   async createTable(client, db, collection, options) {
     if (await this.tableIsExists(client, db, collection)) {
-      throw new Error('Collection with same name already exists.')
+      throw new Error(COLLECTION_EXISTS)
     } else {
       const database = client.db(db)
       const table = await database.createCollection(collection, options)
@@ -136,7 +156,17 @@ const common = {
   },
 
   async createDatabase(client, db) {
-    await this.createTable(client, db, 'temp')
+    try {
+      await this.createTable(client, db, 'temp')
+    } catch (error) {
+      const { message } = error
+      if (message === COLLECTION_EXISTS) {
+        throw new Error(_.template(DATABASE_EXISTS)({ db }))
+      } else {
+        throw error
+      }
+    }
+    this.dropTable(client, db, 'temp')
     return true
   },
 

@@ -7,7 +7,13 @@ const getters = {
   },
   selectedServerDBs(state) {
     // return state.selectedServer
-    return _.get(state.selectedServer, ['dbStatistics', 'databases']) || []
+    const dbs = [..._.get(state.selectedServer, ['dbStatistics', 'databases'])]
+    state.newDatabase.forEach(newDB => {
+      if (dbs.findIndex(db => db.name === newDB) < 0) {
+        dbs.push({ name: newDB })
+      }
+    })
+    return dbs
   },
   selectedServerStates(state) {
     const status = _.get(state.selectedServer, ['status']) || {}
