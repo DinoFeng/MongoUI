@@ -16,18 +16,19 @@
           :props="props"
           ) {{ col.value }}
         q-menu(
-          v-if='!!props.row._id'
           touch-position
           context-menu
           )
           q-list(dense style="min-width: 100px")
             q-item(
+              v-if='!!props.row._id'
               clickable 
               v-close-popup
               @click='$emit("updateItemClick",props.row._id,props.row)'
               )
               q-item-section {{$t('menu.updateDocument')}}
             q-item(
+              v-if='!!props.row._id'
               clickable 
               v-close-popup
               @click='$emit("removeItemClick",props.row._id)'

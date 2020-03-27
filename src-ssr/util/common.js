@@ -84,7 +84,11 @@ const common = {
   async updateData(client, db, collection, _id, data) {
     const table = client.db(db).collection(collection)
     delete data['_id']
-    return await table.update({ _id: ObjectID(_id) }, data)
+    if (ObjectID.isValid(_id)) {
+      return await table.update({ _id: ObjectID(_id) }, data)
+    } else {
+      return await table.update({ _id }, data)
+    }
   },
 
   async customerUpdateData(client, db, collection, _id, data) {

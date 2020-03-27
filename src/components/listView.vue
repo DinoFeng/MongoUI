@@ -13,7 +13,7 @@
         q-expansion-item(
           v-for='(row,index) in dataRows'
           v-model='expandeds[row._id]'
-          :key='row._id'
+          :key='rowKey(row)'
           :content-inset-level='0.3'
           switch-toggle-side
           )
@@ -22,18 +22,19 @@
             q-item-section {{getDesc(row)}}
             q-item-section {{getType(row)}}
             q-menu(
-              v-if='!!row._id'
               touch-position
               context-menu
               )
               q-list(dense style="min-width: 100px")
                 q-item(
+                  v-if='!!row._id'
                   clickable 
                   v-close-popup
                   @click='$emit("updateItemClick",row._id,row)'
                   )
                   q-item-section {{$t('menu.updateDocument')}}
                 q-item(
+                  v-if='!!row._id'
                   clickable 
                   v-close-popup
                   @click='$emit("removeItemClick",row._id)'
@@ -75,7 +76,11 @@ export default {
       return _.merge(pre, { [cur._id]: false })
     }, {})
   },
+  computed: {},
   methods: {
+    rowKey(row) {
+      return JSON.stringify(row._id)
+    },
     calcBodyHeight(contentHeight) {
       if (this.$refs.header) {
         const headerSize = tools.getEleSizeValue(this.$refs.header.$el)

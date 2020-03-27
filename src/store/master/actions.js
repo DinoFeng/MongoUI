@@ -101,7 +101,7 @@ const actions = {
     try {
       const { serverName, database, table, id } = params
       let context = {}
-      const result = await gobalAction.deleteTableData({ serverName, database, table, id }, context)
+      const result = await gobalAction.deleteTableData({ serverName, database, table }, { id }, context)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -112,7 +112,7 @@ const actions = {
     try {
       const { serverName, database, table, id, data } = params
       let context = {}
-      const result = await gobalAction.updateTableData({ serverName, database, table, id }, data, context)
+      const result = await gobalAction.updateTableData({ serverName, database, table }, { id, data }, context)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })

@@ -11,7 +11,6 @@
           aria-label='Menu'
           )
         q-toolbar-title Mongo UI
-        div Version {{version}}
         q-btn-dropdown(
           flat
           )
@@ -48,7 +47,7 @@
                   )
     q-footer
       q-toolbar
-        q-toolbar-title Footer
+        q-toolbar-title Version {{version}}
         div Build with Quasar v{{ $q.version }}
     //- q-page-container
     router-view
