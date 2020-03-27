@@ -178,13 +178,15 @@ const common = {
   },
 
   async getHostInfo(client) {
-    const database = client.db().admin()
+    const defaultDB = await this.getDefaultDBName(client)
+    const database = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
     // console.debug('OK', database)
     return await database.command({ hostInfo: 1 })
   },
 
   async getLogs(client) {
-    const database = client.db().admin()
+    const defaultDB = await this.getDefaultDBName(client)
+    const database = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
     // console.debug('OK', database)
     return await database.command({ getLog: 'global' })
   },
