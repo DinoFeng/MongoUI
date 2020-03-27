@@ -42,8 +42,6 @@ export default {
   },
   computed: {
     parentLink() {
-      const x = this.$route
-      console.debug({ x })
       return this.$route.path
     },
   },
