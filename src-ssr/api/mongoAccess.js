@@ -210,7 +210,7 @@ router.get(
     const { db, server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getDBCollectionsStats(client, db)
+      return await common.getCollections(client, db)
     } else {
       throw new Error(`Mongo connection is null`)
     }

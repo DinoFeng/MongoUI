@@ -22,11 +22,20 @@ const common = {
     }
   },
 
+  async getDefaultDBName(client) {
+    // console.debug({ getOptions: _.get(client, ['s', 'options']) })
+    return _.get(client, ['s', 'options', 'dbName'])
+  },
+
   async getServerStatus(client) {
-    return client
-      .db()
-      .admin()
-      .serverStatus()
+    try {
+      return await client
+        .db()
+        .admin()
+        .serverStatus()
+    } catch (error) {
+      return error
+    }
   },
 
   // client.db().stats()
@@ -34,39 +43,37 @@ const common = {
     return client.db(dbName).stats()
   },
 
-  async getDBCollectionsStats(client, dbName) {
-    if (!dbName) {
-      const adminDB = client.db().admin()
-      const dbList = await adminDB.listDatabases()
-      if (dbList) {
-        const skippedDBs = ['null', 'admin', 'local']
-        const { databases: dbs, totalSize, ok } = dbList
-        const databases = await Promise.all(
-          dbs
-            .filter(db => !skippedDBs.includes(db.name.toLowerCase()))
-            .map(db => this.getDBCollectionsStats(client, db.name).then(result => _.merge({}, db, { tables: result }))),
-        )
-        return { databases, totalSize, ok }
-      }
-    } else {
-      const db = client.db(dbName)
-      const collList = await db.listCollections().toArray()
-      const collStats = await Promise.all(
-        collList.map(coll => this.getTableStats(client, dbName, coll.name)),
-        // client
-        //   .db(dbName)
-        //   .collection(coll.name)
-        //   .stats()
-        //   .then(data => _.merge({ name: coll.name }, data)),
-        // ),
+  async getDBCollectionsStats(client) {
+    const defaultDB = await this.getDefaultDBName(client)
+    // console.debug({ defaultDB })
+    const adminDB = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
+    const dbList = await adminDB.listDatabases()
+    if (dbList) {
+      const skippedDBs = ['null', 'admin', 'local']
+      const { databases: dbs, totalSize, ok } = dbList
+      const databases = await Promise.all(
+        dbs
+          .filter(db => !skippedDBs.includes(db.name.toLowerCase()))
+          .map(db => this.getCollections(client, db.name).then(result => _.merge({}, db, { tables: result }))),
       )
-      return collStats
+      return { databases, totalSize, ok }
     }
+  },
+
+  async getCollections(client, dbName) {
+    const db = client.db(dbName)
+    const collList = await db.listCollections().toArray()
+    const collStats = await Promise.all(collList.map(coll => this.getTableStats(client, dbName, coll.name)))
+    return collStats
   },
 
   async getTableStats(client, db, collection) {
     const table = client.db(db).collection(collection)
-    return await table.stats().then(data => _.merge({ name: collection }, data))
+    try {
+      return await table.stats().then(data => _.merge({ name: collection }, data))
+    } catch (error) {
+      return _.merge(error, { name: collection })
+    }
   },
 
   genObjectId() {
@@ -172,11 +179,13 @@ const common = {
 
   async getHostInfo(client) {
     const database = client.db().admin()
+    // console.debug('OK', database)
     return await database.command({ hostInfo: 1 })
   },
 
   async getLogs(client) {
     const database = client.db().admin()
+    // console.debug('OK', database)
     return await database.command({ getLog: 'global' })
   },
 

@@ -7,7 +7,8 @@ const getters = {
   },
   selectedServerDBs(state) {
     // return state.selectedServer
-    const dbs = [..._.get(state.selectedServer, ['dbStatistics', 'databases'])]
+    const remoteDBs = _.get(state.selectedServer, ['dbStatistics', 'databases'])
+    const dbs = _.isArray(remoteDBs) ? [...remoteDBs] : []
     state.newDatabase.forEach(newDB => {
       if (dbs.findIndex(db => db.name === newDB) < 0) {
         dbs.push({ name: newDB })
