@@ -63,12 +63,12 @@ const mutations = {
   addNewDatabase(state, database) {
     const newDB = new Set(state.newDatabase)
     newDB.add(database)
-    state.newDatabase = Array.from(newDB)
+    state.newDatabase = Array.from(newDB) || []
   },
   removeNewDatabase(state, database) {
     const newDB = new Set(state.newDatabase)
     newDB.delete(database)
-    state.newDatabase = Array.from(newDB)
+    state.newDatabase = Array.from(newDB) || []
   },
   setSelectedDatabase(state, data) {
     state.selectedDatabase = _.cloneDeep(data)

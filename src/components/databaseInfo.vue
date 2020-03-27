@@ -20,7 +20,8 @@
                   q-item-section(avatar)
                     q-icon(name='fas fa-table')
                   q-item-section
-                    q-item-label {{table.name}}
+                    q-item-label 
+                      a(href='javascript:void(0)' @click='$emit("tableClick",table.name)') {{table.name}}
                   q-item-section(avatar style='padding-right:32px;')
                     q-icon(name='fas fa-hdd')
                   q-item-section
@@ -39,5 +40,32 @@ export default {
   props: {
     databasesInfo: Array,
   },
+  computed: {
+    parentLink() {
+      const x = this.$route
+      console.debug({ x })
+      return this.$route.path
+    },
+  },
 }
 </script>
+<style lang="stylus" scoped>
+>>>a:link {
+  text-decoration: none;
+  color: blue;
+}
+
+>>>a:active {
+  text-decoration: blink;
+}
+
+>>>a:hover {
+  text-decoration: none;
+  color: red;
+}
+
+>>>a:visited {
+  text-decoration: none;
+  color: green;
+}
+</style>
