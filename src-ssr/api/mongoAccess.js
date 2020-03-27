@@ -26,14 +26,15 @@ router.post(
 
 // update document
 router.patch(
-  '/:server/:db/:table/:id/update',
+  '/:server/:db/:table/update',
   wrapAsync(async req => {
     const { body, params } = req
-    const { db, table, id, server } = params
+    const { db, table, server } = params
+    const { id, data } = body
     const client = await req.getMongoClient(server)
     if (client) {
       // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      return await common.updateData(client, db, table, id, body)
+      return await common.updateData(client, db, table, id, data)
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -42,10 +43,11 @@ router.patch(
 
 // delete (all) document(s)
 router.delete(
-  '/:server/:db/:table/:id/delete',
+  '/:server/:db/:table/delete',
   wrapAsync(async req => {
-    const { params } = req
-    const { db, table, id, server } = params
+    const { params, body } = req
+    const { db, table, server } = params
+    const { id } = body
     const client = await req.getMongoClient(server)
     if (client) {
       return await common.deleteData(client, db, table, id)

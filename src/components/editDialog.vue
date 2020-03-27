@@ -55,7 +55,7 @@ export default {
   props: {
     value: Boolean,
     editTable: String,
-    editKey: String,
+    editKey: [String, Object],
     editData: Object,
   },
   mounted() {

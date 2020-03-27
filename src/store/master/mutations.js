@@ -2,6 +2,9 @@ import _ from 'lodash'
 import tools from '../../util/tools.js'
 
 const mutations = {
+  setLoading(state, loading) {
+    state.loading = loading
+  },
   setLeftDrawerOpen(state, val) {
     state.leftDrawerOpen = val
   },
@@ -63,12 +66,12 @@ const mutations = {
   addNewDatabase(state, database) {
     const newDB = new Set(state.newDatabase)
     newDB.add(database)
-    state.newDatabase = Array.from(newDB)
+    state.newDatabase = Array.from(newDB) || []
   },
   removeNewDatabase(state, database) {
     const newDB = new Set(state.newDatabase)
     newDB.delete(database)
-    state.newDatabase = Array.from(newDB)
+    state.newDatabase = Array.from(newDB) || []
   },
   setSelectedDatabase(state, data) {
     state.selectedDatabase = _.cloneDeep(data)

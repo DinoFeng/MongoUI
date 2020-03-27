@@ -21,7 +21,7 @@
           .col.q-ma-sm.text-body1 {{message}}
       q-card-section(v-if='!!detail' align='right')
         a(
-          href='javascript:void()'
+          href='javascript:void(0)'
           @click='()=>detailShow=!detailShow'
           ) {{$t('detail')}}
       q-card-section(v-if='!!detail && detailShow')

@@ -2,6 +2,9 @@
 import _ from 'lodash'
 import { Object } from 'core-js'
 const getters = {
+  appLoading(state) {
+    return state.loading
+  },
   serverList(state) {
     return state.servers
   },

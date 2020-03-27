@@ -84,7 +84,11 @@ const common = {
   async updateData(client, db, collection, _id, data) {
     const table = client.db(db).collection(collection)
     delete data['_id']
-    return await table.update({ _id: ObjectID(_id) }, data)
+    if (ObjectID.isValid(_id)) {
+      return await table.update({ _id: ObjectID(_id) }, data)
+    } else {
+      return await table.update({ _id }, data)
+    }
   },
 
   async customerUpdateData(client, db, collection, _id, data) {
@@ -178,13 +182,15 @@ const common = {
   },
 
   async getHostInfo(client) {
-    const database = client.db().admin()
+    const defaultDB = await this.getDefaultDBName(client)
+    const database = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
     // console.debug('OK', database)
     return await database.command({ hostInfo: 1 })
   },
 
   async getLogs(client) {
-    const database = client.db().admin()
+    const defaultDB = await this.getDefaultDBName(client)
+    const database = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
     // console.debug('OK', database)
     return await database.command({ getLog: 'global' })
   },

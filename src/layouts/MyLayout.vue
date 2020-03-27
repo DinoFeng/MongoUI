@@ -11,12 +11,17 @@
           aria-label='Menu'
           )
         q-toolbar-title Mongo UI
-        div Quasar v{{ $q.version }}
         q-btn-dropdown(
-          label='Language'
-          :icon-right='`img:statics/flag/${language}.png`'
           flat
           )
+          template(v-slot:label)
+            .row
+              | Language
+              q-icon.on-right(
+                right 
+                :name='`img:statics/flag/${language}.png`'
+                style='width:32px;height:21px;'
+                )
           q-list
             q-item(
               clickable
@@ -25,7 +30,10 @@
               )
               q-item-section English
               q-item-section(avatar)
-                q-icon(name='img:statics/flag/en-us.png')
+                q-icon(
+                  name='img:statics/flag/en-us.png'
+                  style='width:32px;height:21px;'
+                  )
             q-item(
               clickable
               v-close-popup
@@ -33,10 +41,14 @@
               )
               q-item-section 简体中文
               q-item-section(avatar)
-                q-icon(name='img:statics/flag/zh-cn.png')
+                q-icon(
+                  name='img:statics/flag/zh-cn.png'
+                  style='width:32px;height:21px;'
+                  )
     q-footer
       q-toolbar
-        q-toolbar-title Footer
+        q-toolbar-title Version {{version}}
+        div Build with Quasar v{{ $q.version }}
     //- q-page-container
     router-view
 </template>
@@ -51,6 +63,7 @@ export default {
   data() {
     return {
       language: null,
+      version: 0.1,
     }
   },
   computed: {

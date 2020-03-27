@@ -41,9 +41,10 @@ const actions = {
     console.debug(`connectServer result is:`, data)
     return data
   },
-  async deleteTableData(pathParams, context) {
-    const api = new API(`api/{serverName}/{database}/{table}/{id}/delete`, {
+  async deleteTableData(pathParams, post, context) {
+    const api = new API(`api/{serverName}/{database}/{table}/delete`, {
       pathParams,
+      post,
       method: 'DELETE',
     })
     const data = await api.fetch(false)
@@ -54,7 +55,7 @@ const actions = {
     return data
   },
   async updateTableData(pathParams, post, context) {
-    const api = new API(`api/{serverName}/{database}/{table}/{id}/update`, {
+    const api = new API(`api/{serverName}/{database}/{table}/update`, {
       pathParams,
       post,
       method: 'PATCH',
