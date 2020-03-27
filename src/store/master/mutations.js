@@ -2,6 +2,9 @@ import _ from 'lodash'
 import tools from '../../util/tools.js'
 
 const mutations = {
+  setLoading(state, loading) {
+    state.loading = loading
+  },
   setLeftDrawerOpen(state, val) {
     state.leftDrawerOpen = val
   },

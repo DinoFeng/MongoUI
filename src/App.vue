@@ -1,6 +1,11 @@
 <template lang="pug">
   #q-app
     router-view
+    q-inner-loading(
+      :showing='appLoading'
+      style='z-index: +9999;'
+      )
+      q-spinner-pie(size='50px' color='orange' )
 </template>
 
 <script>
@@ -20,6 +25,7 @@ export default {
   },
   computed: {
     ...mapGetters('errorHandle', ['err']),
+    ...mapGetters('master', ['appLoading']),
   },
   methods: {
     ...mapMutations('master', ['loadServerConfig']),
