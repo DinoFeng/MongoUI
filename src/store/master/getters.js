@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { Object } from 'core-js'
 const getters = {
   appLoading(state) {
-    return state.loading
+    return state.loading > 0
   },
   serverList(state) {
     return state.servers

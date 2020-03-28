@@ -1,6 +1,6 @@
 import axios from 'axios'
 import tools from './tools'
-const baseHost = `http://localhost:8080`
+// const baseHost = `http://localhost:8080`
 const assignManager = {
   assignId: null,
   async init() {
@@ -8,7 +8,7 @@ const assignManager = {
     if (!assignId) {
       assignId = await axios
         .request({
-          url: `${baseHost}/api/assign`,
+          url: `/api/assign`,
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',

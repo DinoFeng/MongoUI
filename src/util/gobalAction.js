@@ -218,16 +218,11 @@ const actions = {
     console.debug(`dropDatabase durationMs:${api.durationMs} result is:`, data)
     return data
   },
-  // async testUrl() {
-  //   let data = await new API(`${baseHost}/api/test`, {
-  //     post: {
-  //       connString: 'mongodb://localhost:27017/',
-  //       assignId: 'assignId',
-  //     },
-  //   }).fetch(false)
-  //   console.debug(`testUrl result is:`, data)
-  //   return data
-  // },
+  async getVersion() {
+    let version = await new API(`/api/version`, {}).fetch(false)
+    console.debug(`getVersion result is:`, version)
+    return version
+  },
 }
 
 export default actions
