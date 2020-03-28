@@ -1,6 +1,5 @@
 import API from './api'
 import _ from 'lodash'
-// const baseHost = `http://localhost:8080`
 const actions = {
   async findTableData(pathParams, post, context) {
     const api = new API(`api/{serverName}/{database}/{table}/{page}/find`, {
@@ -217,6 +216,9 @@ const actions = {
     }
     console.debug(`dropDatabase durationMs:${api.durationMs} result is:`, data)
     return data
+  },
+  async getVersion() {
+    return await API.getVersion()
   },
 }
 

@@ -9,45 +9,27 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import assignManager from './util/assignManager'
 import notify from './mixin/notify.js'
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 export default {
   name: 'App',
   mixins: [notify],
-  created() {
+  beforeMount() {
+    assignManager.init()
     this.loadServerConfig()
-    Vue.prototype.$axios
-      .request({
-        url: './statics/config/config.json',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      })
-      .then(response => response.data)
-      .then(cfgs => {
-        console.debug(cfgs)
-        this.setVersion(cfgs.version)
-        assignManager.init(cfgs.baseHost)
-      })
-      .catch(error => {
-        const { message, stack } = error
-        this.showAlert({
-          title: this.$t('error'),
-          type: 'negative',
-          message: message,
-          detail: stack,
-        })
-      })
+  },
+  mounted() {
+    this.getVersion()
   },
   computed: {
     ...mapGetters('errorHandle', ['err']),
     ...mapGetters('master', ['appLoading']),
   },
   methods: {
-    ...mapMutations('master', ['loadServerConfig', 'setVersion']),
+    ...mapMutations('master', ['loadServerConfig']),
     ...mapMutations('errorHandle', ['shiftError']),
+    ...mapActions('master', ['getVersion']),
   },
   watch: {
     err: {

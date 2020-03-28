@@ -1,4 +1,3 @@
 {
-  "baseHost": "http://localhost:8080",
   "version": "x.00xxxxx.#{Build.BuildNumber}#"
 }
