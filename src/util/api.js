@@ -54,6 +54,9 @@ class API {
     }
     // headers = _.merge({}, { Authorization: `Bearer ${keycloak.token}` }, headers)
     // headers = _.merge({}, headers)
+    if (!_.isString(assignManager.assignId)) {
+      throw new Error('No assign id !')
+    }
     headers = _.merge({}, { assignId: assignManager.assignId }, headers)
     // this[myOptions] = _.merge({}, defaultOptions, { url }, { params, data: post, method, headers })
     Object.defineProperty(this, 'option', {
