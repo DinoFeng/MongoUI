@@ -530,3 +530,9 @@ export default {
   },
 }
 </script>
+<style lang="stylus" scoped>
+.q-expansion-item--expanded>div>.q-item>.q-item__section {
+  color: #1976d2;
+  font-weight: 700;
+}
+</style>

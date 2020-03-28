@@ -1,22 +1,23 @@
 <template lang="pug">
   q-page(:style-fn='myTweak')
     .q-pa-md
-      q-breadcrumbs
-        q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop' :to='`/app/${navigation.server}`')
-        q-breadcrumbs-el(:label='navigation.db' icon='fas fa-database')
+      my-navigation(ref='header')
+      //- q-breadcrumbs
+        //- q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop' :to='`/app/${navigation.server}`')
+        //- q-breadcrumbs-el(:label='navigation.db' icon='fas fa-database')
       database-info(
         :databasesInfo='selectedDatabaseInfo'
-        @tableClick='tableClick'
         )
 </template>
 
 <script>
 import _ from 'lodash'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
+import myNavigation from '../components/myNavigation'
 import databaseInfo from '../components/databaseInfo'
 export default {
   name: 'PageDatabase',
-  components: { databaseInfo },
+  components: { databaseInfo, myNavigation },
   // preFetch({ store, currentRoute, previousRoute, redirect, ssrContext }) {
   //   // fetch data, validate route and optionally redirect to some other route...
 
@@ -38,17 +39,17 @@ export default {
     },
   },
   methods: {
-    ...mapActions('master', ['findTableData']),
+    // ...mapActions('master', ['findTableData']),
     myTweak(offset) {
       return { height: offset ? `calc(100vh - ${offset}px)` : '100vh', overflow: 'auto' }
     },
-    tableClick(table) {
-      // console.debug('tableClick', table)
-      const { server, db } = _.get(this.$route, ['params'])
-      this.findTableData({ page: 1, serverName: server, database: db, table, isReset: true }).then(() =>
-        this.$router.push({ name: 'table', params: { server, db, table } }),
-      )
-    },
+    // tableClick(database, table) {
+    //   // console.debug('tableClick', table)
+    //   const { server } = _.get(this.$route, ['params'])
+    //   this.findTableData({ page: 1, serverName: server, database, table, isReset: true }).then(() =>
+    //     this.$router.push({ name: 'table', params: { server, db: database, table } }),
+    //   )
+    // },
   },
 }
 </script>

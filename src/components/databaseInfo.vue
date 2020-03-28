@@ -4,13 +4,15 @@
         q-card-section
           q-list
             q-expansion-item(
-              v-for='db in databasesInfo'
+              v-for='(db, index) in databasesInfo'
               v-if='!!db'
               :key='db.name'
-              popup 
-              icon='fas fa-database'
               :label='db.name'
               :content-inset-level='0.3'
+              :default-opened='index===0'
+              icon='fas fa-database'
+              group='dbInfo'
+              popup 
               )
               q-list
                 q-item(
@@ -21,7 +23,8 @@
                     q-icon(name='fas fa-table')
                   q-item-section
                     q-item-label 
-                      a(href='javascript:void(0)' @click='$emit("tableClick",table.name)') {{table.name}}
+                      a(:href='`/app/${server}/${db.name}/${table.name}`') {{table.name}}
+                      //- a(href='javascript:void(0)' @click='$emit("tableClick",db.name,table.name)') {{table.name}}
                   q-item-section(avatar style='padding-right:32px;')
                     q-icon(name='fas fa-hdd')
                   q-item-section
@@ -35,14 +38,16 @@
 
 </template>
 <script>
+import _ from 'lodash'
 export default {
   name: 'databaseInfo',
   props: {
     databasesInfo: Array,
   },
   computed: {
-    parentLink() {
-      return this.$route.path
+    server() {
+      const { server } = _.get(this.$route, ['params'])
+      return server
     },
   },
 }

@@ -2,16 +2,17 @@
   q-list
     q-expansion-item(
       v-for='db in databases'
+      v-model='dbSelected[db.name]'
       :key='db.name'
+      :content-inset-level='0.3'
       expand-icon-toggle
       expand-separator
-      group="dbGroup"
-      :content-inset-level='0.3'
+      group='dbGroup'
       )
       template(v-slot:header)
         q-item-section(avatar)
           q-icon(name='fas fa-database')
-        q-item-section.cursor-pointer(@click='$emit("databaseClick",db.name)')
+        q-item-section.cursor-pointer(@click='onItemClick(db.name)')
           q-item-label
             | {{db.name}}
         q-menu(
@@ -59,6 +60,8 @@
     
 </template>
 <script>
+import _ from 'lodash'
+// import vue from 'vue'
 import tableItems from './tableItemsForDrawer'
 export default {
   name: 'databaseItemsForDrawer',
@@ -68,5 +71,32 @@ export default {
   props: {
     databases: Array,
   },
+  data() {
+    return {
+      dbSelected: {},
+    }
+  },
+  mounted() {
+    const { db } = _.get(this.$route, ['params'])
+    if (db) {
+      this.dbSelected = { [db]: !this.dbSelected[db] }
+    } else {
+      this.dbSelected = {}
+    }
+  },
+  methods: {
+    onItemClick(database) {
+      console.debug('onItemClick', database)
+      // this.dbSelected[database] = !this.dbSelected[database]
+      this.dbSelected = { [database]: !this.dbSelected[database] }
+      this.$emit('databaseClick', database)
+    },
+  },
 }
 </script>
+<style lang="stylus" scoped>
+.q-expansion-item--expanded>div>.q-item>.q-item__section {
+  color: #1976d2;
+  font-weight: 700;
+}
+</style>

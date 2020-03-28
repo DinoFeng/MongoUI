@@ -63,19 +63,13 @@ export default {
   data() {
     return {
       language: null,
-      version: 0.1,
     }
   },
   computed: {
     ...mapState('master', ['leftDrawerOpen']),
-    // language: {
-    //   get() {
-    //     return this.lang || window.navigator.language.toLowerCase()
-    //   },
-    //   set(v) {
-    //     this.lang = v
-    //   },
-    // },
+    version() {
+      return process.env.VERSION || ''
+    },
   },
   methods: {
     ...mapMutations('master', ['setLeftDrawerOpen']),
