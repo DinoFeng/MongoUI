@@ -55,7 +55,6 @@
 
 <script>
 import { mapMutations, mapState } from 'vuex'
-import cfg from '../statics/config/config'
 export default {
   name: 'MyLayout',
   mounted() {
@@ -67,9 +66,9 @@ export default {
     }
   },
   computed: {
-    ...mapState('master', ['leftDrawerOpen']),
+    ...mapState('master', ['leftDrawerOpen', 'version']),
     ver() {
-      return cfg.version || ''
+      return this.version || ''
     },
   },
   methods: {
