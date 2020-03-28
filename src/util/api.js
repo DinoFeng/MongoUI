@@ -39,6 +39,32 @@ class API {
     return `${urlHostName}/${urlApi}`
   }
 
+  static async getVersion() {
+    return axios
+      .request({
+        url: './statics/config/config.json',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      })
+      .then(response => response.data)
+      .then(cfg => cfg.version)
+      .catch(error => {
+        const { response, name, message, stack, config, request } = error
+        if (response) {
+          const { data, status, headers } = response
+          const { error } = data
+          if (error) {
+            console.debug({ status, headers })
+            console.error(error)
+            throw error
+          }
+        }
+        console.debug({ name, message, stack, config, request })
+        throw error
+      })
+  }
+
   constructor(uri, { pathParams, params, post, method, headers }, options) {
     let url = uri
     if (_.isString(url)) {
@@ -56,6 +82,8 @@ class API {
     // headers = _.merge({}, headers)
     if (!_.isString(assignManager.assignId)) {
       throw new Error(`Access ${url} without assign id !`)
+      // } else {
+      //   console.debug(assignManager.assignId)
     }
     headers = _.merge({}, { assignId: assignManager.assignId }, headers)
     // this[myOptions] = _.merge({}, defaultOptions, { url }, { params, data: post, method, headers })
