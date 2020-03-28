@@ -11,15 +11,10 @@
 <script>
 import assignManager from './util/assignManager'
 import notify from './mixin/notify.js'
-import { mapMutations, mapGetters, mapActions } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 export default {
   name: 'App',
   mixins: [notify],
-  mounted() {
-    // const version = window.navigator.language
-    // console.debug(version)
-    this.getVersion()
-  },
   created() {
     this.loadServerConfig()
     assignManager.init()
@@ -31,7 +26,6 @@ export default {
   methods: {
     ...mapMutations('master', ['loadServerConfig']),
     ...mapMutations('errorHandle', ['shiftError']),
-    ...mapActions('master', ['getVersion']),
   },
   watch: {
     err: {
