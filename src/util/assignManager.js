@@ -1,9 +1,10 @@
+// import axios from 'axios'
 import axios from 'axios'
 import tools from './tools'
-const { baseHost } = require('../statics/config/config').default
+
 const assignManager = {
   assignId: null,
-  async init() {
+  async init(baseHost) {
     let assignId = tools.getAssignId()
     if (!assignId) {
       assignId = await axios

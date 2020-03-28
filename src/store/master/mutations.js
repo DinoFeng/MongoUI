@@ -2,6 +2,9 @@ import _ from 'lodash'
 import tools from '../../util/tools.js'
 
 const mutations = {
+  setVersion(state, ver) {
+    state.version = ver
+  },
   setLoading(state, loading) {
     state.loading = state.loading + loading
   },
