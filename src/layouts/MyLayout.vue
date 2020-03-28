@@ -47,7 +47,7 @@
                   )
     q-footer
       q-toolbar
-        q-toolbar-title Version {{version}}
+        q-toolbar-title Version {{ver}}
         div Build with Quasar v{{ $q.version }}
     //- q-page-container
     router-view
@@ -66,9 +66,9 @@ export default {
     }
   },
   computed: {
-    ...mapState('master', ['leftDrawerOpen']),
-    version() {
-      return process.env.VERSION || ''
+    ...mapState('master', ['leftDrawerOpen', 'version']),
+    ver() {
+      return this.version || ''
     },
   },
   methods: {

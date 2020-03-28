@@ -8,6 +8,10 @@ router.post('/assign', async (req, res) => {
   res.status(200).json(common.genObjectId())
 })
 
+router.get('/version', async (req, res) => {
+  res.status(200).json(process.env.VERSION || 'x.0.1')
+})
+
 // insert documents
 router.post(
   '/:server/:db/:table/insert',

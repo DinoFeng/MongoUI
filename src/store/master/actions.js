@@ -12,7 +12,7 @@ const actions = {
   async connectServer({ commit, state, dispatch }, serverName) {
     try {
       // const { assignId } = state
-      commit('setLoading', true)
+      commit('setLoading', 1)
       commit(`setSelectedServer`, serverName)
       const serverConfig = await gobalAction.connectServer(state.selectedServer)
       console.info('connectServer', serverConfig, state.selectedServer)
@@ -29,12 +29,12 @@ const actions = {
       commit(`setSelectedServer`, null)
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async getDatabaseCollections({ commit, dispatch }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       // const { assignId } = state
       // commit(`setSelectedDatabase`, { name: params.database })
       const dbStats = await gobalAction.getDatabaseCollections(params)
@@ -44,12 +44,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async findTableData({ commit, state, dispatch }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       // const { assignId } = state
       // commit(`setSelectedDatabase`, { name: params.database })
       const { page, serverName, database, table, isReset } = params
@@ -75,12 +75,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async aggregateTableData({ commit, state, dispatch }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       // const { assignId } = state
       // commit(`setSelectedDatabase`, { name: params.database })
       const { page, serverName, database, table, isReset } = params
@@ -106,12 +106,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async deleteData({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database, table, id } = params
       let context = {}
       const result = await gobalAction.deleteTableData({ serverName, database, table }, { id }, context)
@@ -123,7 +123,7 @@ const actions = {
   },
   async updateData({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database, table, id, data } = params
       let context = {}
       const result = await gobalAction.updateTableData({ serverName, database, table }, { id, data }, context)
@@ -132,12 +132,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async insertData({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database, table, data } = params
       let context = {}
       const result = await gobalAction.insertTableData({ serverName, database, table }, data, context)
@@ -146,12 +146,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async getTabelStats({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database, table } = params
       let context = {}
       const result = await gobalAction.getTabelStats({ serverName, database, table }, context)
@@ -161,12 +161,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async duplicateTable({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database, table, newName } = params
       let context = {}
       const result = await gobalAction.duplicateTable({ serverName, database, table }, newName, context)
@@ -176,12 +176,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async dropTable({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database, table } = params
       let context = {}
       const result = await gobalAction.dropTable({ serverName, database, table }, context)
@@ -191,12 +191,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async createTable({ dispatch, state, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database, table } = params
       let context = {}
       const result = await gobalAction.createTable({ serverName, database, table }, context)
@@ -212,12 +212,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async renameTable({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database, table, newName } = params
       let context = {}
       const result = await gobalAction.renameTable({ serverName, database, table }, newName, context)
@@ -227,12 +227,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async getDatabaseStats({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database } = params
       let context = {}
       const result = await gobalAction.getDatabaseStats({ serverName, database }, context)
@@ -242,12 +242,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async getServerStatus({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName } = params
       let context = {}
       const result = await gobalAction.getServerStatus({ serverName }, context)
@@ -257,12 +257,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async getServerHostInfo({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName } = params
       let context = {}
       const result = await gobalAction.getServerHostInfo({ serverName }, context)
@@ -272,12 +272,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async getServerLogs({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName } = params
       let context = {}
       const result = await gobalAction.getServerLogs({ serverName }, context)
@@ -287,12 +287,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async getServerStats({ dispatch, commit }, serverName) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       // const { assignId } = state
       const serverConfig = await gobalAction.getServerStats(serverName)
       commit(`saveConnectServer`, serverConfig)
@@ -301,12 +301,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async createDatabase({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database } = params
       let context = {}
       const result = await gobalAction.createDatabase({ serverName, database }, context)
@@ -317,12 +317,12 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
     }
   },
   async dropDatabase({ dispatch, commit }, params) {
     try {
-      commit('setLoading', true)
+      commit('setLoading', 1)
       const { serverName, database } = params
       let context = {}
       const result = await gobalAction.dropDatabase({ serverName, database }, context)
@@ -333,7 +333,20 @@ const actions = {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
     } finally {
-      commit('setLoading', false)
+      commit('setLoading', -1)
+    }
+  },
+  async getVersion({ dispatch, commit }) {
+    try {
+      commit('setLoading', 1)
+      const version = await gobalAction.getVersion()
+      commit('serVersion', version)
+      return version
+    } catch (error) {
+      dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    } finally {
+      commit('setLoading', -1)
     }
   },
 }
