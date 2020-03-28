@@ -218,11 +218,6 @@ const actions = {
     console.debug(`dropDatabase durationMs:${api.durationMs} result is:`, data)
     return data
   },
-  async getVersion() {
-    let version = await new API(`/api/version`, {}).fetch(false)
-    console.debug(`getVersion result is:`, version)
-    return version
-  },
 }
 
 export default actions

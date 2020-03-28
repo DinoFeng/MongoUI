@@ -1,6 +1,5 @@
 const state = {
-  version: null,
-  loading: false,
+  loading: 0,
   selectedServer: null,
   selectedDatabase: null,
   newDatabase: [],

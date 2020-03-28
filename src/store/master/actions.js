@@ -336,18 +336,5 @@ const actions = {
       commit('setLoading', -1)
     }
   },
-  async getVersion({ dispatch, commit }) {
-    try {
-      commit('setLoading', 1)
-      const version = await gobalAction.getVersion()
-      commit('serVersion', version)
-      return version
-    } catch (error) {
-      dispatch('errorHandle/doPushError', { error }, { root: true })
-      throw error
-    } finally {
-      commit('setLoading', -1)
-    }
-  },
 }
 export default actions
