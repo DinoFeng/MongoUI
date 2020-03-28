@@ -3,11 +3,12 @@
     q-item(
       v-for='table in tables'
       :key='table.name'
+      :active='active[table.name]'
       clickable
       )
       q-item-section(avatar)
         q-icon(name='fas fa-table')
-      q-item-section.cursor-pointer(@click='$emit("tableClick",table.name)')
+      q-item-section.cursor-pointer(@click='onItemClick(table.name)')
         q-item-label {{table.name}}
         q-item-label(caption)
       q-menu(
@@ -63,10 +64,41 @@
 </template>
 
 <script>
+import _ from 'lodash'
 export default {
   name: 'tableItemsForDrawer',
   props: {
     tables: Array,
   },
+  data() {
+    return {
+      active: {},
+    }
+  },
+  mounted() {
+    // console.debug('mounted')
+    const { table } = _.get(this.$route, ['params'])
+    if (table) {
+      this.active = { [table]: true }
+    } else {
+      this.active = {}
+    }
+  },
+  methods: {
+    onItemClick(tableName) {
+      // this.active[tableName] = true
+      this.active = { [tableName]: !this.active[tableName] }
+      this.$emit('tableClick', tableName)
+    },
+  },
 }
 </script>
+<style lang="stylus" scoped>
+.q-item {
+  border-radius: 10px 0 0 10px;
+}
+
+.q-item--active {
+  background: #e6f1fc;
+}
+</style>

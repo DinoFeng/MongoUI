@@ -1,8 +1,9 @@
 <template lang="pug">
   q-page(:style-fn='myTweak')
     .q-pa-md
-      q-breadcrumbs
-        q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop')
+      my-navigation(ref='header')
+      //- q-breadcrumbs
+      //-   q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop')
       .q-pa-md
         q-card
           q-card-section {{$t('serverStatus')}}
@@ -15,16 +16,19 @@
                 q-item-section {{s.name}}
                 q-item-section {{s.value}}
       .q-pa-md
-        database-info(:databasesInfo='selectedServerDBs')
+        database-info(
+          :databasesInfo='selectedServerDBs'
+          )
 </template>
 
 <script>
 import _ from 'lodash'
 import { mapGetters } from 'vuex'
+import myNavigation from '../components/myNavigation'
 import databaseInfo from '../components/databaseInfo'
 export default {
   name: 'PageServer',
-  components: { databaseInfo },
+  components: { databaseInfo, myNavigation },
   data() {
     return {}
   },
@@ -45,6 +49,7 @@ export default {
     },
   },
   methods: {
+    // ...mapActions('master', ['findTableData']),
     myTweak(offset) {
       // console.debug({ offset })
       // "offset" is a Number (pixels) that refers to the total
@@ -54,6 +59,13 @@ export default {
       // this is actually what the default style-fn does in Quasar
       return { height: offset ? `calc(100vh - ${offset}px)` : '100vh', overflow: 'auto' }
     },
+    // tableClick(database, table) {
+    //   // console.debug('tableClick', table)
+    //   const { server } = _.get(this.$route, ['params'])
+    //   this.findTableData({ page: 1, serverName: server, database, table, isReset: true }).then(() =>
+    //     this.$router.push({ name: 'table', params: { server, db: database, table } }),
+    //   )
+    // },
   },
 }
 </script>

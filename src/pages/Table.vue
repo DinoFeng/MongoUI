@@ -2,10 +2,11 @@
   q-page(:style-fn='myTweak')
     q-resize-observer(@resize='onResize')
     .q-pa-md(ref='mainContent')
-      q-breadcrumbs(ref='header')
-        q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop' :to='`/app/${navigation.server}`')
-        q-breadcrumbs-el(:label='navigation.db' icon='fas fa-database' :to='`/app/${navigation.server}/${navigation.db}`')
-        q-breadcrumbs-el(:label='navigation.table' icon='fas fa-table')
+      my-navigation(ref='header')
+      //- q-breadcrumbs(ref='header')
+        //- q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop' :to='`/app/${navigation.server}`')
+        //- q-breadcrumbs-el(:label='navigation.db' icon='fas fa-database' :to='`/app/${navigation.server}/${navigation.db}`')
+        //- q-breadcrumbs-el(:label='navigation.table' icon='fas fa-table')
       
       q-toolbar(ref='toolbar')
         q-btn-group(spread)
@@ -92,6 +93,7 @@
 <script>
 import _ from 'lodash'
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
+import myNavigation from '../components/myNavigation'
 import listView from '../components/listView'
 import documentView from '../components/documentView'
 import tableView from '../components/tableView'
@@ -103,7 +105,15 @@ import notify from '../mixin/notify.js'
 export default {
   name: 'PageTable',
   mixins: [notify],
-  components: { listView, documentView, tableView, queryDialog, searchDialog, editDialog },
+  components: {
+    myNavigation,
+    listView,
+    documentView,
+    tableView,
+    queryDialog,
+    searchDialog,
+    editDialog,
+  },
   // preFetch({ store, currentRoute, previousRoute, redirect, ssrContext }) {
   //   // fetch data, validate route and optionally redirect to some other route...
 
