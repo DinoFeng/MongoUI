@@ -65,9 +65,18 @@ export default {
       editing: {},
     }
   },
+  mounted() {
+    // console.debug('queryDialog mounted')
+    const { command, options } = this.commandData
+    this.editing = {
+      command: command ? JSON.stringify(command) : command,
+      options: command ? JSON.stringify(options) : options,
+    }
+  },
   computed: {
     command: {
       get() {
+        // console.debug('get command', _.get(this.editing, ['command']))
         return _.get(this.editing, ['command'])
       },
       set(val) {
@@ -110,6 +119,7 @@ export default {
       deep: true,
       // immediate: true,
       handler: function(val) {
+        // console.debug('watch commandData', val)
         const { command, options } = val
         this.editing = {
           command: command ? JSON.stringify(command) : command,

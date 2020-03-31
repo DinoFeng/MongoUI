@@ -48,7 +48,7 @@
           q-toolbar
             q-space
             q-btn.q-ml-sm(
-              :label='$t("create")'
+              :label='$t("save")'
               type='submit'
               color='primary'
               )
