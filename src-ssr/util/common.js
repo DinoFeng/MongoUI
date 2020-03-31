@@ -227,9 +227,13 @@ const common = {
     pipeline.push({ $limit: limit })
     totalPipeLine.push({ $count: 'total' })
     const table = client.db(db).collection(collection)
+    // console.debug({ pipeline, totalPipeLine })
     const [rows, [{ total }]] = await Promise.all([
       table.aggregate(pipeline, opt).toArray(),
-      table.aggregate(totalPipeLine, { cursor: { batchSize: 1 } }).toArray(),
+      table
+        .aggregate(totalPipeLine, { cursor: { batchSize: 1 } })
+        .toArray()
+        .then(res => (res && res.length > 0 ? res : [{ total: 0 }])),
     ])
     // const rows = await table.aggregate(pipeline, opt).toArray()
     // const [{ total }] = await table.aggregate(totalPipeLine, { cursor: { batchSize: 1 } }).toArray()

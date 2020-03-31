@@ -65,6 +65,13 @@ export default {
       editing: {},
     }
   },
+  mounted() {
+    const { command, options } = this.commandData || {}
+    this.editing = {
+      command: command ? JSON.stringify(command) : command,
+      options: command ? JSON.stringify(options) : options,
+    }
+  },
   computed: {
     command: {
       get() {
@@ -110,7 +117,7 @@ export default {
       deep: true,
       // immediate: true,
       handler: function(val) {
-        const { command, options } = val
+        const { command, options } = val || {}
         this.editing = {
           command: command ? JSON.stringify(command) : command,
           options: command ? JSON.stringify(options) : options,
