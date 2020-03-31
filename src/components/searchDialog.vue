@@ -23,6 +23,10 @@
             debounce='500'
             filled
             lazy-rules
+            use-input
+            hide-selected
+            fill-input
+            @input-value="setValue"
             )
           q-input(
             v-model='inputValue'
@@ -63,10 +67,24 @@ export default {
       editing: {},
     }
   },
+  mounted() {
+    const { command } = this.commandData || {}
+    const selectedField = command ? _.get(Object.keys(command), [0]) || '' : ''
+    const inputValue = _.get(command, [selectedField]) || ''
+
+    this.editing = {
+      selectedField,
+      inputValue,
+    }
+  },
   computed: {
     ...mapGetters('master', ['resultFields']),
     fields() {
-      return this.resultFields
+      if (this.selectedField) {
+        return this.resultFields.filter(v => v.toLocaleLowerCase().indexOf(this.selectedField.toLocaleLowerCase()) > -1)
+      } else {
+        return this.resultFields
+      }
     },
     selectedField: {
       get() {
@@ -86,6 +104,9 @@ export default {
     },
   },
   methods: {
+    setValue(val) {
+      this.selectedField = val
+    },
     onSubmit() {
       const { selectedField: f, inputValue: v } = this.editing
       const command = { [f]: v }
