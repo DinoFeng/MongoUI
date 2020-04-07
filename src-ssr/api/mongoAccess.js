@@ -8,6 +8,21 @@ router.post('/assign', async (req, res) => {
   res.status(200).json(common.genObjectId())
 })
 
+router.get(
+  '/:server/:db/:table/fields',
+  wrapAsync(async req => {
+    const { params } = req
+    const { db, table, server } = params
+    const client = await req.getMongoClient(server)
+    if (client) {
+      // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
+      return await common.getAllFieldsAndTypes(client, db, table)
+    } else {
+      throw new Error(`Mongo connection is null`)
+    }
+  }),
+)
+
 // insert documents
 router.post(
   '/:server/:db/:table/insert',
