@@ -98,6 +98,10 @@ export default {
   border-radius: 10px 0 0 10px;
 }
 
+.q-menu .q-item {
+  border-radius: 0px 0 0 0px;
+}
+
 .q-item--active {
   background: #e6f1fc;
 }
