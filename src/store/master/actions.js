@@ -119,6 +119,8 @@ const actions = {
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
       throw error
+    } finally {
+      commit('setLoading', -1)
     }
   },
   async updateData({ dispatch, commit }, params) {

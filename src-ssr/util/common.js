@@ -6,6 +6,30 @@ const SOURCE_NOT_EXISTS = `Source collection is't exists.`
 const DATABASE_EXISTS = `<%=db%>.temp already exists.`
 
 const common = {
+  async getAllFieldsAndTypes(client, db, collection) {
+    const table = client.db(db).collection(collection)
+    const result = await table
+      .mapReduce(
+        function map() {
+          for (var key in this) {
+            // eslint-disable-next-line no-undef
+            emit(key, null)
+          }
+        },
+        // eslint-disable-next-line no-unused-vars
+        function reduce(key, stuff) {
+          return null
+        },
+        {
+          limit: 20,
+          out: { inline: 1 },
+        },
+      )
+      .then(result => result.map(({ _id }) => _id))
+    // console.debug(result)
+    return result
+  },
+
   async getServerStatusAndCollections(client) {
     const status = await this.getServerStatus(client)
     const { host, version, process, pid, uptime, localTime } = status

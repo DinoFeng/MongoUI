@@ -14,7 +14,6 @@
   "bugs": {
     "url": "https://github.com/DinoFeng/MongoUI/issues"
   },
-  "license": "GPL",
   "keywords": [
     "mongo",
     "mongodb",
@@ -44,23 +43,24 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.6.0",
-    "axios": "^0.19.0",
+    "@quasar/extras": "^1.6.1",
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "lodash": "^4.17.15",
-    "luxon": "^1.21.3",
-    "mongodb": "^3.5.2",
-    "quasar": "^1.9.10",
-    "vue-i18n": "^8.0.0"
+    "luxon": "^1.23.0",
+    "mongodb": "^3.5.5",
+    "quasar": "^1.9.13",
+    "vue-i18n": "^8.16.0"
   },
   "devDependencies": {
-    "@quasar/app": "^1.0.0",
-    "@vue/eslint-config-prettier": "^4.0.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.10.0",
-    "eslint-loader": "^2.1.1",
-    "eslint-plugin-vue": "^5.0.0",
+    "@quasar/app": "^1.6.1",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-loader": "^4.0.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-vue": "^6.2.2",
     "pug": "^2.0.4",
     "pug-plain-loader": "^1.0.0"
   },
