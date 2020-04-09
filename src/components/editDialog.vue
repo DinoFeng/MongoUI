@@ -19,9 +19,18 @@
           q-input(
             v-model='editing'
             :rules="[ val => val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`]"
-            :rows='20'
+            :rows='16'
             :label='`${$t("record")} *`'
             type='textarea'
+            debounce='500'
+            filled
+            lazy-rules
+            )
+          q-input(
+            v-model='options'
+            :rules="[ val => val?(val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`):true]"
+            type='textarea'
+            label='options'
             debounce='500'
             filled
             lazy-rules
@@ -64,6 +73,7 @@ export default {
   data() {
     return {
       editing: '',
+      options: '',
     }
   },
   computed: {
@@ -82,7 +92,7 @@ export default {
     },
     onSubmit() {
       this.$emit('input', false)
-      this.$emit('submit', this.editKey, JSON.parse(this.editing), this.editTable)
+      this.$emit('submit', this.editKey, JSON.parse(this.editing), this.editTable, JSON.parse(this.options))
     },
     onReset() {
       this.$emit('input', false)

@@ -510,10 +510,10 @@ export default {
       this.editing = {}
       this.editingTable = table
     },
-    editSave(_id, data, table) {
+    editSave(_id, data, table, options) {
       const { server, db } = _.get(this.$route, ['params'])
       console.debug('editSave', { _id, data, server, db, table })
-      this.insertData({ serverName: server, database: db, table, data }).then(() => {
+      this.insertData({ serverName: server, database: db, table, data, options }).then(() => {
         this.$q.notify({
           type: 'positive',
           message: this.$t('document_insert_success'),
