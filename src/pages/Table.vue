@@ -237,10 +237,10 @@ export default {
         // this.showAlert(alertOption).onDismiss(() => this.refreshPage()
       })
     },
-    editSave(_id, data) {
+    editSave(_id, data, tb, options) {
       const { server, db, table } = _.get(this.$route, ['params'])
       console.debug('editSave', { server, db, table, _id, data })
-      this.updateData({ serverName: server, database: db, table, id: _id, data }).then(() => {
+      this.updateData({ serverName: server, database: db, table, id: _id, data, options }).then(() => {
         this.$q.notify({
           type: 'positive',
           message: _.template(this.$t('document_update_success'))({ id: _id }),

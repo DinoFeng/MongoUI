@@ -18,6 +18,23 @@ const genQuery = (orgQuery, fieldOptions) => {
   }
 }
 
+const dataTransType = (orgData, options) => {
+  console.debug(JSON.stringify(options))
+  const objectIdFields = _.get(options, ['objectIdFields'])
+  const dateFields = _.get(options, ['dateFields'])
+  const result = _.cloneDeep(orgData)
+  if (objectIdFields && _.isArray(objectIdFields)) {
+    console.debug(JSON.stringify(objectIdFields))
+    objectIdFields.forEach(field => _.set(result, field, ObjectID(_.get(orgData, field))))
+  }
+  if (dateFields && _.isArray(dateFields)) {
+    console.debug(JSON.stringify(dateFields))
+    dateFields.forEach(field => _.set(result, field, new Date(_.get(orgData, field))))
+  }
+  console.debug(JSON.stringify(result))
+  return result
+}
+
 const common = {
   async getAllFieldsAndTypes(client, db, collection) {
     const table = client.db(db).collection(collection)
@@ -118,27 +135,27 @@ const common = {
     return objID.toHexString().toString()
   },
 
-  async updateData(client, db, collection, _id, data) {
+  async updateData(client, db, collection, _id, data, options) {
     const table = client.db(db).collection(collection)
     delete data['_id']
     if (ObjectID.isValid(_id)) {
-      return await table.update({ _id: ObjectID(_id) }, data)
+      return await table.update({ _id: ObjectID(_id) }, dataTransType(data, options))
     } else {
-      return await table.update({ _id }, data)
+      return await table.update({ _id }, dataTransType(data, options))
     }
   },
 
-  async customerUpdateData(client, db, collection, _id, data) {
-    const table = client.db(db).collection(collection)
-    return await table.updateOne({ _id: ObjectID(_id) }, data)
-  },
+  // async customerUpdateData(client, db, collection, _id, data) {
+  //   const table = client.db(db).collection(collection)
+  //   return await table.updateOne({ _id: ObjectID(_id) }, data)
+  // },
 
-  async insertData(client, db, collection, data) {
+  async insertData(client, db, collection, data, options) {
     const table = client.db(db).collection(collection)
     if (_.isArray(data)) {
-      return await Promise.all(data.map(item => table.insertOne(item)))
+      return await Promise.all(data.map(item => table.insertOne(dataTransType(item, options))))
     } else {
-      return await table.insertOne(data)
+      return await table.insertOne(dataTransType(data, options))
     }
   },
 

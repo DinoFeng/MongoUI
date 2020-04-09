@@ -126,9 +126,9 @@ const actions = {
   async updateData({ dispatch, commit }, params) {
     try {
       commit('setLoading', 1)
-      const { serverName, database, table, id, data } = params
+      const { serverName, database, table, id, data, options } = params
       let context = {}
-      const result = await gobalAction.updateTableData({ serverName, database, table }, { id, data }, context)
+      const result = await gobalAction.updateTableData({ serverName, database, table }, { id, data, options }, context)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -140,9 +140,9 @@ const actions = {
   async insertData({ dispatch, commit }, params) {
     try {
       commit('setLoading', 1)
-      const { serverName, database, table, data } = params
+      const { serverName, database, table, data, options } = params
       let context = {}
-      const result = await gobalAction.insertTableData({ serverName, database, table }, data, context)
+      const result = await gobalAction.insertTableData({ serverName, database, table }, { data, options }, context)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
