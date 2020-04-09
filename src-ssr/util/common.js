@@ -5,6 +5,19 @@ const COLLECTION_EXISTS = 'Collection with same name already exists.'
 const SOURCE_NOT_EXISTS = `Source collection is't exists.`
 const DATABASE_EXISTS = `<%=db%>.temp already exists.`
 
+const genQuery = (orgQuery, fieldOptions) => {
+  const objectIdFields = _.get(fieldOptions, ['objectIdFields'])
+  if (objectIdFields && _.isArray(objectIdFields)) {
+    // console.debug(objectIdFields)
+    const q = objectIdFields.reduce((pre, cur) => _.merge(pre, { [cur]: ObjectID(orgQuery[cur]) }), {})
+    // console.debug(JSON.stringify(q))
+    // console.debug(_.merge({}, orgQuery, q))
+    return _.merge({}, orgQuery, q)
+  } else {
+    return orgQuery
+  }
+}
+
 const common = {
   async getAllFieldsAndTypes(client, db, collection) {
     const table = client.db(db).collection(collection)
@@ -219,7 +232,7 @@ const common = {
     return await database.command({ getLog: 'global' })
   },
 
-  async findData(client, db, collection, query, pageOptoins, options) {
+  async findData(client, db, collection, query, pageOptoins, options, fieldOptions) {
     // console.debug({ db, collection, query, options })
     const limit = (pageOptoins && pageOptoins.pageSize) || 20
     const page = (pageOptoins && pageOptoins.page) || 1
@@ -228,7 +241,9 @@ const common = {
     const table = client.db(db).collection(collection)
     // const rows = await table.find(query, opt).toArray()
     // const total = await table.find(query).count()
-    const [rows, total] = await Promise.all([table.find(query, opt).toArray(), table.find(query).count()])
+    const q = genQuery(query, fieldOptions)
+    // console.debug(JSON.stringify({ q }))
+    const [rows, total] = await Promise.all([table.find(q, opt).toArray(), table.find(q).count()])
     return { rows, total }
   },
 

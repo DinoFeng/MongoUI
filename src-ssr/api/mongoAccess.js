@@ -176,11 +176,13 @@ router.post(
   '/:server/:db/:table/:page/find',
   wrapAsync(async req => {
     const { body, params } = req
-    const { findQuery, pageSize, options } = body
+    const { findQuery, pageSize, options: opt } = body
+    const { _fieldOptions } = opt || {}
+    const options = _.omit(opt, ['_fieldOptions'])
     const { db, table, page, server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.findData(client, db, table, findQuery || {}, { page, pageSize }, options)
+      return await common.findData(client, db, table, findQuery || {}, { page, pageSize }, options, _fieldOptions)
     } else {
       throw new Error(`Mongo connection is null`)
     }
