@@ -20,10 +20,12 @@ NodeJS
 首先安装依赖库
     
 ```yarn install```
+    
 
 - 开发环境
     
 ```yarn dev```
+    
 
 - 部署
 ```
