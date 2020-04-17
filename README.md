@@ -5,6 +5,7 @@
     
 ![image](./Solution.png)
 1.  因防火墙，mongo client端管理工具无法直连mongoDB 服务器
+    
 ![image](./Solution2.png)
 2. 某些Web版mongo管理工具，连接mongoDB字符串保存在服务器上，令所有连该服务器的用户都可以看到。
 
