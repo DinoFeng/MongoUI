@@ -1,4 +1,5 @@
 const { ObjectID } = require('mongodb')
+const parseSchema = require('mongodb-schema')
 const _ = require('lodash')
 
 const COLLECTION_EXISTS = 'Collection with same name already exists.'
@@ -36,6 +37,48 @@ const dataTransType = (orgData, options) => {
 }
 
 const common = {
+  async parseDataSchema(data) {
+    return new Promise((resolve, reject) => {
+      parseSchema(data, (error, schema) => {
+        if (error) reject(error)
+        // console.debug({ s: schema })
+        return resolve(schema)
+      })
+    })
+  },
+
+  compressSchemaType(typeObject, typeNames) {
+    const { bsonType, type, fields, values, count, types } = typeObject
+    const result = { bsonType, type }
+    if (_.isArray(types)) {
+      _.merge(result, { types: types.map(t => this.compressSchemaType(t, type)) })
+    }
+    if (fields) {
+      _.merge(result, this.compressSchema({ fields }))
+    }
+    if (_.isArray(typeNames) && _.isArray(values)) {
+      if (typeNames.filter(v => v.toLowerCase() !== 'Undefined'.toLowerCase()).length > 1) {
+        _.merge(result, { values: Array.from(new Set(values)) })
+      }
+    }
+    return result
+  },
+
+  compressSchema(schema) {
+    // console.debug({ schema })
+    const { fields } = schema
+    return {
+      fields: fields.map(({ name, path, types, type }) => {
+        return {
+          name,
+          path,
+          types: types.map(t => this.compressSchemaType(t, type)),
+          type,
+        }
+      }),
+    }
+  },
+
   async getAllFieldsAndTypes(client, db, collection) {
     const table = client.db(db).collection(collection)
     const result = await table
@@ -260,8 +303,10 @@ const common = {
     // const total = await table.find(query).count()
     const q = genQuery(query, fieldOptions)
     // console.debug(JSON.stringify({ q }))
-    const [rows, total] = await Promise.all([table.find(q, opt).toArray(), table.find(q).count()])
-    return { rows, total }
+    const datas = table.find(q, opt)
+    const schema = await this.parseDataSchema(datas).then(s => this.compressSchema(s))
+    const [rows, total] = await Promise.all([datas.toArray(), table.find(q).count()])
+    return { rows, total, schema }
   },
 
   async aggregate(client, db, collection, aggregate, pageOptoins, options) {
@@ -284,8 +329,10 @@ const common = {
     totalPipeLine.push({ $count: 'total' })
     const table = client.db(db).collection(collection)
     // console.debug({ pipeline, totalPipeLine })
+    const datas = table.aggregate(pipeline, opt)
+    const schema = await this.parseDataSchema(datas).then(s => this.compressSchema(s))
     const [rows, [{ total }]] = await Promise.all([
-      table.aggregate(pipeline, opt).toArray(),
+      datas.toArray(),
       table
         .aggregate(totalPipeLine, { cursor: { batchSize: 1 } })
         .toArray()
@@ -293,7 +340,7 @@ const common = {
     ])
     // const rows = await table.aggregate(pipeline, opt).toArray()
     // const [{ total }] = await table.aggregate(totalPipeLine, { cursor: { batchSize: 1 } }).toArray()
-    return { rows, total }
+    return { rows, total, schema }
   },
 }
 
