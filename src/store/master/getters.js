@@ -26,6 +26,9 @@ const getters = {
   selectedDatabaseInfo(state) {
     return [state.selectedDatabase]
   },
+  tableSchema(state) {
+    return _.get(state, ['tableResult', 'schema']) || []
+  },
   tableRows(state) {
     return _.get(state, ['tableResult', 'rows']) || []
   },

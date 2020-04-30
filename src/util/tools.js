@@ -37,7 +37,7 @@ const tools = {
   getType(v) {
     return (
       (_.isArray(v) && 'Array') ||
-      (_.isPlainObject(v) && 'Object') ||
+      (_.isPlainObject(v) && 'Document') ||
       (_.isDate(v) && 'Date') ||
       (_.isInteger(v) && 'Integer') ||
       (_.isNumber(v) && 'Number') ||
@@ -46,15 +46,98 @@ const tools = {
       (_.isNull(v) && 'Null')
     )
   },
-  getDataDesc(data) {
-    if (_.isArray(data)) {
-      return `[ ${data.length} elements ]`
-    } else if (_.isPlainObject(data)) {
-      return `{ ${Object.keys(data).length} fields }`
+  getTypeFromArraySchema(schema, value) {
+    if (!_.isNil(schema) && !_.isEmpty(schema)) {
+      const types = schema.filter(v => v.bsonType)
+      if (types) {
+        if (types.length === 1) {
+          return this.convertSchema(types[0])
+        } else {
+          return this.parseMultiTypes(types, value)
+        }
+      }
     } else {
-      return data
+      return this.genVirtulSchema(value)
     }
   },
+  genVirtulSchema(value) {
+    const typeDesc = this.getType(value)
+    return {
+      typeDesc,
+      childSchema: null,
+      isExt: ['Document', 'Array'].includes(typeDesc),
+      displayValue: v => {
+        if (_.isArray(v)) {
+          return `[ ${v.length} elements ]`
+        } else if (_.isPlainObject(v)) {
+          return `{ ${Object.keys(v).length} fields }`
+        } else {
+          return v
+        }
+      },
+    }
+  },
+  convertSchema(schema) {
+    const { bsonType, fields, types } = schema || {}
+    return {
+      typeDesc: bsonType,
+      childSchema: fields ? { fields } : types ? types : {},
+      isExt: ['Document', 'Array'].includes(bsonType),
+      displayValue: v => {
+        if (_.isArray(v)) {
+          return `[ ${v.length} elements ]`
+        } else if (_.isPlainObject(v)) {
+          return `{ ${Object.keys(v).length} fields }`
+        } else {
+          return v && bsonType === 'ObjectID' ? `ObjectId("${v}")` : v
+          // return
+        }
+      },
+    }
+  },
+  parseMultiTypes(types, value) {
+    if (_.isPlainObject(value)) {
+      const t = types.find(v => v.bsonType === 'Document')
+      return this.convertSchema(t)
+    } else if (_.isArray(value)) {
+      const t = types.find(v => v.bsonType === 'Array')
+      return this.convertSchema(t)
+    } else if (_.isNull(value)) {
+      const t = types.find(v => v.bsonType === 'Null')
+      return this.convertSchema(t)
+    } else {
+      const tl = types.filter(v => v && v.values && _.isArray(v.values) && v.values.includes(value))
+      if (tl.length === 1) {
+        return this.convertSchema(tl[0])
+      } else {
+        console.warn('!!!!!Doc!!!!!', tl, { types, value, isNull: _.isNull(value) })
+        return { typeDesc: tl.map(({ bsonType }) => bsonType).join('/'), childSchema: {} }
+      }
+    }
+  },
+  getTypeFromDocSchema(schema, field, value) {
+    if (!_.isNil(schema) && !_.isEmpty(schema)) {
+      const types = _.get(schema, ['fields', field, 'types']).filter(v => v.bsonType)
+      if (types) {
+        if (types.length === 1) {
+          return this.convertSchema(types[0])
+        } else {
+          return this.parseMultiTypes(types, value)
+        }
+      }
+    } else {
+      return this.genVirtulSchema(value)
+    }
+  },
+  // getDataDesc(data) {
+  //   if (_.isArray(data)) {
+  //     return `[ ${data.length} elements ]`
+  //   } else if (_.isPlainObject(data)) {
+  //     return `{ ${Object.keys(data).length} fields }`
+  //   } else {
+  //     return data
+  //   }
+  // },
   getPaddingValue(ele) {
     const { style } = dom
     const top = _.toNumber(_.trimEnd(style(ele, 'padding-top'), 'px'))

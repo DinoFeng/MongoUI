@@ -12,15 +12,16 @@
       q-list(bordered separator)
         q-expansion-item(
           v-for='(row,index) in dataRows'
-          v-model='expandeds[row._id]'
+          v-model='expandeds[rowKey(row)]'
           :key='rowKey(row)'
           :content-inset-level='0.3'
           switch-toggle-side
           )
           template(v-slot:header)
-            q-item-section ({{index+1}}) ObjectId("{{row._id}}") 
+            q-item-section ({{index+1}}) {{row._id?rowKey(row):""}}
             q-item-section {{getDesc(row)}}
-            q-item-section {{getType(row)}}
+            q-item-section Document 
+            //- q-item-section {{getType(row)}}
             q-menu(
               touch-position
               context-menu
@@ -48,8 +49,9 @@
                   )
                   q-item-section {{$t('menu.refresh')}}
           display-list(
-            v-if='expandeds[row._id]'
+            v-if='expandeds[rowKey(row)]'
             :data='row'
+            :schema='schema'
             )
 </template>
 
@@ -63,6 +65,7 @@ export default {
   props: {
     contentHeight: Number,
     dataRows: Array,
+    schema: [Object, Array],
   },
   data() {
     return {
@@ -79,7 +82,14 @@ export default {
   computed: {},
   methods: {
     rowKey(row) {
-      return JSON.stringify(row._id)
+      const key = _.get(row, '_id')
+      if (key) {
+        return _.isPlainObject(key) || _.isArray(key)
+          ? JSON.stringify(key)
+          : tools.getTypeFromDocSchema(this.schema, '_id', key).displayValue(key)
+      } else {
+        return JSON.stringify(row)
+      }
     },
     calcBodyHeight(contentHeight) {
       if (this.$refs.header) {
@@ -90,11 +100,11 @@ export default {
       }
     },
     getDesc(data) {
-      return tools.getDataDesc(data)
+      return tools.convertSchema(this.schema).displayValue(data)
     },
-    getType(data) {
-      return tools.getType(data)
-    },
+    // getType(data) {
+    //   return tools.getType(data)
+    // },
   },
   watch: {
     contentHeight: {

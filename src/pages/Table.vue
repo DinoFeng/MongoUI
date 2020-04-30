@@ -48,6 +48,7 @@
         list-view(
           v-if='displayMode==="list"'
           :dataRows='tableRows'
+          :schema='tableSchema'
           :contentHeight='contentHeight'
           @updateItemClick='updateItem'
           @removeItemClick='removeItem'
@@ -62,6 +63,7 @@
         table-view(
           v-if='displayMode==="table"'
           :dataRows='tableRows'
+          :schema='tableSchema'
           :contentHeight='contentHeight'
           @updateItemClick='updateItem'
           @removeItemClick='removeItem'
@@ -147,7 +149,7 @@ export default {
   },
   computed: {
     ...mapState('master', ['pageSize', 'currentPage', 'commandMode', 'find', 'aggregate']),
-    ...mapGetters('master', ['tableRows', 'pageMax', 'duration']),
+    ...mapGetters('master', ['tableRows', 'tableSchema', 'pageMax', 'duration']),
     navigation() {
       return _.get(this.$route, ['params'])
     },

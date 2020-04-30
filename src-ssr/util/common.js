@@ -49,18 +49,18 @@ const common = {
 
   compressSchemaType(typeObject, typeNames) {
     const { bsonType, type, fields, values, count, types } = typeObject
-    const result = { bsonType, type }
+    const result = { bsonType, type, values: Array.from(new Set(values)) }
     if (_.isArray(types)) {
       _.merge(result, { types: types.map(t => this.compressSchemaType(t, type)) })
     }
     if (fields) {
       _.merge(result, this.compressSchema({ fields }))
     }
-    if (_.isArray(typeNames) && _.isArray(values)) {
-      if (typeNames.filter(v => v.toLowerCase() !== 'Undefined'.toLowerCase()).length > 1) {
-        _.merge(result, { values: Array.from(new Set(values)) })
-      }
-    }
+    // if (_.isArray(typeNames) && _.isArray(values)) {
+    // if (typeNames.filter(v => v.toLowerCase() !== 'Undefined'.toLowerCase()).length > 1) {
+    // _.merge(result, { values: Array.from(new Set(values)) })
+    // }
+    // }
     return result
   },
 
@@ -68,14 +68,26 @@ const common = {
     // console.debug({ schema })
     const { fields } = schema
     return {
-      fields: fields.map(({ name, path, types, type }) => {
-        return {
-          name,
-          path,
-          types: types.map(t => this.compressSchemaType(t, type)),
-          type,
-        }
-      }),
+      fields: fields
+        // .map(({ name, path, types, type }) => {
+        //   return {
+        //     name,
+        //     path,
+        //     types: types.map(t => this.compressSchemaType(t, type)),
+        //     type,
+        //   }
+        // })
+        .reduce(
+          (pre, { name, path, types, type }) =>
+            _.merge({}, pre, {
+              [name]: {
+                path,
+                types: types.map(t => this.compressSchemaType(t, type)),
+                type,
+              },
+            }),
+          {},
+        ),
     }
   },
 
@@ -137,7 +149,10 @@ const common = {
 
   // client.db().stats()
   async getDBStats(client, dbName) {
-    return client.db(dbName).stats()
+    const datas = client.db(dbName).stats()
+    // const schema = await this.parseDataSchema(datas)
+    // console.debug({ schema })
+    return datas
   },
 
   async getDBCollectionsStats(client) {
@@ -302,8 +317,11 @@ const common = {
     // const rows = await table.find(query, opt).toArray()
     // const total = await table.find(query).count()
     const q = genQuery(query, fieldOptions)
+    console.debug({ q, opt })
     // console.debug(JSON.stringify({ q }))
     const datas = table.find(q, opt)
+    // .skip(skip)
+    // .limit(limit)
     const schema = await this.parseDataSchema(datas).then(s => this.compressSchema(s))
     const [rows, total] = await Promise.all([datas.toArray(), table.find(q).count()])
     return { rows, total, schema }

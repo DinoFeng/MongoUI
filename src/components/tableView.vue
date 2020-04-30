@@ -54,6 +54,7 @@ export default {
   props: {
     contentHeight: Number,
     dataRows: Array,
+    schema: [Object, Array],
   },
   data() {
     return {
@@ -72,11 +73,15 @@ export default {
         label: name, //_.startCase(name),
         align: 'left',
         field: row => {
-          const type = tools.getType(row[name])
-          if (['Object', 'Array'].includes(type)) {
-            return type
+          if (!_.isUndefined(row[name])) {
+            const type = tools.getTypeFromDocSchema(this.schema, name, row[name])
+            // if (['Document', 'Array'].includes(type.typeDesc)) {
+            //   return type.typeDesc
+            // } else {
+            return type.displayValue(row[name]) // row[name]
+            // }
           } else {
-            return row[name]
+            row[name]
           }
         },
       }))
