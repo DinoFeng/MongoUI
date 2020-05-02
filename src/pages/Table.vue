@@ -48,7 +48,6 @@
         list-view(
           v-if='displayMode==="list"'
           :dataRows='tableRows'
-          :schema='tableSchema'
           :contentHeight='contentHeight'
           @updateItemClick='updateItem'
           @removeItemClick='removeItem'
@@ -63,7 +62,6 @@
         table-view(
           v-if='displayMode==="table"'
           :dataRows='tableRows'
-          :schema='tableSchema'
           :contentHeight='contentHeight'
           @updateItemClick='updateItem'
           @removeItemClick='removeItem'
@@ -242,20 +240,20 @@ export default {
     editSave(_id, data, tb, options) {
       const { server, db, table } = _.get(this.$route, ['params'])
       console.debug('editSave', { server, db, table, _id, data })
-      this.updateData({ serverName: server, database: db, table, id: _id, data, options }).then(() => {
-        this.$q.notify({
-          type: 'positive',
-          message: _.template(this.$t('document_update_success'))({ id: _id }),
-        })
-        this.refreshPage()
-        // const alertOption = {
-        //   title: 'Correct',
-        //   type: 'positive',
-        //   autoClose: 1.5,
-        //   message: `Record (${_id}) delete success!`,
-        // }
-        // this.showAlert(alertOption).onDismiss(() => this.refreshPage()
-      })
+      // this.updateData({ serverName: server, database: db, table, id: _id, data, options }).then(() => {
+      //   this.$q.notify({
+      //     type: 'positive',
+      //     message: _.template(this.$t('document_update_success'))({ id: _id }),
+      //   })
+      //   this.refreshPage()
+      //   // const alertOption = {
+      //   //   title: 'Correct',
+      //   //   type: 'positive',
+      //   //   autoClose: 1.5,
+      //   //   message: `Record (${_id}) delete success!`,
+      //   // }
+      //   // this.showAlert(alertOption).onDismiss(() => this.refreshPage()
+      // })
     },
     onQuerySubmit() {
       // console.debug('onQuerySubmit')

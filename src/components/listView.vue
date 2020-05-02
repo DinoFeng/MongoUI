@@ -18,27 +18,26 @@
           switch-toggle-side
           )
           template(v-slot:header)
-            q-item-section ({{index+1}}) {{row._id?rowKey(row):""}}
-            q-item-section {{getDesc(row)}}
-            q-item-section Document 
-            //- q-item-section {{getType(row)}}
+            q-item-section ({{index+1}}) {{hasId(row)?row.value._id.display():""}}
+            q-item-section {{row.display()}}
+            q-item-section {{row.type}} 
             q-menu(
               touch-position
               context-menu
               )
               q-list(dense style="min-width: 100px")
                 q-item(
-                  v-if='!!row._id'
+                  v-if='hasId(row)'
                   clickable 
                   v-close-popup
-                  @click='$emit("updateItemClick",row._id,row)'
+                  @click='$emit("updateItemClick",getIdValue(row),row._v)'
                   )
                   q-item-section {{$t('menu.updateDocument')}}
                 q-item(
-                  v-if='!!row._id'
+                  v-if='hasId(row)'
                   clickable 
                   v-close-popup
-                  @click='$emit("removeItemClick",row._id)'
+                  @click='$emit("removeItemClick",getIdValue(row))'
                   )
                   q-item-section {{$t('menu.removeDocument')}}
                 q-separator  
@@ -50,8 +49,7 @@
                   q-item-section {{$t('menu.refresh')}}
           display-list(
             v-if='expandeds[rowKey(row)]'
-            :data='row'
-            :schema='schema'
+            :data='row.value'
             )
 </template>
 
@@ -65,7 +63,6 @@ export default {
   props: {
     contentHeight: Number,
     dataRows: Array,
-    schema: [Object, Array],
   },
   data() {
     return {
@@ -75,20 +72,25 @@ export default {
   },
   mounted() {
     this.bodyHeight = this.calcBodyHeight(this.contentHeight)
-    this.expandeds = this.dataRows.reduce((pre, cur) => {
-      return _.merge(pre, { [cur._id]: false })
-    }, {})
+    this.expandeds = {}
+    // this.dataRows.reduce((pre, cur) => {
+    //   return _.merge(pre, { [this.rowKey(cur)]: false })
+    // }, {})
   },
   computed: {},
   methods: {
+    getIdValue(row) {
+      return _.get(row, ['value', '_id', '_v'])
+    },
+    hasId(row) {
+      return _.has(row, ['value', '_id'])
+    },
     rowKey(row) {
-      const key = _.get(row, '_id')
+      const key = _.get(row, ['value', '_id'])
       if (key) {
-        return _.isPlainObject(key) || _.isArray(key)
-          ? JSON.stringify(key)
-          : tools.getTypeFromDocSchema(this.schema, '_id', key).displayValue(key)
+        return ['Object', 'Array'].includes(key.type) ? JSON.stringify(key._v) : key.display()
       } else {
-        return JSON.stringify(row)
+        return JSON.stringify(row._v)
       }
     },
     calcBodyHeight(contentHeight) {
@@ -99,9 +101,9 @@ export default {
         return contentHeight
       }
     },
-    getDesc(data) {
-      return tools.convertSchema(this.schema).displayValue(data)
-    },
+    // getDesc(data) {
+    //   return tools.convertSchema(this.schema).displayValue(data)
+    // },
     // getType(data) {
     //   return tools.getType(data)
     // },

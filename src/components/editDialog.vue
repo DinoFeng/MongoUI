@@ -16,7 +16,24 @@
           @submit='onSubmit'
           @reset='onReset'
           )
-          q-input(
+          span {{$t("record")}} *
+          ace-editor(
+            v-model='editing'
+            theme='tomorrow'
+            mode='javascript'
+            :maxLines='28'
+            :minLines='18'
+            )
+          //- span options
+          //- ace-editor(
+            v-model='options'
+            theme='kuroir'
+            mode='javascript'
+            :maxLines='10'
+            :minLines='10'
+            )
+          //- chrome clouds crimson_editor dawn
+          //- q-input(
             v-model='editing'
             :rules="[ val => val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`]"
             :rows='16'
@@ -26,7 +43,8 @@
             filled
             lazy-rules
             )
-          q-input(
+          //- q-label
+          //- q-input(
             v-model='options'
             :rules="[ val => val?(val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`):true]"
             type='textarea'
@@ -59,16 +77,20 @@
 // import _ from 'lodash'
 // import { mapMutations } from 'vuex'
 // import vue from 'vue'
+// const aceEditor = () => import('./ace-editor.vue')
+import aceEditor from './ace-editor'
+import eJson from 'mongodb-extjson'
 export default {
   name: 'queryDialog',
+  components: { aceEditor },
   props: {
     value: Boolean,
     editTable: String,
-    editKey: [String, Object],
+    editKey: [String, Object, Number],
     editData: Object,
   },
   mounted() {
-    this.editing = JSON.stringify(this.editData, null, 4)
+    this.editing = eJson.stringify(this.editData, null, 4, { relaxed: true }) // JSON.stringify(this.editData, null, 4)
   },
   data() {
     return {
@@ -92,7 +114,8 @@ export default {
     },
     onSubmit() {
       this.$emit('input', false)
-      this.$emit('submit', this.editKey, JSON.parse(this.editing), this.editTable, JSON.parse(this.options))
+      // this.$emit('submit', this.editKey, this.editing, this.editTable, JSON.parse(this.options))
+      this.$emit('submit', this.editKey, this.editing, this.editTable)
     },
     onReset() {
       this.$emit('input', false)

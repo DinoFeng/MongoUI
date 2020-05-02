@@ -3,6 +3,7 @@ import {
   // SessionStorage ,
 } from 'quasar'
 import _ from 'lodash'
+import eJson from 'mongodb-extjson'
 import { dom } from 'quasar'
 const tools = {
   saveServerConfigToLocal(config) {
@@ -34,6 +35,88 @@ const tools = {
   // setCurrentServer(data) {
   //   LocalStorage.set('currentServer', JSON.stringify(data))
   // },
+  getBsonTypeName(v) {
+    return (
+      (_.isString(v) && 'String') ||
+      (_.isDate(v) && 'Date') ||
+      (v instanceof eJson.BSON.ObjectId && 'ObjectId') ||
+      (v instanceof eJson.BSON.Int32 && 'Int32') ||
+      (_.isNull(v) && 'Null') ||
+      (_.isBoolean(v) && 'Boolean') ||
+      (_.isArray(v) && 'Array') ||
+      (_.isPlainObject(v) && 'Object') ||
+      (v instanceof eJson.BSON.Long && 'Long') ||
+      (v instanceof eJson.BSON.Double && 'Double') ||
+      (v instanceof eJson.BSON.Decimal128 && 'Decimal128') ||
+      (v instanceof eJson.BSON.Timestamp && 'Timestamp') ||
+      (v instanceof eJson.BSON.Binary && 'Binary') ||
+      (v instanceof eJson.BSON.Code && 'Code') ||
+      (v instanceof eJson.BSON.DBRef && 'DBRef') ||
+      (v instanceof eJson.BSON.MaxKey && 'MaxKey') ||
+      (v instanceof eJson.BSON.MinKey && 'MinKey') ||
+      (v instanceof eJson.BSON.BSONRegExp && 'BSONRegExp') ||
+      (v instanceof eJson.BSON.Symbol && 'Symbol') ||
+      (console.warn(v, 'type is Other!!') && 'Other')
+    )
+  },
+  toDisplay: {
+    ObjectId: v => `ObjectId("${v}")`,
+    Array: v => `[${v.length} element${v.length > 1 ? 's' : ''}]`,
+    Object: v => `{${Object.keys(v).length} field${Object.keys(v).length > 1 ? 's' : ''}}`,
+  },
+  // toEditing: {
+  //   Date: v => `ISODate("${v}")`,
+  //   ObjectId: v => `ObjectId("${v}")`,
+  // },
+  parseBson(v) {
+    if (_.isArray(v)) {
+      const value = this.parseArrayBson(v)
+      return {
+        value,
+        type: 'Array',
+        isExt: true,
+        _v: v,
+        // getEditing: () => value.map(item => item.getEditing()),
+        display: () => this.toDisplay['Array'](v),
+      }
+    } else if (_.isPlainObject(v)) {
+      const value = this.parseDocBson(v)
+      return {
+        value,
+        type: 'Object',
+        isExt: true,
+        _v: v,
+        // getEditing: () =>
+        //   Object.keys(value).reduce((pre, cur) => {
+        //     return _.merge(pre, { [cur]: value[cur].getEditing() })
+        //   }, {}),
+        display: () => this.toDisplay['Object'](v),
+      }
+    } else {
+      return this.parseValueBson(v)
+    }
+  },
+  parseValueBson(value) {
+    const type = this.getBsonTypeName(value)
+    const display = () => JSON.parse(JSON.stringify(value))
+    return {
+      value,
+      type,
+      isExt: false,
+      _v: value,
+      // getEditing: () => (this.toEditing[type] ? this.toEditing[type](display) : display),
+      display: () => (this.toDisplay[type] ? this.toDisplay[type](display()) : display()),
+    }
+  },
+  parseDocBson(doc) {
+    return Object.keys(doc).reduce((pre, cur) => {
+      return _.merge(pre, { [cur]: this.parseBson(doc[cur]) })
+    }, {})
+  },
+  parseArrayBson(array) {
+    return array.map(v => this.parseBson(v))
+  },
+  //****************************************************** */
   getType(v) {
     return (
       (_.isArray(v) && 'Array') ||
@@ -68,9 +151,9 @@ const tools = {
       isExt: ['Document', 'Array'].includes(typeDesc),
       displayValue: v => {
         if (_.isArray(v)) {
-          return `[ ${v.length} elements ]`
+          return `[${v.length} elements ]`
         } else if (_.isPlainObject(v)) {
-          return `{ ${Object.keys(v).length} fields }`
+          return `{ ${Object.keys(v).length} fields } `
         } else {
           return v
         }
@@ -85,12 +168,11 @@ const tools = {
       isExt: ['Document', 'Array'].includes(bsonType),
       displayValue: v => {
         if (_.isArray(v)) {
-          return `[ ${v.length} elements ]`
+          return `[${v.length} elements ]`
         } else if (_.isPlainObject(v)) {
-          return `{ ${Object.keys(v).length} fields }`
+          return `{ ${Object.keys(v).length} fields } `
         } else {
           return v && bsonType === 'ObjectID' ? `ObjectId("${v}")` : v
-          // return
         }
       },
     }
@@ -131,13 +213,14 @@ const tools = {
   },
   // getDataDesc(data) {
   //   if (_.isArray(data)) {
-  //     return `[ ${data.length} elements ]`
+  //     return `[${ data.length } elements ]`
   //   } else if (_.isPlainObject(data)) {
-  //     return `{ ${Object.keys(data).length} fields }`
+  //     return `{ ${ Object.keys(data).length } fields } `
   //   } else {
   //     return data
   //   }
   // },
+  //*************************************************************** */
   getPaddingValue(ele) {
     const { style } = dom
     const top = _.toNumber(_.trimEnd(style(ele, 'padding-top'), 'px'))

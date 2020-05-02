@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import eJson from 'mongodb-extjson'
 import tools from '../../util/tools.js'
 
 const mutations = {
@@ -84,7 +85,12 @@ const mutations = {
     }
   },
   setTableResult(state, data) {
-    state.tableResult = _.cloneDeep(data)
+    const { rows: ejsonString, total, schema } = data
+    const eRows = eJson.parse(ejsonString, { relaxed: false })
+    const rows = eRows.map(row => tools.parseBson(row))
+    console.debug({ rows })
+    state.tableResult = { rows, total, eRows }
+    // state.tableResult = _.cloneDeep(data)
   },
   setPageSize(state, value) {
     state.pageSize = _.toNumber(value)

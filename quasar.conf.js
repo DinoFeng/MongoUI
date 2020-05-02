@@ -1,7 +1,8 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 module.exports = ctx => {
-  console.log(ctx)
+  // const webpack = require('webpack')
+  // console.log(ctx)
   return {
     preFetch: true,
     // app boot file (/src/boot)
@@ -75,6 +76,11 @@ module.exports = ctx => {
           test: /\.pug$/,
           loader: 'pug-plain-loader',
         })
+        // cfg.plugins.push(
+        //   new webpack.ProvidePlugin({
+        //     'ace-builds': 'ace-builds',
+        //   }),
+        // )
       },
     },
 
@@ -177,6 +183,11 @@ module.exports = ctx => {
         // do something with Electron main process Webpack cfg
         // chainWebpack also available besides this extendWebpack
         cfg.module.rules.push(null)
+        // cfg.plugins.push(
+        //   new webpack.ProvidePlugin({
+        //     'ace-builds': 'ace-builds',
+        //   }),
+        // )
       },
     },
   }

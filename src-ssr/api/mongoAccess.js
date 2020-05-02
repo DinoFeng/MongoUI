@@ -3,6 +3,7 @@ const router = express.Router()
 const common = require('../util/common')
 const wrapAsync = require('./api').wrapAsync
 const _ = require('lodash')
+const eJson = require('mongodb-extjson')
 
 router.post('/assign', async (req, res) => {
   res.status(200).json(common.genObjectId())
@@ -216,7 +217,13 @@ router.get(
     const { db, server, table } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getTableStats(client, db, table)
+      return await common
+        .getTableStats(client, db, table)
+        .then(row => [row])
+        .then(rows => ({
+          rows: eJson.stringify(rows, { relaxed: true }),
+          total: 1,
+        }))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -244,7 +251,13 @@ router.get(
     const { db, server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getDBStats(client, db)
+      return await common
+        .getDBStats(client, db)
+        .then(row => [row])
+        .then(rows => ({
+          rows: eJson.stringify(rows, { relaxed: true }),
+          total: 1,
+        }))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -258,7 +271,13 @@ router.get(
     const { server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getServerStatus(client)
+      return await common
+        .getServerStatus(client)
+        .then(row => [row])
+        .then(rows => ({
+          rows: eJson.stringify(rows, { relaxed: true }),
+          total: 1,
+        }))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -273,7 +292,13 @@ router.get(
     const { server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getHostInfo(client)
+      return await common
+        .getHostInfo(client)
+        .then(row => [row])
+        .then(rows => ({
+          rows: eJson.stringify(rows, { relaxed: true }),
+          total: 1,
+        }))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -288,7 +313,13 @@ router.get(
     const { server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getLogs(client)
+      return await common
+        .getLogs(client)
+        .then(row => [row])
+        .then(rows => ({
+          rows: eJson.stringify(rows, { relaxed: true }),
+          total: 1,
+        }))
     } else {
       throw new Error(`Mongo connection is null`)
     }

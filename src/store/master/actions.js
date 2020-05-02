@@ -157,7 +157,7 @@ const actions = {
       const { serverName, database, table } = params
       let context = {}
       const result = await gobalAction.getTabelStats({ serverName, database, table }, context)
-      commit(`setTableResult`, { rows: [result], total: 1 })
+      commit(`setTableResult`, result)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -238,7 +238,7 @@ const actions = {
       const { serverName, database } = params
       let context = {}
       const result = await gobalAction.getDatabaseStats({ serverName, database }, context)
-      commit(`setTableResult`, { rows: [result], total: 1 })
+      commit(`setTableResult`, result)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -253,7 +253,7 @@ const actions = {
       const { serverName } = params
       let context = {}
       const result = await gobalAction.getServerStatus({ serverName }, context)
-      commit(`setTableResult`, { rows: [result], total: 1 })
+      commit(`setTableResult`, result)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -268,7 +268,7 @@ const actions = {
       const { serverName } = params
       let context = {}
       const result = await gobalAction.getServerHostInfo({ serverName }, context)
-      commit(`setTableResult`, { rows: [result], total: 1 })
+      commit(`setTableResult`, result)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -283,7 +283,7 @@ const actions = {
       const { serverName } = params
       let context = {}
       const result = await gobalAction.getServerLogs({ serverName }, context)
-      commit(`setTableResult`, { rows: [result], total: 1 })
+      commit(`setTableResult`, result)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })

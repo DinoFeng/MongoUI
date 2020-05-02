@@ -6,8 +6,8 @@
       )
       q-item(v-if='!row.ext')
         q-item-section {{row.key}}
-        q-item-section {{row.type.displayValue(row.value)}}
-        q-item-section {{row.type.typeDesc}}
+        q-item-section {{row.value.display()}}
+        q-item-section {{row.value.type}}
       q-expansion-item(
         v-if='row.ext'
         v-model='expandeds[row.key]'
@@ -16,12 +16,11 @@
         )
         template(v-slot:header)
           q-item-section {{row.key}}
-          q-item-section {{row.type.displayValue(row.value)}}
-          q-item-section {{row.type.typeDesc}}
+          q-item-section {{row.value.display()}}
+          q-item-section {{row.value.type}}
         display-list(
           v-if='expandeds[row.key]'
-          :data='row.value'
-          :schema='row.type.childSchema'
+          :data='row.value.value'
           )
 </template>
 
@@ -32,7 +31,7 @@ export default {
   name: 'displayList',
   props: {
     data: [Object, Array],
-    schema: [Object, Array],
+    // schema: [Object, Array],
   },
   data() {
     return {
@@ -41,34 +40,40 @@ export default {
   },
   mounted() {
     // console.debug({ data: this.data, schema: this.schema, field: this.field })
-    this.expandeds = Object.keys(this.data).reduce((pre, cur) => {
-      return _.merge(pre, { [cur]: false })
-    }, {})
+    this.expandeds = {}
+    // Object.keys(this.data).reduce((pre, cur) => {
+    //   return _.merge(pre, { [cur]: false })
+    // }, {})
   },
   computed: {
     rows() {
       const data = this.data
-      const schema = this.schema
       if (_.isArray(data)) {
-        return data.map((value, index) => {
-          const type = tools.getTypeFromArraySchema(schema, value)
+        const r = data.map((value, index) => {
+          // const type = tools.getTypeFromArraySchema(schema, value)
+          // const value = _.get(v, ['value'])
           return {
             key: index,
             value,
-            type, // this.getType(schema, key, data[key]),
-            ext: type.isExt, // this.isExt(value),
+            ext: value && value.isExt, // this.isExt(value),
           }
         })
+        // console.debug(r)
+        return r
       } else {
-        return Object.keys(data).map(key => {
-          const type = tools.getTypeFromDocSchema(schema, key, data[key])
+        const r = Object.keys(data).map(key => {
+          // const type = tools.getTypeFromDocSchema(schema, key, data[key])
+          const value = _.get(data, [key])
           return {
             key,
-            value: data[key],
-            type,
-            ext: type.isExt, // this.isExt(data[key]),
+            value,
+            ext: value && value.isExt,
+            // type: value && value.type,
+            // ext: type.isExt, // this.isExt(data[key]),
           }
         })
+        // console.debug(r)
+        return r
       }
     },
   },

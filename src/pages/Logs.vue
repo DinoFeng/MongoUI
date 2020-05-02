@@ -8,7 +8,15 @@
         q-breadcrumbs-el(v-if='!!navigation.table' :label='navigation.table' icon='fas fa-table' :to='`/app/${navigation.server}/${navigation.db}/${navigation.table}`')
         q-breadcrumbs-el(label='Logs' icon='list_alt')
       .q-pa-md(ref='bodyContent')
-        q-input(
+        ace-editor(
+          :value='datas'
+          mode='text'
+          theme='kuroir'
+          readonly
+          :maxLines='maxRows'
+          :minLines='maxRows'
+          )
+        //- q-input(
           ref='content'
           :value='datas'
           :rows='maxRows'
@@ -36,10 +44,11 @@
 import _ from 'lodash'
 import { dom } from 'quasar'
 import tools from '../util/tools'
+import aceEditor from '../components/ace-editor'
 import { mapGetters } from 'vuex'
 export default {
   name: 'PageLogs',
-  components: {},
+  components: { aceEditor },
   data() {
     return {
       contentHeight: 100,
@@ -55,9 +64,10 @@ export default {
       return _.get(this.$route, ['params'])
     },
     datas() {
-      const logs = _.get(this.tableRows, [0, 'log'])
+      const logs = _.get(this.tableRows, [0, '_v', 'log'])
+      // console.debug(logs)
       if (logs) {
-        return logs.join('\r\n\r\n')
+        return logs.join('\r\n')
       } else {
         return ''
       }
@@ -65,16 +75,17 @@ export default {
   },
   methods: {
     getLineHeight() {
-      if (this.$refs.content) {
-        const { style } = dom
-        return _.toNumber(_.trimEnd(style(this.$refs.content.$el, 'line-height'), 'px'))
-      } else {
-        return 10
-      }
+      return 16
+      // if (this.$refs.content) {
+      //   const { style } = dom
+      //   return _.toNumber(_.trimEnd(style(this.$refs.content.$el, 'line-height'), 'px'))
+      // } else {
+      //   return 10
+      // }
     },
     calcMaxRows(contentHeight) {
       const x = this.getLineHeight()
-      return Math.ceil(contentHeight / x) + 6
+      return Math.ceil(contentHeight / x)
     },
     myTweak(offset) {
       return { height: offset ? `calc(100vh - ${offset}px)` : '100vh', overflow: 'auto' }

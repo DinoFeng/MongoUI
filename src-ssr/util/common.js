@@ -1,4 +1,5 @@
 const { ObjectID } = require('mongodb')
+const eJson = require('mongodb-extjson')
 const parseSchema = require('mongodb-schema')
 const _ = require('lodash')
 
@@ -322,9 +323,12 @@ const common = {
     const datas = table.find(q, opt)
     // .skip(skip)
     // .limit(limit)
-    const schema = await this.parseDataSchema(datas).then(s => this.compressSchema(s))
-    const [rows, total] = await Promise.all([datas.toArray(), table.find(q).count()])
-    return { rows, total, schema }
+    // const schema = await this.parseDataSchema(datas).then(s => this.compressSchema(s))
+    const [rows, total] = await Promise.all([
+      datas.toArray().then(r => eJson.stringify(r, { relaxed: true })),
+      table.find(q).count(),
+    ])
+    return { rows, total }
   },
 
   async aggregate(client, db, collection, aggregate, pageOptoins, options) {
@@ -348,9 +352,9 @@ const common = {
     const table = client.db(db).collection(collection)
     // console.debug({ pipeline, totalPipeLine })
     const datas = table.aggregate(pipeline, opt)
-    const schema = await this.parseDataSchema(datas).then(s => this.compressSchema(s))
+    // const schema = await this.parseDataSchema(datas).then(s => this.compressSchema(s))
     const [rows, [{ total }]] = await Promise.all([
-      datas.toArray(),
+      datas.toArray().then(r => eJson.stringify(r, { relaxed: true })),
       table
         .aggregate(totalPipeLine, { cursor: { batchSize: 1 } })
         .toArray()
@@ -358,7 +362,7 @@ const common = {
     ])
     // const rows = await table.aggregate(pipeline, opt).toArray()
     // const [{ total }] = await table.aggregate(totalPipeLine, { cursor: { batchSize: 1 } }).toArray()
-    return { rows, total, schema }
+    return { rows, total }
   },
 }
 
