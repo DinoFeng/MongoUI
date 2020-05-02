@@ -20,7 +20,7 @@
           ace-editor(
             v-model='editing'
             theme='tomorrow'
-            mode='javascript'
+            mode='json'
             :maxLines='28'
             :minLines='18'
             )
@@ -112,10 +112,20 @@ export default {
         return false
       }
     },
+    parseEditData(editData) {
+      try {
+        return eJson.parse(editData)
+      } catch {
+        return null
+      }
+    },
     onSubmit() {
-      this.$emit('input', false)
       // this.$emit('submit', this.editKey, this.editing, this.editTable, JSON.parse(this.options))
-      this.$emit('submit', this.editKey, this.editing, this.editTable)
+      const submitData = this.parseEditData(this.editing)
+      if (submitData) {
+        this.$emit('input', false)
+        this.$emit('submit', this.editKey, this.editing, this.editTable)
+      }
     },
     onReset() {
       this.$emit('input', false)

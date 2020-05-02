@@ -7,35 +7,35 @@ const COLLECTION_EXISTS = 'Collection with same name already exists.'
 const SOURCE_NOT_EXISTS = `Source collection is't exists.`
 const DATABASE_EXISTS = `<%=db%>.temp already exists.`
 
-const genQuery = (orgQuery, fieldOptions) => {
-  const objectIdFields = _.get(fieldOptions, ['objectIdFields'])
-  if (objectIdFields && _.isArray(objectIdFields)) {
-    // console.debug(objectIdFields)
-    const q = objectIdFields.reduce((pre, cur) => _.merge(pre, { [cur]: ObjectID(orgQuery[cur]) }), {})
-    // console.debug(JSON.stringify(q))
-    // console.debug(_.merge({}, orgQuery, q))
-    return _.merge({}, orgQuery, q)
-  } else {
-    return orgQuery
-  }
-}
+// const genQuery = (orgQuery, fieldOptions) => {
+//   const objectIdFields = _.get(fieldOptions, ['objectIdFields'])
+//   if (objectIdFields && _.isArray(objectIdFields)) {
+//     // console.debug(objectIdFields)
+//     const q = objectIdFields.reduce((pre, cur) => _.merge(pre, { [cur]: ObjectID(orgQuery[cur]) }), {})
+//     // console.debug(JSON.stringify(q))
+//     // console.debug(_.merge({}, orgQuery, q))
+//     return _.merge({}, orgQuery, q)
+//   } else {
+//     return orgQuery
+//   }
+// }
 
-const dataTransType = (orgData, options) => {
-  console.debug(JSON.stringify(options))
-  const objectIdFields = _.get(options, ['objectIdFields'])
-  const dateFields = _.get(options, ['dateFields'])
-  const result = _.cloneDeep(orgData)
-  if (objectIdFields && _.isArray(objectIdFields)) {
-    console.debug(JSON.stringify(objectIdFields))
-    objectIdFields.forEach(field => _.set(result, field, ObjectID(_.get(orgData, field))))
-  }
-  if (dateFields && _.isArray(dateFields)) {
-    console.debug(JSON.stringify(dateFields))
-    dateFields.forEach(field => _.set(result, field, new Date(_.get(orgData, field))))
-  }
-  console.debug(JSON.stringify(result))
-  return result
-}
+// const dataTransType = (orgData, options) => {
+//   console.debug(JSON.stringify(options))
+//   const objectIdFields = _.get(options, ['objectIdFields'])
+//   const dateFields = _.get(options, ['dateFields'])
+//   const result = _.cloneDeep(orgData)
+//   if (objectIdFields && _.isArray(objectIdFields)) {
+//     console.debug(JSON.stringify(objectIdFields))
+//     objectIdFields.forEach(field => _.set(result, field, ObjectID(_.get(orgData, field))))
+//   }
+//   if (dateFields && _.isArray(dateFields)) {
+//     console.debug(JSON.stringify(dateFields))
+//     dateFields.forEach(field => _.set(result, field, new Date(_.get(orgData, field))))
+//   }
+//   console.debug(JSON.stringify(result))
+//   return result
+// }
 
 const common = {
   async parseDataSchema(data) {
@@ -92,29 +92,29 @@ const common = {
     }
   },
 
-  async getAllFieldsAndTypes(client, db, collection) {
-    const table = client.db(db).collection(collection)
-    const result = await table
-      .mapReduce(
-        function map() {
-          for (var key in this) {
-            // eslint-disable-next-line no-undef
-            emit(key, null)
-          }
-        },
-        // eslint-disable-next-line no-unused-vars
-        function reduce(key, stuff) {
-          return null
-        },
-        {
-          limit: 20,
-          out: { inline: 1 },
-        },
-      )
-      .then(result => result.map(({ _id }) => _id))
-    // console.debug(result)
-    return result
-  },
+  // async getAllFieldsAndTypes(client, db, collection) {
+  //   const table = client.db(db).collection(collection)
+  //   const result = await table
+  //     .mapReduce(
+  //       function map() {
+  //         for (var key in this) {
+  //           // eslint-disable-next-line no-undef
+  //           emit(key, null)
+  //         }
+  //       },
+  //       // eslint-disable-next-line no-unused-vars
+  //       function reduce(key, stuff) {
+  //         return null
+  //       },
+  //       {
+  //         limit: 20,
+  //         out: { inline: 1 },
+  //       },
+  //     )
+  //     .then(result => result.map(({ _id }) => _id))
+  //   // console.debug(result)
+  //   return result
+  // },
 
   async getServerStatusAndCollections(client) {
     const status = await this.getServerStatus(client)
@@ -194,14 +194,15 @@ const common = {
     return objID.toHexString().toString()
   },
 
-  async updateData(client, db, collection, _id, data, options) {
+  async updateData(client, db, collection, _id, data) {
     const table = client.db(db).collection(collection)
     delete data['_id']
-    if (ObjectID.isValid(_id)) {
-      return await table.update({ _id: ObjectID(_id) }, dataTransType(data, options))
-    } else {
-      return await table.update({ _id }, dataTransType(data, options))
-    }
+    // if (ObjectID.isValid(_id)) {
+    //   return await table.update({ _id: ObjectID(_id) }, dataTransType(data, options))
+    // } else {
+    //   return await table.update({ _id }, dataTransType(data, options))
+    // }
+    return await table.update(_id, data)
   },
 
   // async customerUpdateData(client, db, collection, _id, data) {
@@ -209,25 +210,26 @@ const common = {
   //   return await table.updateOne({ _id: ObjectID(_id) }, data)
   // },
 
-  async insertData(client, db, collection, data, options) {
+  async insertData(client, db, collection, data) {
     const table = client.db(db).collection(collection)
-    if (_.isArray(data)) {
-      return await Promise.all(data.map(item => table.insertOne(dataTransType(item, options))))
-    } else {
-      return await table.insertOne(dataTransType(data, options))
-    }
+    // if (_.isArray(data)) {
+    //   return await Promise.all(data.map(item => table.insertOne(dataTransType(item, options))))
+    // } else {
+    //   return await table.insertOne(dataTransType(data, options))
+    // }
+    return await table.insertOne(data)
   },
 
   async deleteData(client, db, collection, _id) {
     const table = client.db(db).collection(collection)
-    if (_.toNumber(_id) === -1) {
-      return await table.deleteMany({})
+    if (_.isPlainObject(_id) && _.isEmpty(_id)) {
+      return await table.deleteMany(_id)
     } else {
-      if (ObjectID.isValid(_id)) {
-        return await table.deleteOne({ _id: ObjectID(_id) })
-      } else {
-        return await table.deleteOne({ _id })
-      }
+      // if (ObjectID.isValid(_id)) {
+      //   return await table.deleteOne({ _id: ObjectID(_id) })
+      // } else {
+      return await table.deleteOne(_id)
+      // }
     }
   },
 
@@ -317,16 +319,16 @@ const common = {
     const table = client.db(db).collection(collection)
     // const rows = await table.find(query, opt).toArray()
     // const total = await table.find(query).count()
-    const q = genQuery(query, fieldOptions)
-    console.debug({ q, opt })
+    // const q = genQuery(query, fieldOptions)
+    // console.debug({ q, opt })
     // console.debug(JSON.stringify({ q }))
-    const datas = table.find(q, opt)
+    const datas = table.find(query, opt)
     // .skip(skip)
     // .limit(limit)
     // const schema = await this.parseDataSchema(datas).then(s => this.compressSchema(s))
     const [rows, total] = await Promise.all([
       datas.toArray().then(r => eJson.stringify(r, { relaxed: true })),
-      table.find(q).count(),
+      table.find(query).count(),
     ])
     return { rows, total }
   },

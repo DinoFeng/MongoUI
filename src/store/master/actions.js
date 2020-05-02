@@ -1,5 +1,6 @@
 // import consola from 'consola'
 import _ from 'lodash'
+import eJson from 'mongodb-extjson'
 import gobalAction from '../../util/gobalAction'
 const actions = {
   // async getAssignId({ commit, state }) {
@@ -114,7 +115,11 @@ const actions = {
       commit('setLoading', 1)
       const { serverName, database, table, id } = params
       let context = {}
-      const result = await gobalAction.deleteTableData({ serverName, database, table }, { id }, context)
+      const result = await gobalAction.deleteTableData(
+        { serverName, database, table },
+        { id: !_.isNil(id) ? eJson.stringify({ _id: id }) : eJson.stringify({}) },
+        context,
+      )
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -126,9 +131,13 @@ const actions = {
   async updateData({ dispatch, commit }, params) {
     try {
       commit('setLoading', 1)
-      const { serverName, database, table, id, data, options } = params
+      const { serverName, database, table, id, data } = params
       let context = {}
-      const result = await gobalAction.updateTableData({ serverName, database, table }, { id, data, options }, context)
+      const result = await gobalAction.updateTableData(
+        { serverName, database, table },
+        { id: eJson.stringify({ _id: id }), data },
+        context,
+      )
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -140,9 +149,9 @@ const actions = {
   async insertData({ dispatch, commit }, params) {
     try {
       commit('setLoading', 1)
-      const { serverName, database, table, data, options } = params
+      const { serverName, database, table, data } = params
       let context = {}
-      const result = await gobalAction.insertTableData({ serverName, database, table }, { data, options }, context)
+      const result = await gobalAction.insertTableData({ serverName, database, table }, { data }, context)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
