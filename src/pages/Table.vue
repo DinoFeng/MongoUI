@@ -31,6 +31,14 @@
           @input='changePage'
           )
         q-separator(vertical inset)
+        q-btn(
+          flat
+          color='primary'
+          icon='las la-sync-alt'
+          size='sm'
+          @click='refreshPage'
+          )
+        q-separator(vertical inset)
         q-btn-toggle(
           v-model='displayMode'
           :options='displayModes'
@@ -237,10 +245,10 @@ export default {
         // this.showAlert(alertOption).onDismiss(() => this.refreshPage()
       })
     },
-    editSave(_id, data, tb, options) {
+    editSave(_id, data, tb) {
       const { server, db, table } = _.get(this.$route, ['params'])
       console.debug('editSave', { server, db, table, _id, data })
-      this.updateData({ serverName: server, database: db, table, id: _id, data, options }).then(() => {
+      this.updateData({ serverName: server, database: db, table, id: _id, data }).then(() => {
         this.$q.notify({
           type: 'positive',
           message: _.template(this.$t('document_update_success'))({ id: _id }),

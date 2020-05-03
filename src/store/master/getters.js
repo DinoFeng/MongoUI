@@ -41,7 +41,8 @@ const getters = {
     }
   },
   resultFields(state) {
-    const rows = _.get(state, ['tableResult', 'rows'])
+    const rows = _.get(state, ['tableResult', 'rows']).map(row => row._v)
+    // console.debug(rows)
     if (rows.length > 0) {
       const fields = new Set()
       for (let i = 0; i < rows.length; i++) {

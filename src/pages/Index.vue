@@ -496,7 +496,7 @@ export default {
         cancelLabel: this.$t('delete_all_doc.cancel'),
       }).onOk(() => {
         const { server } = _.get(this.$route, ['params'])
-        this.deleteData({ serverName: server, database: db, table, id: -1 }).then(() => {
+        this.deleteData({ serverName: server, database: db, table }).then(() => {
           this.$q.notify({
             type: 'positive',
             message: _.template(this.$t('delete_all_doc.success'))({ table }),
@@ -510,10 +510,10 @@ export default {
       this.editing = {}
       this.editingTable = table
     },
-    editSave(_id, data, table, options) {
+    editSave(_id, data, table) {
       const { server, db } = _.get(this.$route, ['params'])
       console.debug('editSave', { _id, data, server, db, table })
-      this.insertData({ serverName: server, database: db, table, data, options }).then(() => {
+      this.insertData({ serverName: server, database: db, table, data }).then(() => {
         this.$q.notify({
           type: 'positive',
           message: this.$t('document_insert_success'),

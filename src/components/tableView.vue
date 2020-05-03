@@ -1,6 +1,6 @@
 <template lang="pug">
   sticky-header-table(
-    :data='dataRows'
+    :data='rows'
     :columns='columns'
     :pagination='pagination'
     :tableHeight='contentHeight'
@@ -14,28 +14,31 @@
           v-for='col in props.cols'
           :key='col.name'
           :props="props"
-          ) {{ col.value }}
+          ) 
+          q-icon(:name='`img:statics/types/${props.row[col.name] && props.row[col.name].icon}.png`' style='font-size: 1.4em;')
+          span {{ col.value }}
         q-menu(
           touch-position
           context-menu
           )
           q-list(dense style="min-width: 100px")
             q-item(
-              v-if='!!props.row._id'
+              v-if='hasId(props.row)'
               clickable 
               v-close-popup
-              @click='$emit("updateItemClick",props.row._id,props.row)'
+              @click='$emit("updateItemClick",getIdValue(props.row),getOrgData(getIdValue(props.row)))'
               )
               q-item-section {{$t('menu.updateDocument')}}
             q-item(
-              v-if='!!props.row._id'
+              v-if='hasId(props.row)'
               clickable 
               v-close-popup
-              @click='$emit("removeItemClick",props.row._id)'
+              @click='$emit("removeItemClick",getIdValue(props.row))'
               )
               q-item-section {{$t('menu.removeDocument')}}
             q-separator  
             q-item(
+              v-if='!hideFreshMenu'
               clickable 
               v-close-popup
               @click='$emit("refreshItemClick")'
@@ -54,6 +57,7 @@ export default {
   props: {
     contentHeight: Number,
     dataRows: Array,
+    hideFreshMenu: Boolean,
   },
   data() {
     return {
@@ -62,24 +66,40 @@ export default {
   },
   computed: {
     ...mapGetters('master', ['pagination']),
+    rows() {
+      return this.dataRows.map(row => row.value)
+    },
     columns() {
-      // return this.resultColumns
-      const row = this.dataRows.reduce((pre, cur) => {
+      const mergeRow = this.rows.reduce((pre, cur) => {
         return _.merge(pre, cur)
-      }, {}) //  _.get(this.dataRows, [0]) || {}
-      return Object.keys(row).map(name => ({
+      }, {})
+      // console.debug(this.dataRows, row)
+      return Object.keys(mergeRow).map(name => ({
         name,
         label: name, //_.startCase(name),
         align: 'left',
         field: row => {
-          const type = tools.getType(row[name])
-          if (['Object', 'Array'].includes(type)) {
-            return type
+          if (!_.isUndefined(row[name])) {
+            return row[name].display()
           } else {
-            return row[name]
+            return undefined
           }
         },
       }))
+    },
+  },
+  methods: {
+    hasId(row) {
+      // console.debug({ row })
+      return _.has(row, ['_id'])
+    },
+    getIdValue(row) {
+      return _.get(row, ['_id', '_v'])
+    },
+    getOrgData(idValue) {
+      const data = this.dataRows.find(row => this.getIdValue(row.value) === idValue)
+      // console.debug(data)
+      return data && data._v
     },
   },
 }

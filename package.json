@@ -43,13 +43,16 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.6.1",
+    "@quasar/extras": "^1.7.0",
+    "ace-builds": "^1.4.11",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "luxon": "^1.23.0",
     "mongodb": "^3.5.5",
+    "mongodb-extjson": "^3.0.3",
+    "mongodb-schema": "^8.2.5",
     "quasar": "^1.9.13",
     "vue-i18n": "^8.16.0"
   },

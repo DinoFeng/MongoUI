@@ -3,6 +3,7 @@ const router = express.Router()
 const common = require('../util/common')
 const wrapAsync = require('./api').wrapAsync
 const _ = require('lodash')
+const eJson = require('mongodb-extjson')
 
 router.post('/assign', async (req, res) => {
   res.status(200).json(common.genObjectId())
@@ -29,11 +30,11 @@ router.post(
   wrapAsync(async req => {
     const { body, params } = req
     const { db, table, server } = params
-    const { data, options } = body
+    const { data } = body
     const client = await req.getMongoClient(server)
     if (client) {
       // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      return await common.insertData(client, db, table, data, options)
+      return await common.insertData(client, db, table, eJson.parse(data))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -46,11 +47,11 @@ router.patch(
   wrapAsync(async req => {
     const { body, params } = req
     const { db, table, server } = params
-    const { id, data, options } = body
+    const { id, data } = body
     const client = await req.getMongoClient(server)
     if (client) {
       // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      return await common.updateData(client, db, table, id, data, options)
+      return await common.updateData(client, db, table, eJson.parse(id), eJson.parse(data))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -66,7 +67,7 @@ router.delete(
     const { id } = body
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.deleteData(client, db, table, id)
+      return await common.deleteData(client, db, table, eJson.parse(id))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -177,13 +178,15 @@ router.post(
   '/:server/:db/:table/:page/find',
   wrapAsync(async req => {
     const { body, params } = req
-    const { findQuery, pageSize, options: opt } = body
-    const { _fieldOptions } = opt || {}
-    const options = _.omit(opt, ['_fieldOptions'])
+    const { findQuery: qString, pageSize, options: opt } = body
+    const findQuery = qString ? eJson.parse(qString) : {}
+    const options = opt && eJson.parse(opt)
+    // const { _fieldOptions } = opt || {}
+    // const options = _.omit(opt, ['_fieldOptions'])
     const { db, table, page, server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.findData(client, db, table, findQuery || {}, { page, pageSize }, options, _fieldOptions)
+      return await common.findData(client, db, table, findQuery, { page, pageSize }, options)
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -194,11 +197,14 @@ router.post(
   '/:server/:db/:table/:page/aggregate',
   wrapAsync(async req => {
     const { body, params } = req
-    const { aggregate, pageSize, options } = body
+    const { aggregate: qString, pageSize, options: opt } = body
     const { db, table, page, server } = params
-    if (!aggregate) {
+    if (!qString) {
       throw new Error(`Please post 'aggregate' params`)
     }
+    const aggregate = qString && eJson.parse(qString)
+    const options = opt && eJson.parse(opt)
+
     const client = await req.getMongoClient(server)
     if (client) {
       return await common.aggregate(client, db, table, aggregate, { page, pageSize }, options)
@@ -216,7 +222,13 @@ router.get(
     const { db, server, table } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getTableStats(client, db, table)
+      return await common
+        .getTableStats(client, db, table)
+        .then(row => [row])
+        .then(rows => ({
+          rows: eJson.stringify(rows, { relaxed: true }),
+          total: 1,
+        }))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -244,7 +256,13 @@ router.get(
     const { db, server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getDBStats(client, db)
+      return await common
+        .getDBStats(client, db)
+        .then(row => [row])
+        .then(rows => ({
+          rows: eJson.stringify(rows, { relaxed: true }),
+          total: 1,
+        }))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -258,7 +276,13 @@ router.get(
     const { server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getServerStatus(client)
+      return await common
+        .getServerStatus(client)
+        .then(row => [row])
+        .then(rows => ({
+          rows: eJson.stringify(rows, { relaxed: true }),
+          total: 1,
+        }))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -273,7 +297,13 @@ router.get(
     const { server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getHostInfo(client)
+      return await common
+        .getHostInfo(client)
+        .then(row => [row])
+        .then(rows => ({
+          rows: eJson.stringify(rows, { relaxed: true }),
+          total: 1,
+        }))
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -288,7 +318,13 @@ router.get(
     const { server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.getLogs(client)
+      return await common
+        .getLogs(client)
+        .then(row => [row])
+        .then(rows => ({
+          rows: eJson.stringify(rows, { relaxed: true }),
+          total: 1,
+        }))
     } else {
       throw new Error(`Mongo connection is null`)
     }

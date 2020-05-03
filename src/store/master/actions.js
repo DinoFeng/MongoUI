@@ -1,5 +1,6 @@
 // import consola from 'consola'
 import _ from 'lodash'
+import eJson from 'mongodb-extjson'
 import gobalAction from '../../util/gobalAction'
 const actions = {
   // async getAssignId({ commit, state }) {
@@ -57,12 +58,14 @@ const actions = {
         commit('setFindCommand', {})
         commit('setCommandMode', 'find')
       }
+      const command = _.get(state, ['find', 'command'])
+      const options = _.get(state, ['find', 'options'])
       let context = {}
       const result = await gobalAction.findTableData(
         { page, serverName, database, table },
         {
-          findQuery: _.get(state, ['find', 'command']),
-          options: _.get(state, ['find', 'options']),
+          findQuery: command ? eJson.stringify(command, { relaxed: true }) : '',
+          options: options ? eJson.stringify(options, { relaxed: true }) : '',
           pageSize: state.pageSize,
         },
         context,
@@ -88,12 +91,14 @@ const actions = {
         commit('setAggregateCommand', {})
         commit('setCommandMode', 'aggregate')
       }
+      const command = _.get(state, ['aggregate', 'command'])
+      const options = _.get(state, ['aggregate', 'options'])
       let context = {}
       const result = await gobalAction.aggregateTableData(
         { page, serverName, database, table },
         {
-          aggregate: _.get(state, ['aggregate', 'command']),
-          options: _.get(state, ['aggregate', 'options']),
+          aggregate: command ? eJson.stringify(command, { relaxed: true }) : '',
+          options: options ? eJson.stringify(options, { relaxed: true }) : '',
           pageSize: state.pageSize,
         },
         context,
@@ -114,7 +119,11 @@ const actions = {
       commit('setLoading', 1)
       const { serverName, database, table, id } = params
       let context = {}
-      const result = await gobalAction.deleteTableData({ serverName, database, table }, { id }, context)
+      const result = await gobalAction.deleteTableData(
+        { serverName, database, table },
+        { id: !_.isNil(id) ? eJson.stringify({ _id: id }) : eJson.stringify({}) },
+        context,
+      )
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -126,9 +135,13 @@ const actions = {
   async updateData({ dispatch, commit }, params) {
     try {
       commit('setLoading', 1)
-      const { serverName, database, table, id, data, options } = params
+      const { serverName, database, table, id, data } = params
       let context = {}
-      const result = await gobalAction.updateTableData({ serverName, database, table }, { id, data, options }, context)
+      const result = await gobalAction.updateTableData(
+        { serverName, database, table },
+        { id: eJson.stringify({ _id: id }), data },
+        context,
+      )
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -140,9 +153,9 @@ const actions = {
   async insertData({ dispatch, commit }, params) {
     try {
       commit('setLoading', 1)
-      const { serverName, database, table, data, options } = params
+      const { serverName, database, table, data } = params
       let context = {}
-      const result = await gobalAction.insertTableData({ serverName, database, table }, { data, options }, context)
+      const result = await gobalAction.insertTableData({ serverName, database, table }, { data }, context)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -157,7 +170,7 @@ const actions = {
       const { serverName, database, table } = params
       let context = {}
       const result = await gobalAction.getTabelStats({ serverName, database, table }, context)
-      commit(`setTableResult`, { rows: [result], total: 1 })
+      commit(`setTableResult`, result)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -238,7 +251,7 @@ const actions = {
       const { serverName, database } = params
       let context = {}
       const result = await gobalAction.getDatabaseStats({ serverName, database }, context)
-      commit(`setTableResult`, { rows: [result], total: 1 })
+      commit(`setTableResult`, result)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -253,7 +266,7 @@ const actions = {
       const { serverName } = params
       let context = {}
       const result = await gobalAction.getServerStatus({ serverName }, context)
-      commit(`setTableResult`, { rows: [result], total: 1 })
+      commit(`setTableResult`, result)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -268,7 +281,7 @@ const actions = {
       const { serverName } = params
       let context = {}
       const result = await gobalAction.getServerHostInfo({ serverName }, context)
-      commit(`setTableResult`, { rows: [result], total: 1 })
+      commit(`setTableResult`, result)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })
@@ -283,7 +296,7 @@ const actions = {
       const { serverName } = params
       let context = {}
       const result = await gobalAction.getServerLogs({ serverName }, context)
-      commit(`setTableResult`, { rows: [result], total: 1 })
+      commit(`setTableResult`, result)
       return result
     } catch (error) {
       dispatch('errorHandle/doPushError', { error }, { root: true })

@@ -4,23 +4,33 @@
       v-for='row in rows' 
       :key='row.key'
       )
-      q-item(v-if='!row.ext')
-        q-item-section {{row.key}}
-        q-item-section {{row.value}}
-        q-item-section {{row.type}}
+      q-item(
+        v-if='!row.ext'
+        dense
+        )
+        q-item-section
+          .row
+            q-icon(:name='`img:statics/types/${row.value.icon}.png`' style='font-size: 1.4em;')
+            | {{row.key}}
+        q-item-section {{row.value.display()}}
+        q-item-section {{row.value.type}}
       q-expansion-item(
         v-if='row.ext'
         v-model='expandeds[row.key]'
         :content-inset-level='0.3'
         switch-toggle-side
+        dense
         )
         template(v-slot:header)
-          q-item-section {{row.key}}
-          q-item-section {{getDesc(row.value)}}
-          q-item-section {{row.type}}
+          q-item-section
+            .row
+              q-icon(:name='`img:statics/types/${row.value.icon}.png`' style='font-size: 1.4em;')
+              | {{row.key}}
+          q-item-section {{row.value.display()}}
+          q-item-section {{row.value.type}}
         display-list(
           v-if='expandeds[row.key]'
-          :data='row.value'
+          :data='row.value.value'
           )
 </template>
 
@@ -31,6 +41,7 @@ export default {
   name: 'displayList',
   props: {
     data: [Object, Array],
+    // schema: [Object, Array],
   },
   data() {
     return {
@@ -38,41 +49,36 @@ export default {
     }
   },
   mounted() {
-    this.expandeds = Object.keys(this.data).reduce((pre, cur) => {
-      return _.merge(pre, { [cur]: false })
-    }, {})
+    this.expandeds = {}
+    // Object.keys(this.data).reduce((pre, cur) => {
+    //   return _.merge(pre, { [cur]: false })
+    // }, {})
   },
   computed: {
     rows() {
       const data = this.data
       if (_.isArray(data)) {
-        return data.map((value, index) => ({
-          key: index,
-          value,
-          type: this.getType(value),
-          ext: this.isExt(value),
-        }))
+        const r = data.map((value, index) => {
+          return {
+            key: index,
+            value,
+            ext: value && value.isExt,
+          }
+        })
+        return r
       } else {
-        return Object.keys(data).map(key => ({
-          key,
-          value: data[key],
-          type: this.getType(data[key]),
-          ext: this.isExt(data[key]),
-        }))
+        const r = Object.keys(data).map(key => {
+          const value = _.get(data, [key])
+          return {
+            key,
+            value,
+            ext: value && value.isExt,
+          }
+        })
+        return r
       }
     },
   },
-  methods: {
-    getDesc(data) {
-      return tools.getDataDesc(data)
-    },
-    getType(v) {
-      return tools.getType(v)
-    },
-    isExt(v) {
-      const type = tools.getType(v)
-      return ['Object', 'Array'].includes(type)
-    },
-  },
+  methods: {},
 }
 </script>

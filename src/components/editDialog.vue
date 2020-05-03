@@ -2,6 +2,7 @@
   q-dialog(
     v-if='value'
     v-model='value'
+    transition-show='none'
     persistent
     )
     q-card(style='min-width:80vw')
@@ -16,31 +17,19 @@
           @submit='onSubmit'
           @reset='onReset'
           )
-          q-input(
+          span {{$t("record")}} *
+          ace-editor(
             v-model='editing'
-            :rules="[ val => val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`]"
-            :rows='16'
-            :label='`${$t("record")} *`'
-            type='textarea'
-            debounce='500'
-            filled
-            lazy-rules
-            )
-          q-input(
-            v-model='options'
-            :rules="[ val => val?(val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`):true]"
-            type='textarea'
-            label='options'
-            debounce='500'
-            filled
-            lazy-rules
+            :maxLines='28'
+            :minLines='18'
+            mode='json'
+            theme='tomorrow'
             )
           hr(style='filter: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15);')
           q-toolbar
-            //- q-btn.q-ml-sm(
-            //-   :label='$t("validate")'
-            //-   color='primary'
-            //-   )
+            .col.remined.text-negative
+              .row ObjectId("")=>{"$oid":""}
+              .row Date("")=>{"$date":""}
             q-space
             q-btn.q-ml-sm(
               :label='$t("save")'
@@ -56,19 +45,20 @@
 </template>
 
 <script>
-// import _ from 'lodash'
-// import { mapMutations } from 'vuex'
-// import vue from 'vue'
+// const aceEditor = () => import('./ace-editor.vue')
+import aceEditor from './ace-editor'
+import eJson from 'mongodb-extjson'
 export default {
-  name: 'queryDialog',
+  name: 'editDialog',
+  components: { aceEditor },
   props: {
     value: Boolean,
     editTable: String,
-    editKey: [String, Object],
+    editKey: [String, Object, Number],
     editData: Object,
   },
   mounted() {
-    this.editing = JSON.stringify(this.editData, null, 4)
+    this.editing = eJson.stringify(this.editData, null, 4, { relaxed: true }) // JSON.stringify(this.editData, null, 4)
   },
   data() {
     return {
@@ -90,9 +80,20 @@ export default {
         return false
       }
     },
+    parseEditData(editData) {
+      try {
+        return eJson.parse(editData)
+      } catch {
+        return null
+      }
+    },
     onSubmit() {
-      this.$emit('input', false)
-      this.$emit('submit', this.editKey, JSON.parse(this.editing), this.editTable, JSON.parse(this.options))
+      // this.$emit('submit', this.editKey, this.editing, this.editTable, JSON.parse(this.options))
+      const submitData = this.parseEditData(this.editing)
+      if (submitData) {
+        this.$emit('input', false)
+        this.$emit('submit', this.editKey, this.editing, this.editTable)
+      }
     },
     onReset() {
       this.$emit('input', false)
@@ -110,3 +111,8 @@ export default {
   },
 }
 </script>
+<style scoped>
+.remined {
+  font-size: 12px;
+}
+</style>

@@ -12,44 +12,49 @@
       q-list(bordered separator)
         q-expansion-item(
           v-for='(row,index) in dataRows'
-          v-model='expandeds[row._id]'
+          v-model='expandeds[rowKey(row)]'
           :key='rowKey(row)'
           :content-inset-level='0.3'
           switch-toggle-side
+          dense
           )
           template(v-slot:header)
-            q-item-section ({{index+1}}) ObjectId("{{row._id}}") 
-            q-item-section {{getDesc(row)}}
-            q-item-section {{getType(row)}}
+            q-item-section
+              .row
+                q-icon(:name='`img:statics/types/${row.icon}.png`' style='font-size: 1.4em;')
+                | ({{index+1}}) {{hasId(row)?row.value._id.display():""}}
+            q-item-section {{row.display()}}
+            q-item-section {{row.type}} 
             q-menu(
               touch-position
               context-menu
               )
               q-list(dense style="min-width: 100px")
                 q-item(
-                  v-if='!!row._id'
+                  v-if='hasId(row)'
                   clickable 
                   v-close-popup
-                  @click='$emit("updateItemClick",row._id,row)'
+                  @click='$emit("updateItemClick",getIdValue(row),row._v)'
                   )
                   q-item-section {{$t('menu.updateDocument')}}
                 q-item(
-                  v-if='!!row._id'
+                  v-if='hasId(row)'
                   clickable 
                   v-close-popup
-                  @click='$emit("removeItemClick",row._id)'
+                  @click='$emit("removeItemClick",getIdValue(row))'
                   )
                   q-item-section {{$t('menu.removeDocument')}}
                 q-separator  
                 q-item(
+                  v-if='!hideFreshMenu'
                   clickable 
                   v-close-popup
                   @click='$emit("refreshItemClick")'
                   )
                   q-item-section {{$t('menu.refresh')}}
           display-list(
-            v-if='expandeds[row._id]'
-            :data='row'
+            v-if='expandeds[rowKey(row)]'
+            :data='row.value'
             )
 </template>
 
@@ -63,6 +68,7 @@ export default {
   props: {
     contentHeight: Number,
     dataRows: Array,
+    hideFreshMenu: Boolean,
   },
   data() {
     return {
@@ -72,14 +78,26 @@ export default {
   },
   mounted() {
     this.bodyHeight = this.calcBodyHeight(this.contentHeight)
-    this.expandeds = this.dataRows.reduce((pre, cur) => {
-      return _.merge(pre, { [cur._id]: false })
-    }, {})
+    this.expandeds = {}
+    // this.dataRows.reduce((pre, cur) => {
+    //   return _.merge(pre, { [this.rowKey(cur)]: false })
+    // }, {})
   },
   computed: {},
   methods: {
+    getIdValue(row) {
+      return _.get(row, ['value', '_id', '_v'])
+    },
+    hasId(row) {
+      return _.has(row, ['value', '_id'])
+    },
     rowKey(row) {
-      return JSON.stringify(row._id)
+      const key = _.get(row, ['value', '_id'])
+      if (key) {
+        return ['Object', 'Array'].includes(key.type) ? JSON.stringify(key._v) : key.display()
+      } else {
+        return JSON.stringify(row._v)
+      }
     },
     calcBodyHeight(contentHeight) {
       if (this.$refs.header) {
@@ -88,12 +106,6 @@ export default {
       } else {
         return contentHeight
       }
-    },
-    getDesc(data) {
-      return tools.getDataDesc(data)
-    },
-    getType(data) {
-      return tools.getType(data)
     },
   },
   watch: {
@@ -105,3 +117,12 @@ export default {
   },
 }
 </script>
+<style lang="stylus" scoped>
+>>>.q-item__section--avatar {
+  min-width: 6px;
+}
+
+>>>.q-item__section--side {
+  padding-right: 2px;
+}
+</style>
