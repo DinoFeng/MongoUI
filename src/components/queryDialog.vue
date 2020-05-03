@@ -19,39 +19,24 @@
           span {{commandMode}} *
           ace-editor(
             v-model='command'
-            theme='tomorrow'
-            mode='json'
-            :maxLines='28'
             :minLines='18'
-            )
-          //- q-input(
-            v-model='command'
-            :rules="[ val => val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`]"
-            :label='`${commandMode} *`'
-            type='textarea'
-            debounce='500'
-            filled
-            lazy-rules
+            :maxLines='18'
+            mode='json'
+            theme='tomorrow'
             )
           span options
           ace-editor(
             v-model='options'
-            theme='kuroir'
-            mode='json'
-            :maxLines='10'
             :minLines='10'
-            )
-          //- q-input(
-            v-model='options'
-            :rules="[ val => val?(val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`):true]"
-            type='textarea'
-            label='options'
-            debounce='500'
-            filled
-            lazy-rules
+            :maxLines='10'
+            mode='json'
+            theme='kuroir'
             )
           hr(style='filter: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15);')
           q-toolbar
+            .col.remined.text-negative
+              .row ObjectId("")=>{"$oid":""}
+              .row Date("")=>{"$date":""}
             q-space
             q-btn.q-ml-sm(
               :label='$t("run")'
@@ -111,14 +96,6 @@ export default {
     },
   },
   methods: {
-    canJsonParse(v) {
-      try {
-        v && eJson.parse(v)
-        return true
-      } catch {
-        return false
-      }
-    },
     onSubmit() {
       try {
         const { command: c, options: o } = this.editing
@@ -150,3 +127,8 @@ export default {
   // },
 }
 </script>
+<style scoped>
+.remined {
+  font-size: 12px;
+}
+</style>

@@ -39,7 +39,6 @@ export default {
     }
   },
   mounted() {
-    // console.debug({ data: this.data, schema: this.schema, field: this.field })
     this.expandeds = {}
     // Object.keys(this.data).reduce((pre, cur) => {
     //   return _.merge(pre, { [cur]: false })
@@ -50,46 +49,26 @@ export default {
       const data = this.data
       if (_.isArray(data)) {
         const r = data.map((value, index) => {
-          // const type = tools.getTypeFromArraySchema(schema, value)
-          // const value = _.get(v, ['value'])
           return {
             key: index,
             value,
-            ext: value && value.isExt, // this.isExt(value),
+            ext: value && value.isExt,
           }
         })
-        // console.debug(r)
         return r
       } else {
         const r = Object.keys(data).map(key => {
-          // const type = tools.getTypeFromDocSchema(schema, key, data[key])
           const value = _.get(data, [key])
           return {
             key,
             value,
             ext: value && value.isExt,
-            // type: value && value.type,
-            // ext: type.isExt, // this.isExt(data[key]),
           }
         })
-        // console.debug(r)
         return r
       }
     },
   },
-  methods: {
-    // getDesc(data) {
-    //   return tools.getDataDesc(data)
-    // },
-    // getType(s, f, v) {
-    //   const type = tools.getTypeFromDocSchema(s, f, v)
-    //   // console.debug({ type })
-    //   return type
-    // },
-    // isExt(v) {
-    //   const type = tools.getType(v)
-    //   return ['Object', 'Array'].includes(type)
-    // },
-  },
+  methods: {},
 }
 </script>

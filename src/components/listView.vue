@@ -101,12 +101,6 @@ export default {
         return contentHeight
       }
     },
-    // getDesc(data) {
-    //   return tools.convertSchema(this.schema).displayValue(data)
-    // },
-    // getType(data) {
-    //   return tools.getType(data)
-    // },
   },
   watch: {
     contentHeight: {

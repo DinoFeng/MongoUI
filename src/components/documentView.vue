@@ -1,23 +1,12 @@
 <template lang="pug">
-//- q-input(
-//-   ref='content'
-//-   :value='datas'
-//-   :rows='maxRows'
-//-   :style='`height:${contentHeight}px`'
-//-   type='textarea'
-//-   filled
-//-   outlined
-//-   standout 
-//-   readonly
-//-   )
 div
   ace-editor(
     :value='datas'
+    :maxLines='maxRows'
+    :minLines='maxRows'
     mode='javascript'
     theme='kuroir'
     readonly
-    :maxLines='maxRows'
-    :minLines='maxRows'
     )
   q-menu(
     touch-position
@@ -56,7 +45,7 @@ export default {
   computed: {
     datas() {
       const r = this.dataRows
-        .map((row, index) => `/* ${index} */\r\n${eJson.stringify(row._v, null, 4, { relaxed: true })}`)
+        .map((row, index) => `/* ${index + 1} */\r\n${eJson.stringify(row._v, null, 4, { relaxed: true })}`)
         .join('\r\n\r\n')
       // console.debug('r')
       return r
