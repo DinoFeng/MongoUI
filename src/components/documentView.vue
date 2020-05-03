@@ -14,6 +14,7 @@ div
     )
     q-list(dense style="min-width: 100px")
       q-item(
+        v-if='!hideFreshMenu'
         clickable 
         v-close-popup
         @click='$emit("refreshItemClick")'
@@ -32,6 +33,7 @@ export default {
   props: {
     contentHeight: Number,
     dataRows: Array,
+    hideFreshMenu: Boolean,
   },
   data() {
     return {

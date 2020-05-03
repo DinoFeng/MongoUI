@@ -16,9 +16,13 @@
           :key='rowKey(row)'
           :content-inset-level='0.3'
           switch-toggle-side
+          dense
           )
           template(v-slot:header)
-            q-item-section ({{index+1}}) {{hasId(row)?row.value._id.display():""}}
+            q-item-section
+              .row
+                q-icon(:name='`img:statics/types/${row.icon}.png`' style='font-size: 1.4em;')
+                | ({{index+1}}) {{hasId(row)?row.value._id.display():""}}
             q-item-section {{row.display()}}
             q-item-section {{row.type}} 
             q-menu(
@@ -42,6 +46,7 @@
                   q-item-section {{$t('menu.removeDocument')}}
                 q-separator  
                 q-item(
+                  v-if='!hideFreshMenu'
                   clickable 
                   v-close-popup
                   @click='$emit("refreshItemClick")'
@@ -63,6 +68,7 @@ export default {
   props: {
     contentHeight: Number,
     dataRows: Array,
+    hideFreshMenu: Boolean,
   },
   data() {
     return {
@@ -111,3 +117,12 @@ export default {
   },
 }
 </script>
+<style lang="stylus" scoped>
+>>>.q-item__section--avatar {
+  min-width: 6px;
+}
+
+>>>.q-item__section--side {
+  padding-right: 2px;
+}
+</style>

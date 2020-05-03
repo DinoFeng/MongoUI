@@ -14,7 +14,9 @@
           v-for='col in props.cols'
           :key='col.name'
           :props="props"
-          ) {{ col.value }}
+          ) 
+          q-icon(:name='`img:statics/types/${props.row[col.name] && props.row[col.name].icon}.png`' style='font-size: 1.4em;')
+          span {{ col.value }}
         q-menu(
           touch-position
           context-menu
@@ -36,6 +38,7 @@
               q-item-section {{$t('menu.removeDocument')}}
             q-separator  
             q-item(
+              v-if='!hideFreshMenu'
               clickable 
               v-close-popup
               @click='$emit("refreshItemClick")'
@@ -54,6 +57,7 @@ export default {
   props: {
     contentHeight: Number,
     dataRows: Array,
+    hideFreshMenu: Boolean,
   },
   data() {
     return {

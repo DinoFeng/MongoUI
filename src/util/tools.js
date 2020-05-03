@@ -64,6 +64,19 @@ const tools = {
     Array: v => `[${v.length} element${v.length > 1 ? 's' : ''}]`,
     Object: v => `{${Object.keys(v).length} field${Object.keys(v).length > 1 ? 's' : ''}}`,
   },
+  typesMapping: {
+    String: 'string',
+    Date: 'date',
+    ObjectId: 'objectId',
+    Null: 'null',
+    Boolean: 'boolean',
+    Int32: 'number',
+    Long: 'number',
+    Double: 'number',
+    Decimal128: 'number',
+    Array: 'array',
+    Object: 'object',
+  },
   // toEditing: {
   //   Date: v => `ISODate("${v}")`,
   //   ObjectId: v => `ObjectId("${v}")`,
@@ -76,6 +89,7 @@ const tools = {
         type: 'Array',
         isExt: true,
         _v: v,
+        icon: this.typesMapping['Array'] || 'other',
         // getEditing: () => value.map(item => item.getEditing()),
         display: () => this.toDisplay['Array'](v),
       }
@@ -86,6 +100,7 @@ const tools = {
         type: 'Object',
         isExt: true,
         _v: v,
+        icon: this.typesMapping['Object'] || 'other',
         // getEditing: () =>
         //   Object.keys(value).reduce((pre, cur) => {
         //     return _.merge(pre, { [cur]: value[cur].getEditing() })
@@ -104,6 +119,7 @@ const tools = {
       type,
       isExt: false,
       _v: value,
+      icon: this.typesMapping[type] || 'other',
       // getEditing: () => (this.toEditing[type] ? this.toEditing[type](display) : display),
       display: () => (this.toDisplay[type] ? this.toDisplay[type](display()) : display()),
     }

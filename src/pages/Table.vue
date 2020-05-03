@@ -31,6 +31,14 @@
           @input='changePage'
           )
         q-separator(vertical inset)
+        q-btn(
+          flat
+          color='primary'
+          icon='las la-sync-alt'
+          size='sm'
+          @click='refreshPage'
+          )
+        q-separator(vertical inset)
         q-btn-toggle(
           v-model='displayMode'
           :options='displayModes'

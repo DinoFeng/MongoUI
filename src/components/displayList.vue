@@ -4,8 +4,14 @@
       v-for='row in rows' 
       :key='row.key'
       )
-      q-item(v-if='!row.ext')
-        q-item-section {{row.key}}
+      q-item(
+        v-if='!row.ext'
+        dense
+        )
+        q-item-section
+          .row
+            q-icon(:name='`img:statics/types/${row.value.icon}.png`' style='font-size: 1.4em;')
+            | {{row.key}}
         q-item-section {{row.value.display()}}
         q-item-section {{row.value.type}}
       q-expansion-item(
@@ -13,9 +19,13 @@
         v-model='expandeds[row.key]'
         :content-inset-level='0.3'
         switch-toggle-side
+        dense
         )
         template(v-slot:header)
-          q-item-section {{row.key}}
+          q-item-section
+            .row
+              q-icon(:name='`img:statics/types/${row.value.icon}.png`' style='font-size: 1.4em;')
+              | {{row.key}}
           q-item-section {{row.value.display()}}
           q-item-section {{row.value.type}}
         display-list(
