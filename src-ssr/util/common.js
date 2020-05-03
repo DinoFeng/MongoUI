@@ -1,6 +1,6 @@
 const { ObjectID } = require('mongodb')
 const eJson = require('mongodb-extjson')
-const parseSchema = require('mongodb-schema')
+// const parseSchema = require('mongodb-schema')
 const _ = require('lodash')
 
 const COLLECTION_EXISTS = 'Collection with same name already exists.'

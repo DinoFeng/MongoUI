@@ -85,7 +85,7 @@ const mutations = {
     }
   },
   setTableResult(state, data) {
-    const { rows: ejsonString, total, schema } = data
+    const { rows: ejsonString, total } = data
     const eRows = eJson.parse(ejsonString, { relaxed: false })
     const rows = eRows.map(row => tools.parseBson(row))
     console.debug({ rows })

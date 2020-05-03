@@ -155,7 +155,7 @@ export default {
   },
   computed: {
     ...mapState('master', ['pageSize', 'currentPage', 'commandMode', 'find', 'aggregate']),
-    ...mapGetters('master', ['tableRows', 'tableSchema', 'pageMax', 'duration']),
+    ...mapGetters('master', ['tableRows', 'pageMax', 'duration']),
     navigation() {
       return _.get(this.$route, ['params'])
     },

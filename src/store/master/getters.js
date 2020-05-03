@@ -26,9 +26,6 @@ const getters = {
   selectedDatabaseInfo(state) {
     return [state.selectedDatabase]
   },
-  tableSchema(state) {
-    return _.get(state, ['tableResult', 'schema']) || []
-  },
   tableRows(state) {
     return _.get(state, ['tableResult', 'rows']) || []
   },
@@ -45,7 +42,7 @@ const getters = {
   },
   resultFields(state) {
     const rows = _.get(state, ['tableResult', 'rows']).map(row => row._v)
-    console.debug(rows)
+    // console.debug(rows)
     if (rows.length > 0) {
       const fields = new Set()
       for (let i = 0; i < rows.length; i++) {
