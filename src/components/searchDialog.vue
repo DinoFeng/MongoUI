@@ -2,6 +2,7 @@
   q-dialog(
     v-if='value'
     v-model='value'
+    transition-show='none'
     persistent
     )
     q-card(style='min-width:40vw')

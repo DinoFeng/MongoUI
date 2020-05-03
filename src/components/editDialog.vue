@@ -2,6 +2,7 @@
   q-dialog(
     v-if='value'
     v-model='value'
+    transition-show='none'
     persistent
     )
     q-card(style='min-width:80vw')
@@ -81,7 +82,7 @@
 import aceEditor from './ace-editor'
 import eJson from 'mongodb-extjson'
 export default {
-  name: 'queryDialog',
+  name: 'editDialog',
   components: { aceEditor },
   props: {
     value: Boolean,

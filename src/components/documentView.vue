@@ -12,7 +12,7 @@
 //-   )
 div
   ace-editor(
-    v-model='datas'
+    :value='datas'
     mode='javascript'
     theme='kuroir'
     readonly
@@ -54,15 +54,12 @@ export default {
     // console.debug(this.maxRows, this.contentHeight)
   },
   computed: {
-    datas: {
-      get() {
-        const r = this.dataRows
-          .map((row, index) => `/* ${index} */\r\n${eJson.stringify(row._v, null, 4, { relaxed: true })}`)
-          .join('\r\n\r\n')
-        // console.debug('r')
-        return r
-      },
-      set() {},
+    datas() {
+      const r = this.dataRows
+        .map((row, index) => `/* ${index} */\r\n${eJson.stringify(row._v, null, 4, { relaxed: true })}`)
+        .join('\r\n\r\n')
+      // console.debug('r')
+      return r
     },
   },
   methods: {

@@ -58,12 +58,14 @@ const actions = {
         commit('setFindCommand', {})
         commit('setCommandMode', 'find')
       }
+      const command = _.get(state, ['find', 'command'])
+      const options = _.get(state, ['find', 'options'])
       let context = {}
       const result = await gobalAction.findTableData(
         { page, serverName, database, table },
         {
-          findQuery: _.get(state, ['find', 'command']),
-          options: _.get(state, ['find', 'options']),
+          findQuery: command ? eJson.stringify(command, { relaxed: true }) : '',
+          options: options ? eJson.stringify(options, { relaxed: true }) : '',
           pageSize: state.pageSize,
         },
         context,
@@ -89,12 +91,14 @@ const actions = {
         commit('setAggregateCommand', {})
         commit('setCommandMode', 'aggregate')
       }
+      const command = _.get(state, ['aggregate', 'command'])
+      const options = _.get(state, ['aggregate', 'options'])
       let context = {}
       const result = await gobalAction.aggregateTableData(
         { page, serverName, database, table },
         {
-          aggregate: _.get(state, ['aggregate', 'command']),
-          options: _.get(state, ['aggregate', 'options']),
+          aggregate: command ? eJson.stringify(command, { relaxed: true }) : '',
+          options: options ? eJson.stringify(options, { relaxed: true }) : '',
           pageSize: state.pageSize,
         },
         context,

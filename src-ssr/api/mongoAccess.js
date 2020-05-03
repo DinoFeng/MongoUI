@@ -178,13 +178,15 @@ router.post(
   '/:server/:db/:table/:page/find',
   wrapAsync(async req => {
     const { body, params } = req
-    const { findQuery, pageSize, options: opt } = body
-    const { _fieldOptions } = opt || {}
-    const options = _.omit(opt, ['_fieldOptions'])
+    const { findQuery: qString, pageSize, options: opt } = body
+    const findQuery = qString ? eJson.parse(qString) : {}
+    const options = opt && eJson.parse(opt)
+    // const { _fieldOptions } = opt || {}
+    // const options = _.omit(opt, ['_fieldOptions'])
     const { db, table, page, server } = params
     const client = await req.getMongoClient(server)
     if (client) {
-      return await common.findData(client, db, table, findQuery || {}, { page, pageSize }, options, _fieldOptions)
+      return await common.findData(client, db, table, findQuery, { page, pageSize }, options)
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -195,11 +197,14 @@ router.post(
   '/:server/:db/:table/:page/aggregate',
   wrapAsync(async req => {
     const { body, params } = req
-    const { aggregate, pageSize, options } = body
+    const { aggregate: qString, pageSize, options: opt } = body
     const { db, table, page, server } = params
-    if (!aggregate) {
+    if (!qString) {
       throw new Error(`Please post 'aggregate' params`)
     }
+    const aggregate = qString && eJson.parse(qString)
+    const options = opt && eJson.parse(opt)
+
     const client = await req.getMongoClient(server)
     if (client) {
       return await common.aggregate(client, db, table, aggregate, { page, pageSize }, options)

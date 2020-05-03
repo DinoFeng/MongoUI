@@ -2,9 +2,10 @@
   q-dialog(
     v-if='value'
     v-model='value'
+    transition-show='none'
     persistent
     )
-    q-card(style='min-width:40vw')
+    q-card(style='min-width:60vw')
       q-toolbar
         q-avatar
           img(src='https://cdn.quasar.dev/logo/svg/quasar-logo.svg')
@@ -15,7 +16,15 @@
           @submit='onSubmit'
           @reset='onReset'
           )
-          q-input(
+          span {{commandMode}} *
+          ace-editor(
+            v-model='command'
+            theme='tomorrow'
+            mode='json'
+            :maxLines='28'
+            :minLines='18'
+            )
+          //- q-input(
             v-model='command'
             :rules="[ val => val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`]"
             :label='`${commandMode} *`'
@@ -24,7 +33,15 @@
             filled
             lazy-rules
             )
-          q-input(
+          span options
+          ace-editor(
+            v-model='options'
+            theme='kuroir'
+            mode='json'
+            :maxLines='10'
+            :minLines='10'
+            )
+          //- q-input(
             v-model='options'
             :rules="[ val => val?(val && val.length > 0 && canJsonParse(val) || `${$t('requestJsonParseTip')}`):true]"
             type='textarea'
@@ -52,9 +69,12 @@
 <script>
 import _ from 'lodash'
 // import { mapMutations } from 'vuex'
+import eJson from 'mongodb-extjson'
+import aceEditor from './ace-editor'
 import vue from 'vue'
 export default {
   name: 'queryDialog',
+  components: { aceEditor },
   props: {
     value: Boolean,
     commandData: Object,
@@ -68,8 +88,8 @@ export default {
   mounted() {
     const { command, options } = this.commandData || {}
     this.editing = {
-      command: command ? JSON.stringify(command) : command,
-      options: command ? JSON.stringify(options) : options,
+      command: command ? eJson.stringify(command, null, 4, { relaxed: true }) : command,
+      options: options ? eJson.stringify(options, null, 4, { relaxed: true }) : options,
     }
   },
   computed: {
@@ -93,37 +113,40 @@ export default {
   methods: {
     canJsonParse(v) {
       try {
-        JSON.parse(v)
+        v && eJson.parse(v)
         return true
       } catch {
         return false
       }
     },
     onSubmit() {
-      const { command: c, options: o } = this.editing
-      const command = JSON.parse(c)
-      const options = o ? JSON.parse(o) : undefined
-      this.$emit('update:commandData', { command, options })
-      this.$emit('input', false)
-      this.$emit('submit')
+      try {
+        const { command: c, options: o } = this.editing
+        const command = c ? eJson.parse(c) : undefined
+        const options = o ? eJson.parse(o) : undefined
+        this.$emit('update:commandData', { command, options })
+        this.$emit('input', false)
+        this.$emit('submit')
+      } catch {}
     },
     onReset() {
       this.$emit('input', false)
       this.$emit('cancel')
     },
   },
-  watch: {
-    commandData: {
-      deep: true,
-      // immediate: true,
-      handler: function(val) {
-        const { command, options } = val || {}
-        this.editing = {
-          command: command ? JSON.stringify(command) : command,
-          options: command ? JSON.stringify(options) : options,
-        }
-      },
-    },
-  },
+  // watch: {
+  //   commandData: {
+  //     deep: true,
+  //     // immediate: true,
+  //     handler: function(val) {
+  //       const { command, options } = val || {}
+  //       // this.editing = { command, options }
+  //       this.editing = {
+  //         command: command ? eJson.stringify(command, null, 4) : command,
+  //         options: options ? eJson.stringify(options, null, 4) : options,
+  //       }
+  //     },
+  //   },
+  // },
 }
 </script>
