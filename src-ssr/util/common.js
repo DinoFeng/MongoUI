@@ -209,6 +209,7 @@ const common = {
     // }
     console.debug('updateData', { db, collection, _id, data })
     return await table.update(_id, data)
+    // return await table.updateOne(_id, data)
   },
 
   // async customerUpdateData(client, db, collection, _id, data) {

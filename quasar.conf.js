@@ -1,7 +1,9 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 module.exports = ctx => {
-  // const webpack = require('webpack')
+  const webpack = require('webpack')
+  const GitRevisionPlugin = require('git-revision-webpack-plugin')
+  const gitRevisionPlugin = new GitRevisionPlugin()
   // console.log(ctx)
   return {
     preFetch: true,
@@ -76,11 +78,18 @@ module.exports = ctx => {
           test: /\.pug$/,
           loader: 'pug-plain-loader',
         })
-        // cfg.plugins.push(
-        //   new webpack.ProvidePlugin({
-        //     'ace-builds': 'ace-builds',
-        //   }),
-        // )
+        cfg.plugins.push(
+          // new webpack.ProvidePlugin({
+          //   'ace-builds': 'ace-builds',
+          // }),
+          new webpack.DefinePlugin({
+            'process.env': {
+              COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash().substr(0, 7)),
+              VERSION: JSON.stringify(gitRevisionPlugin.version()),
+              BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
+            },
+          }),
+        )
       },
     },
 
@@ -183,11 +192,18 @@ module.exports = ctx => {
         // do something with Electron main process Webpack cfg
         // chainWebpack also available besides this extendWebpack
         cfg.module.rules.push(null)
-        // cfg.plugins.push(
-        //   new webpack.ProvidePlugin({
-        //     'ace-builds': 'ace-builds',
-        //   }),
-        // )
+        cfg.plugins.push(
+          // new webpack.ProvidePlugin({
+          //   'ace-builds': 'ace-builds',
+          // }),
+          new webpack.DefinePlugin({
+            'process.env': {
+              COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash().substr(0, 7)),
+              VERSION: JSON.stringify(gitRevisionPlugin.version()),
+              BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
+            },
+          }),
+        )
       },
     },
   }

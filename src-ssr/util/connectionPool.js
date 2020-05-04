@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb')
 const DateTime = require('luxon').DateTime
-// const _ = require('lodash')
+const _ = require('lodash')
 
 const pool = Symbol('pool')
 const max = Symbol('max')
@@ -65,7 +65,7 @@ class ConnectionPool {
     try {
       // const objID = new ObjectID()
       // const assignId = objID.toHexString().toString()
-      // const client = new MongoClient(connString, _.merge({ useUnifiedTopology: true, auto_reconnect: true }, options))
+      const client = new MongoClient(connString, _.merge({ useUnifiedTopology: true }, options))
       // client.on('close', () => {
       //   this[removeClient](assignId)
       //   console.warn('client closed')
@@ -75,12 +75,12 @@ class ConnectionPool {
       //   console.warn('client reconnect')
       // })
       // client.on('error', error => console.error('client error', error))
-      // const connect = await client.connect()
-      const connect = await createConnection(
-        connString,
-        options,
-        // _.merge({ useUnifiedTopology: true, auto_reconnect: true }, options),
-      )
+      const connect = await client.connect()
+      // const connect = await createConnection(
+      //   connString,
+      //   options,
+      //   // _.merge({ useUnifiedTopology: true, auto_reconnect: true }, options),
+      // )
 
       if (this[pool].size >= this[max]) {
         this[clearPool]()

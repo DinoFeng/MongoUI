@@ -1,5 +1,5 @@
 const state = {
-  version: null,
+  // version: null,
   loading: 0,
   selectedServer: null,
   selectedDatabase: null,

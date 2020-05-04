@@ -118,6 +118,9 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
+>>>.q-item--dense{
+  padding :2px 2px;
+}
 >>>.q-item__section--avatar {
   min-width: 6px;
 }
