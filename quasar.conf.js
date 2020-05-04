@@ -87,6 +87,7 @@ module.exports = ctx => {
               COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash().substr(0, 7)),
               VERSION: JSON.stringify(gitRevisionPlugin.version()),
               BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
+              BUILDNUMBER: JSON.stringify(process.env.BUILDNUMBER),
             },
           }),
         )
@@ -201,6 +202,7 @@ module.exports = ctx => {
               COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash().substr(0, 7)),
               VERSION: JSON.stringify(gitRevisionPlugin.version()),
               BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
+              BUILDNUMBER: JSON.stringify(process.env.BUILDNUMBER),
             },
           }),
         )

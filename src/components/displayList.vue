@@ -10,6 +10,7 @@
         )
         q-item-section
           .row
+            div(:style='`padding-right: ${(level+1)*1.4}em;`')
             q-icon(:name='`img:statics/types/${row.value.icon}.png`' style='font-size: 1.4em;')
             | {{row.key}}
         q-item-section {{row.value.display()}}
@@ -17,13 +18,14 @@
       q-expansion-item(
         v-if='row.ext'
         v-model='expandeds[row.key]'
-        :content-inset-level='0.3'
-        switch-toggle-side
+        expand-icon-class='hide_icon'
         dense
         )
         template(v-slot:header)
           q-item-section
             .row
+              div(:style='`padding-right: ${level*1.4}em;`')
+              q-icon(:name='getExpIcon(expandeds[row.key])' style='font-size: 1.4em;')
               q-icon(:name='`img:statics/types/${row.value.icon}.png`' style='font-size: 1.4em;')
               | {{row.key}}
           q-item-section {{row.value.display()}}
@@ -31,6 +33,7 @@
         display-list(
           v-if='expandeds[row.key]'
           :data='row.value.value'
+          :level='nextLevel'
           )
 </template>
 
@@ -41,7 +44,7 @@ export default {
   name: 'displayList',
   props: {
     data: [Object, Array],
-    // schema: [Object, Array],
+    level: Number,
   },
   data() {
     return {
@@ -55,6 +58,9 @@ export default {
     // }, {})
   },
   computed: {
+    nextLevel() {
+      return this.level + 1
+    },
     rows() {
       const data = this.data
       if (_.isArray(data)) {
@@ -79,6 +85,10 @@ export default {
       }
     },
   },
-  methods: {},
+  methods: {
+    getExpIcon(v) {
+      return v ? 'keyboard_arrow_down' : 'keyboard_arrow_right'
+    },
+  },
 }
 </script>

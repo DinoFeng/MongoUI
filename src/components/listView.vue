@@ -14,13 +14,13 @@
           v-for='(row,index) in dataRows'
           v-model='expandeds[rowKey(row)]'
           :key='rowKey(row)'
-          :content-inset-level='0.3'
-          switch-toggle-side
+          expand-icon-class='hide_icon'
           dense
           )
           template(v-slot:header)
             q-item-section
               .row
+                q-icon(:name='getExpIcon(expandeds[rowKey(row)])' style='font-size: 1.4em;')
                 q-icon(:name='`img:statics/types/${row.icon}.png`' style='font-size: 1.4em;')
                 | ({{index+1}}) {{hasId(row)?row.value._id.display():""}}
             q-item-section {{row.display()}}
@@ -55,6 +55,7 @@
           display-list(
             v-if='expandeds[rowKey(row)]'
             :data='row.value'
+            :level='1'
             )
 </template>
 
@@ -85,6 +86,9 @@ export default {
   },
   computed: {},
   methods: {
+    getExpIcon(v) {
+      return v ? 'keyboard_arrow_down' : 'keyboard_arrow_right'
+    },
     getIdValue(row) {
       return _.get(row, ['value', '_id', '_v'])
     },
@@ -118,9 +122,14 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
->>>.q-item--dense{
-  padding :2px 2px;
+>>>.hide_icon {
+  display: none !important;
 }
+
+>>>.q-item--dense {
+  padding: 2px 2px;
+}
+
 >>>.q-item__section--avatar {
   min-width: 6px;
 }

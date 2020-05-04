@@ -72,8 +72,8 @@ export default {
       // console.debug(process.env)
       // return `${process.env.VERSION} Build ${process.env.COMMITHASH} Branch ${process.env.BRANCH}`
       // this.version || ''
-      const v = (process.env.VERSION && `version: ${process.env.VERSION} `) || ''
-      const c = (process.env.COMMITHASH && `commit: ${process.env.COMMITHASH} `) || ''
+      const v = (process.env.VERSION && `Version: ${process.env.VERSION} `) || ''
+      const c = (process.env.COMMITHASH && `Commit: ${process.env.COMMITHASH} `) || ''
       const b =
         (process.env.BUILDNUMBER && `BuildNo.: ${process.env.BUILDNUMBER} `) ||
         (process.env.BRANCH && `Branch: ${process.env.BRANCH} `) ||
