@@ -42,7 +42,7 @@ export default {
   },
   mounted() {
     this.maxRows = this.calcMaxRows(this.contentHeight)
-    // console.debug(this.maxRows, this.contentHeight)
+    // console.debug(this.contentHeight, this.maxRows)
   },
   computed: {
     datas() {
@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     getLineHeight() {
-      return 16
+      return 17
       // if (this.$refs.content) {
       //   const { style } = dom
       //   return _.toNumber(_.trimEnd(style(this.$refs.content.$el, 'line-height'), 'px'))
@@ -72,6 +72,7 @@ export default {
     contentHeight: {
       handler(val) {
         this.maxRows = this.calcMaxRows(val)
+        // console.debug(val, this.maxRows)
       },
     },
   },

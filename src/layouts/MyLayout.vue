@@ -47,7 +47,7 @@
                   )
     q-footer
       q-toolbar
-        q-toolbar-title Version {{ver}}
+        q-toolbar-title {{revision}}
         div Build with Quasar v{{ $q.version }}
     //- q-page-container
     router-view
@@ -66,9 +66,19 @@ export default {
     }
   },
   computed: {
-    ...mapState('master', ['leftDrawerOpen', 'version']),
-    ver() {
-      return this.version || ''
+    ...mapState('master', ['leftDrawerOpen']),
+    revision() {
+      // const { VERSION, COMMITHASH, BRANCH, BUILDNUMBER } = process.env || {}
+      // console.debug(process.env)
+      // return `${process.env.VERSION} Build ${process.env.COMMITHASH} Branch ${process.env.BRANCH}`
+      // this.version || ''
+      const v = (process.env.VERSION && `version: ${process.env.VERSION} `) || ''
+      const c = (process.env.COMMITHASH && `commit: ${process.env.COMMITHASH} `) || ''
+      const b =
+        (process.env.BUILDNUMBER && `BuildNo.: ${process.env.BUILDNUMBER} `) ||
+        (process.env.BRANCH && `Branch: ${process.env.BRANCH} `) ||
+        ''
+      return `${v}${c}${b}`
     },
   },
   methods: {

@@ -11,7 +11,7 @@
 <script>
 import assignManager from './util/assignManager'
 import notify from './mixin/notify.js'
-import { mapMutations, mapGetters, mapActions } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 export default {
   name: 'App',
   mixins: [notify],
@@ -20,7 +20,7 @@ export default {
     this.loadServerConfig()
   },
   mounted() {
-    this.getVersion()
+    // this.getVersion()
   },
   computed: {
     ...mapGetters('errorHandle', ['err']),
@@ -29,7 +29,7 @@ export default {
   methods: {
     ...mapMutations('master', ['loadServerConfig']),
     ...mapMutations('errorHandle', ['shiftError']),
-    ...mapActions('master', ['getVersion']),
+    // ...mapActions('master', ['getVersion']),
   },
   watch: {
     err: {

@@ -3,9 +3,9 @@ import eJson from 'mongodb-extjson'
 import tools from '../../util/tools.js'
 
 const mutations = {
-  setVersion(state, ver) {
-    state.version = ver
-  },
+  // setVersion(state, ver) {
+  //   state.version = ver
+  // },
   setLoading(state, loading) {
     state.loading = state.loading + loading
   },

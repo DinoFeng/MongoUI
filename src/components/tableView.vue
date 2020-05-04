@@ -13,9 +13,14 @@
         q-td(
           v-for='col in props.cols'
           :key='col.name'
-          :props="props"
+          :props='props'
+          :class='!props.row[col.name]?"disabled":""'
           ) 
-          q-icon(:name='`img:statics/types/${props.row[col.name] && props.row[col.name].icon}.png`' style='font-size: 1.4em;')
+          q-icon(
+            v-if='!!props.row[col.name]'
+            :name='`img:statics/types/${props.row[col.name] && props.row[col.name].icon}.png`' 
+            style='font-size: 1.4em;'
+            )
           span {{ col.value }}
         q-menu(
           touch-position
@@ -104,3 +109,8 @@ export default {
   },
 }
 </script>
+<style lang="stylus" scoped>
+.disabled {
+  background-color: #f1f1f1;
+}
+</style>

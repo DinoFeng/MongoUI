@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     getLineHeight() {
-      return 16
+      return 17
       // if (this.$refs.content) {
       //   const { style } = dom
       //   return _.toNumber(_.trimEnd(style(this.$refs.content.$el, 'line-height'), 'px'))
