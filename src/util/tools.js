@@ -1,7 +1,4 @@
-import {
-  LocalStorage,
-  // SessionStorage ,
-} from 'quasar'
+import { LocalStorage, SessionStorage } from 'quasar'
 import _ from 'lodash'
 import eJson from 'mongodb-extjson'
 import { dom } from 'quasar'
@@ -18,10 +15,10 @@ const tools = {
     }
   },
   saveAssignId(id) {
-    LocalStorage.set('assignId', id)
+    SessionStorage.set('assignId', id)
   },
   getAssignId() {
-    return LocalStorage.getItem('assignId')
+    return SessionStorage.getItem('assignId')
   },
   // getCurrentServer() {
   //   const currentServer = LocalStorage.getItem('currentServer')
