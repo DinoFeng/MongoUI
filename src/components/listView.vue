@@ -2,11 +2,11 @@
   q-list(bordered)
     q-list(bordered)
       q-item(ref='header' bordered)
-        q-item-section {{$t('key')}}
+        q-item-section.col-4 {{$t('key')}}
         q-separator(vertical)
         q-item-section &emsp;{{$t('value')}}
         q-separator(vertical)
-        q-item-section &emsp;{{$t('type')}}
+        q-item-section.col-2 &emsp;{{$t('type')}}
         //- q-item-section &ensp;{{$t('type')}} & nbsp; & ensp; & emsp;
     q-scroll-area(:style='`height:${bodyHeight}px`')
       q-list(bordered separator)
@@ -18,13 +18,13 @@
           dense
           )
           template(v-slot:header)
-            q-item-section
+            q-item-section.col-4
               .row
                 q-icon(:name='getExpIcon(expandeds[rowKey(row)])' style='font-size: 1.4em;')
                 q-icon(:name='`img:statics/types/${row.icon}.png`' style='font-size: 1.4em;')
                 | ({{index+1}}) {{hasId(row)?row.value._id.display():""}}
             q-item-section {{row.display()}}
-            q-item-section {{row.type}} 
+            q-item-section.col-2 {{row.type}} 
             q-menu(
               touch-position
               context-menu
@@ -128,13 +128,5 @@ export default {
 
 >>>.q-item--dense {
   padding: 2px 2px;
-}
-
->>>.q-item__section--avatar {
-  min-width: 6px;
-}
-
->>>.q-item__section--side {
-  padding-right: 2px;
 }
 </style>
