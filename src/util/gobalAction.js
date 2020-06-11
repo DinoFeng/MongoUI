@@ -217,9 +217,10 @@ const actions = {
     console.debug(`dropDatabase durationMs:${api.durationMs} result is:`, data)
     return data
   },
-  // async getVersion() {
-  //   return await API.getVersion()
-  // },
+  async getBuildNO() {
+    const api = new API(`api/buildNO`, {})
+    return await api.fetch(false)
+  },
 }
 
 export default actions

@@ -8,13 +8,13 @@
         v-if='!row.ext'
         dense
         )
-        q-item-section
+        q-item-section.col-4
           .row
             div(:style='`padding-right: ${(level+1)*1.4}em;`')
             q-icon(:name='`img:statics/types/${row.value.icon}.png`' style='font-size: 1.4em;')
             | {{row.key}}
         q-item-section {{row.value.display()}}
-        q-item-section {{row.value.type}}
+        q-item-section.col-2 {{row.value.type}}
       q-expansion-item(
         v-if='row.ext'
         v-model='expandeds[row.key]'
@@ -22,14 +22,14 @@
         dense
         )
         template(v-slot:header)
-          q-item-section
+          q-item-section.col-4
             .row
               div(:style='`padding-right: ${level*1.4}em;`')
               q-icon(:name='getExpIcon(expandeds[row.key])' style='font-size: 1.4em;')
               q-icon(:name='`img:statics/types/${row.value.icon}.png`' style='font-size: 1.4em;')
               | {{row.key}}
           q-item-section {{row.value.display()}}
-          q-item-section {{row.value.type}}
+          q-item-section.col-2 {{row.value.type}}
         display-list(
           v-if='expandeds[row.key]'
           :data='row.value.value'

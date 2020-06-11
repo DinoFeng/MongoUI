@@ -23,7 +23,7 @@ const createConnection = (connString, connOptions) =>
 
 class ConnectionPool {
   constructor() {
-    this[max] = 2
+    this[max] = 20
     this[expireTime] = 1000 * 60 * 60 * 12
     this[pool] = new Map()
   }

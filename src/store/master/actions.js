@@ -351,18 +351,14 @@ const actions = {
       commit('setLoading', -1)
     }
   },
-  // async getVersion({ dispatch, commit }) {
-  //   try {
-  //     commit('setLoading', 1)
-  //     const result = await gobalAction.getVersion()
-  //     commit('setVersion', result)
-  //     return result
-  //   } catch (error) {
-  //     dispatch('errorHandle/doPushError', { error }, { root: true })
-  //     throw error
-  //   } finally {
-  //     commit('setLoading', -1)
-  //   }
-  // },
+  async getBuildNO({ dispatch, commit }) {
+    try {
+      const result = await gobalAction.getBuildNO()
+      return result
+    } catch (error) {
+      // dispatch('errorHandle/doPushError', { error }, { root: true })
+      throw error
+    }
+  },
 }
 export default actions

@@ -9,6 +9,10 @@ router.post('/assign', async (req, res) => {
   res.status(200).json(common.genObjectId())
 })
 
+router.get('/buildNO', async (req, res) => {
+  res.status(200).json(process.env.BUILDNUMBER)
+})
+
 router.get(
   '/:server/:db/:table/fields',
   wrapAsync(async req => {
