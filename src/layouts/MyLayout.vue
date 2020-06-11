@@ -77,7 +77,10 @@ export default {
       // console.debug(process.env)
       // return `${process.env.VERSION} Build ${process.env.COMMITHASH} Branch ${process.env.BRANCH}`
       // this.version || ''
-      const v = (process.env.VERSION && `Version: ${process.env.VERSION} `) || ''
+      const p = (process.env.VERSION && process.env.VERSION.indexOf('-')) || 0
+      const v =
+        (process.env.VERSION && `Version: ${process.env.VERSION.substr(0, p > 0 ? p : process.env.VERSION.length)} `) ||
+        ''
       const c = (process.env.COMMITHASH && `Commit: ${process.env.COMMITHASH} `) || ''
       const b =
         (process.env.BUILDNUMBER && `BuildNo.: ${process.env.BUILDNUMBER} `) ||
