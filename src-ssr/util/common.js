@@ -187,7 +187,7 @@ const common = {
   async getTableStats(client, db, collection) {
     const table = client.db(db).collection(collection)
     try {
-      console.debug('getTableStats', { db, collection })
+      // console.debug('getTableStats', { db, collection })
       return await table.stats().then(data => _.merge({ name: collection }, data))
     } catch (error) {
       return _.merge(error, { name: collection })

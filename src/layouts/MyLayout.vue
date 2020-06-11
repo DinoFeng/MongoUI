@@ -54,15 +54,20 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations, mapState, mapActions } from 'vuex'
+// import cfgs from '../statics/config/config'
 export default {
   name: 'MyLayout',
   mounted() {
     this.language = window.navigator.language.toLowerCase()
+    this.getBuildNO().then(res => {
+      this.buildNo = res
+    })
   },
   data() {
     return {
       language: null,
+      buildNo: null,
     }
   },
   computed: {
@@ -76,6 +81,7 @@ export default {
       const c = (process.env.COMMITHASH && `Commit: ${process.env.COMMITHASH} `) || ''
       const b =
         (process.env.BUILDNUMBER && `BuildNo.: ${process.env.BUILDNUMBER} `) ||
+        (this.buildNo && `BuildNo.: ${this.buildNo} `) ||
         (process.env.BRANCH && `Branch: ${process.env.BRANCH} `) ||
         ''
       return `${v}${c}${b}`
@@ -83,6 +89,7 @@ export default {
   },
   methods: {
     ...mapMutations('master', ['setLeftDrawerOpen']),
+    ...mapActions('master', ['getBuildNO']),
     choiseLanguage(lan) {
       this.language = lan
       console.debug('choiseLanguage', lan)
