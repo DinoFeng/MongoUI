@@ -4,11 +4,10 @@ FROM  node:dubnium-alpine
 RUN echo "==> Install quasar cli" && \
     yarn global add @quasar/cli
 
-# RUN mkdir -p /usr/src/
+RUN mkdir -p /usr/src/
 # COPY . /usr/src/
 # COPY package.json /usr/src/
 RUN echo "==> Copy file" && \
-    mkdir -p /usr/src/ && \
     COPY . /usr/src/ && \
     COPY package.json /usr/src/ 
     
