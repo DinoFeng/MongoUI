@@ -1,4 +1,4 @@
-FROM  node:dubnium-alpine
+FROM  node:dubnium
 
 RUN yarn global add @quasar/cli
 
