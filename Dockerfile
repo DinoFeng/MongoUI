@@ -1,5 +1,8 @@
-FROM  node:dubnium
+FROM  node:dubnium-alpine
 
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash git openssh
+    
 RUN yarn global add @quasar/cli
 
 RUN mkdir -p /usr/src/
