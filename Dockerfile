@@ -5,11 +5,8 @@ RUN echo "==> Install quasar cli" && \
     yarn global add @quasar/cli
 
 RUN mkdir -p /usr/src/
-# COPY . /usr/src/
-# COPY package.json /usr/src/
-RUN echo "==> Copy file" && \
-    COPY . /usr/src/ && \
-    COPY package.json /usr/src/ 
+COPY . /usr/src/
+COPY package.json /usr/src/
     
 WORKDIR /usr/src/
 
