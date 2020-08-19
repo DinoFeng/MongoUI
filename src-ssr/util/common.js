@@ -165,7 +165,7 @@ const common = {
     const adminDB = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
     const dbList = await adminDB.listDatabases()
     if (dbList) {
-      const skippedDBs = ['null', 'admin', 'local']
+      const skippedDBs = ['null', 'admin', 'local', 'config']
       const { databases: dbs, totalSize, ok } = dbList
       const databases = await Promise.all(
         dbs
@@ -177,11 +177,17 @@ const common = {
   },
 
   async getCollections(client, dbName) {
-    const db = client.db(dbName)
-    console.debug('getCollections', { dbName })
-    const collList = await db.listCollections().toArray()
-    const collStats = await Promise.all(collList.map(coll => this.getTableStats(client, dbName, coll.name)))
-    return collStats
+    try {
+      const db = client.db(dbName)
+      console.debug('getCollections', { dbName })
+
+      const collList = await db.listCollections().toArray()
+      const collStats = await Promise.all(collList.map(coll => this.getTableStats(client, dbName, coll.name)))
+      return collStats
+    } catch (error) {
+      console.error('getCollections', error)
+      return [{}]
+    }
   },
 
   async getTableStats(client, db, collection) {
