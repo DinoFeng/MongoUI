@@ -56,6 +56,7 @@
             v-if='expandeds[rowKey(row)]'
             :data='row.value'
             :level='1'
+            @copyPathClick='copyPathClickHandling'
             )
 </template>
 
@@ -110,6 +111,11 @@ export default {
       } else {
         return contentHeight
       }
+    },
+    copyPathClickHandling(path) {
+      console.debug('copyPathClickHandling', { path })
+      // this.$emit('copyPathClick', `${key}.${childKey}`)
+      this.$copyText(path)
     },
   },
   watch: {
