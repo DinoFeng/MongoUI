@@ -11,12 +11,19 @@ div
       q-item-section.col-2 {{ row.value.type }}
       q-menu(touch-position, context-menu)
         q-list(dense, style='min-width: 100px')
+          q-item(clickable, v-close-popup, @click='$emit("test")')
+            q-item-section 展开(Not yet)
+          q-item(clickable, v-close-popup, @click='$emit("test")')
+            q-item-section 折叠(Not yet)
+          q-separator 
           q-item(clickable, v-close-popup, v-clipboard:copy='row.key')
-            q-item-section copy name
+            q-item-section {{ $t("menu.copyName") }}
           q-item(clickable, v-close-popup, @click='() => copyValueClick(row.value)')
-            q-item-section copy value
+            q-item-section {{ $t("menu.copyValue") }}
           q-item(clickable, v-close-popup, @click='() => emitCopyPathClick(row)')
-            q-item-section copy path
+            q-item-section {{ $t("menu.copyPath") }}
+          q-item(clickable, v-close-popup, @click='() => emitCopyObjectClick(row)')
+            q-item-section {{ $t("menu.copyObject") }}
     q-expansion-item(v-if='row.ext', v-model='expandeds[row.key]', expand-icon-class='hide_icon', dense)
       template(v-slot:header)
         q-item-section.col-4
@@ -30,16 +37,19 @@ div
         q-menu(touch-position, context-menu)
           q-list(dense, style='min-width: 100px')
             q-item(clickable, v-close-popup, v-clipboard:copy='row.key')
-              q-item-section copy name
+              q-item-section {{ $t("menu.copyName") }}
             q-item(clickable, v-close-popup, @click='() => copyJsonClick(row.value)')
-              q-item-section copy json
+              q-item-section {{ $t("menu.copyValueJson") }}
             q-item(clickable, v-close-popup, @click='() => emitCopyPathClick(row)')
-              q-item-section copy path
+              q-item-section {{ $t("menu.copyPath") }}
+            q-item(clickable, v-close-popup, @click='() => emitCopyObjectClick(row)')
+              q-item-section {{ $t("menu.copyObject") }}
       display-list(
         v-if='expandeds[row.key]',
         :data='row.value.value',
         :level='nextLevel',
-        @copyPathClick='(childKey) => copyPathClickHandling(row, childKey)'
+        @copyPathClick='(childKeys) => copyPathClickHandling(row, childKeys)',
+        @copyObjectClick='(childKeys, value) => copyObjectClickHandling(row, childKeys, value)'
       )
 </template>
 
@@ -104,13 +114,27 @@ export default {
       this.$copyText(JSON.stringify(value._v))
     },
     emitCopyPathClick(row) {
-      console.debug('copyPathClickHandling', { row })
-      this.$emit('copyPathClick', row.key)
+      console.debug('emitCopyPathClick', { row })
+      this.$emit('copyPathClick', [row.key])
     },
-    copyPathClickHandling(row, childKey) {
-      console.debug('copyPathClickHandling', { row, childKey })
-      this.$emit('copyPathClick', `${row.key}.${childKey}`)
+    emitCopyObjectClick(row) {
+      console.debug('emitCopyObjectClick', { row })
+      this.$emit('copyObjectClick', [row.key], row.value._v)
+    },
+    copyPathClickHandling(row, childKeys) {
+      console.debug('copyPathClickHandling', { row, childKeys })
+      if (row.value.type === 'Array') {
+        childKeys.splice(0, 1)
+      }
+      this.$emit('copyPathClick', [row.key, ...childKeys])
       // this.$copyText(JSON.stringify(value._v))
+    },
+    copyObjectClickHandling(row, childKeys, value) {
+      console.debug('copyObjectClickHandling', { row })
+      if (row.value.type === 'Array') {
+        childKeys.splice(0, 1)
+      }
+      this.$emit('copyObjectClick', [row.key, ...childKeys], value)
     },
   },
 }

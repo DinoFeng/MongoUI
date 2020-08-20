@@ -81,6 +81,11 @@ export default {
     optionsLabel: 'Connection options',
   },
   menu: {
+    copyName: 'Copy Name',
+    copyValue: 'Copy Value',
+    copyValueJson: 'Copy JSON',
+    copyPath: 'Copy Path',
+    copyObject: 'Copy Item JSON',
     refresh: 'Refresh',
     insertDocument: 'Insert Documents',
     updateDocument: 'Update Document',

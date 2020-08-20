@@ -81,6 +81,11 @@ export default {
     optionsLabel: '连接可选配置',
   },
   menu: {
+    copyName: '复制名称',
+    copyValue: '复制值',
+    copyValueJson: '复制JSON值',
+    copyObject: '复制项目JSON值',
+    copyPath: '复制名称路径',
     updateDocument: '修改记录',
     removeDocument: '删除记录',
     refresh: '刷新',
