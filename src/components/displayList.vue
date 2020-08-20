@@ -15,6 +15,29 @@
             | {{row.key}}
         q-item-section {{row.value.display()}}
         q-item-section.col-2 {{row.value.type}}
+        q-menu(
+          touch-position
+          context-menu
+          )
+          q-list(dense style="min-width: 100px")
+            q-item(
+              clickable 
+              v-close-popup
+              @click='$emit("ItemClick",getIdValue(row))'
+              )
+              q-item-section Copy Name
+            q-item(
+              clickable 
+              v-close-popup
+              @click='$emit("ItemClick",getIdValue(row))'
+              )
+              q-item-section Copy Path
+            q-item(
+              clickable 
+              v-close-popup
+              @click='$emit("ItemClick",getIdValue(row))'
+              )
+              q-item-section Copy Value       
       q-expansion-item(
         v-if='row.ext'
         v-model='expandeds[row.key]'
@@ -30,6 +53,29 @@
               | {{row.key}}
           q-item-section {{row.value.display()}}
           q-item-section.col-2 {{row.value.type}}
+          q-menu(
+            touch-position
+            context-menu
+            )
+            q-list(dense style="min-width: 100px")
+              q-item(
+                clickable 
+                v-close-popup
+                @click='$emit("ItemClick",getIdValue(row))'
+                )
+                q-item-section Copy Name
+              q-item(
+                clickable 
+                v-close-popup
+                @click='$emit("ItemClick",getIdValue(row))'
+                )
+                q-item-section Copy Path
+              q-item(
+                clickable 
+                v-close-popup
+                @click='$emit("ItemClick",getIdValue(row))'
+                )
+                q-item-section Copy JSON                                
         display-list(
           v-if='expandeds[row.key]'
           :data='row.value.value'

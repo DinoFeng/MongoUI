@@ -34,9 +34,47 @@
                   v-if='hasId(row)'
                   clickable 
                   v-close-popup
+                  @click='$emit("ItemClick",getIdValue(row))'
+                  )
+                  q-item-section 展开(Not yet)
+                q-item(
+                  v-if='hasId(row)'
+                  clickable 
+                  v-close-popup
+                  @click='$emit("ItemClick",getIdValue(row))'
+                  )
+                  q-item-section 折叠(Not yet)
+                q-separator  
+                q-item(
+                  v-if='hasId(row)'
+                  clickable 
+                  v-close-popup
                   @click='$emit("updateItemClick",getIdValue(row),row._v)'
                   )
                   q-item-section {{$t('menu.updateDocument')}}
+                q-item(
+                  v-if='hasId(row)'
+                  clickable 
+                  v-close-popup
+                  @click='$emit("ItemClick",getIdValue(row))'
+                  )
+                  q-item-section 浏览记录(Not yet)
+                q-item(
+                  v-if='hasId(row)'
+                  clickable 
+                  v-close-popup
+                  @click='$emit("ItemClick",getIdValue(row))'
+                  )
+                  q-item-section 插入记录(Not yet)
+                q-separator 
+                q-item(
+                  v-if='hasId(row)'
+                  clickable 
+                  v-close-popup
+                  @click='$emit("ItemClick",getIdValue(row))'
+                  )
+                  q-item-section 复制JSON(Not yet)
+                q-separator 
                 q-item(
                   v-if='hasId(row)'
                   clickable 
