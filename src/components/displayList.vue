@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   q-list(v-for='row in rows', :key='row.key')
-    q-item(v-if='!row.ext', dense)
+    q-item(v-if='!row.ext', dense, clickable)
       q-item-section.col-4
         .row
           div(:style='`padding-right: ${(level + 1) * 1.4}em;`')
@@ -11,11 +11,6 @@ div
       q-item-section.col-2 {{ row.value.type }}
       q-menu(touch-position, context-menu)
         q-list(dense, style='min-width: 100px')
-          q-item(clickable, v-close-popup, @click='$emit("test")')
-            q-item-section 展开(Not yet)
-          q-item(clickable, v-close-popup, @click='$emit("test")')
-            q-item-section 折叠(Not yet)
-          q-separator 
           q-item(clickable, v-close-popup, v-clipboard:copy='row.key')
             q-item-section {{ $t("menu.copyName") }}
           q-item(clickable, v-close-popup, @click='() => copyValueClick(row.value)')
@@ -36,6 +31,11 @@ div
         q-item-section.col-2 {{ row.value.type }}
         q-menu(touch-position, context-menu)
           q-list(dense, style='min-width: 100px')
+            q-item(clickable, v-close-popup, @click='$emit("test")')
+              q-item-section 展开(Not yet)
+            q-item(clickable, v-close-popup, @click='$emit("test")')
+              q-item-section 折叠(Not yet)
+            q-separator 
             q-item(clickable, v-close-popup, v-clipboard:copy='row.key')
               q-item-section {{ $t("menu.copyName") }}
             q-item(clickable, v-close-popup, @click='() => copyJsonClick(row.value)')
