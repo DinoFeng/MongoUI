@@ -179,9 +179,14 @@ const common = {
   async getCollections(client, dbName) {
     const db = client.db(dbName)
     console.debug('getCollections', { dbName })
-    const collList = await db.listCollections().toArray()
-    const collStats = await Promise.all(collList.map(coll => this.getTableStats(client, dbName, coll.name)))
-    return collStats
+    try {
+      const collList = await db.listCollections().toArray()
+      const collStats = await Promise.all(collList.map(coll => this.getTableStats(client, dbName, coll.name)))
+      return collStats
+    } catch (e) {
+      console.error('getCollections', e)
+      return []
+    }
   },
 
   async getTableStats(client, db, collection) {
@@ -190,6 +195,27 @@ const common = {
       // console.debug('getTableStats', { db, collection })
       return await table.stats().then(data => _.merge({ name: collection }, data))
     } catch (error) {
+      return _.merge(error, { name: collection })
+    }
+  },
+
+  // async getHostInfo(client) {
+  //   const defaultDB = await this.getDefaultDBName(client)
+  //   const database = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
+  //   // console.debug('OK', database)
+  //   console.debug({ hostInfo: 1 })
+  //   return await database.command({ hostInfo: 1 })
+  // },
+
+  async getTableIndexes(client, db, collection) {
+    const defaultDB = await this.getDefaultDBName(client)
+    const database = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
+    // const table = client.db(db).collection(collection)
+    try {
+      // console.debug('getTableStats', { db, collection })
+      return await database.getUser('cabala_prd_t')
+    } catch (error) {
+      console.error('getTableIndexes', error)
       return _.merge(error, { name: collection })
     }
   },
@@ -258,6 +284,7 @@ const common = {
   },
 
   async tableIsExists(client, db, collection) {
+    console.debug('tableIsExists', { db })
     const list = await client
       .db(db)
       .listCollections({ name: collection }, { nameOnly: true })
