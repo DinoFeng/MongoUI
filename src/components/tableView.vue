@@ -1,54 +1,50 @@
 <template lang="pug">
-  sticky-header-table(
-    :data='rows'
-    :columns='columns'
-    :pagination='pagination'
-    :tableHeight='contentHeight'
-    :table-header-style="{ backgroundColor: '#eee' }"
-    row-key='_id'
-    hide-bottom
-    )
-    template(v-slot:body='props')
-      q-tr(:props='props')
-        q-td(
-          v-for='col in props.cols'
-          :key='col.name'
-          :props='props'
-          :class='!props.row[col.name]?"disabled":""'
-          ) 
-          q-icon(
-            v-if='!!props.row[col.name]'
-            :name='`img:statics/types/${props.row[col.name] && props.row[col.name].icon}.png`' 
-            style='font-size: 1.4em;'
-            )
-          span {{ col.value }}
-        q-menu(
-          touch-position
-          context-menu
+sticky-header-table(
+  :data='rows',
+  :columns='columns',
+  :pagination='pagination',
+  :tableHeight='contentHeight',
+  :table-header-style='{ backgroundColor: "#eee" }',
+  row-key='_id',
+  hide-bottom
+)
+  template(v-slot:body='props')
+    q-tr(:props='props')
+      q-td(v-for='col in props.cols', :key='col.name', :props='props', :class='!props.row[col.name] ? "disabled" : ""') 
+        q-icon(
+          v-if='!!props.row[col.name]',
+          :name='`img:statics/types/${props.row[col.name] && props.row[col.name].icon}.png`',
+          style='font-size: 1.4em;'
+        )
+        span {{ col.value }}
+      q-menu(touch-position, context-menu)
+        q-list(dense, style='min-width: 100px')
+          q-item(
+            v-if='hasId(props.row)',
+            clickable,
+            v-close-popup,
+            @click='$emit("browsItemClick", getIdValue(props.row), getOrgData(getIdValue(props.row)))'
           )
-          q-list(dense style="min-width: 100px")
-            q-item(
-              v-if='hasId(props.row)'
-              clickable 
-              v-close-popup
-              @click='$emit("updateItemClick",getIdValue(props.row),getOrgData(getIdValue(props.row)))'
-              )
-              q-item-section {{$t('menu.updateDocument')}}
-            q-item(
-              v-if='hasId(props.row)'
-              clickable 
-              v-close-popup
-              @click='$emit("removeItemClick",getIdValue(props.row))'
-              )
-              q-item-section {{$t('menu.removeDocument')}}
-            q-separator  
-            q-item(
-              v-if='!hideFreshMenu'
-              clickable 
-              v-close-popup
-              @click='$emit("refreshItemClick")'
-              )
-              q-item-section {{$t('menu.refresh')}}
+            q-item-section {{ $t("menu.browseDocument") }}
+          q-item(clickable, v-close-popup, @click='$emit("insertItemClick")')
+            q-item-section {{ $t("menu.insertDocument") }}
+          q-item(
+            v-if='hasId(props.row)',
+            clickable,
+            v-close-popup,
+            @click='$emit("updateItemClick", getIdValue(props.row), getOrgData(getIdValue(props.row)))'
+          )
+            q-item-section {{ $t("menu.updateDocument") }}
+          q-item(
+            v-if='hasId(props.row)',
+            clickable,
+            v-close-popup,
+            @click='$emit("removeItemClick", getIdValue(props.row))'
+          )
+            q-item-section {{ $t("menu.removeDocument") }}
+          q-separator 
+          q-item(v-if='!hideFreshMenu', clickable, v-close-popup, @click='$emit("refreshItemClick")')
+            q-item-section {{ $t("menu.refresh") }}
 </template>
 
 <script>

@@ -1,101 +1,80 @@
 <template lang="pug">
-  q-page(:style-fn='myTweak')
-    q-resize-observer(@resize='onResize')
-    .q-pa-md(ref='mainContent')
-      my-navigation(ref='header')
-      //- q-breadcrumbs(ref='header')
-        //- q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop' :to='`/app/${navigation.server}`')
-        //- q-breadcrumbs-el(:label='navigation.db' icon='fas fa-database' :to='`/app/${navigation.server}/${navigation.db}`')
-        //- q-breadcrumbs-el(:label='navigation.table' icon='fas fa-table')
-      
-      q-toolbar(ref='toolbar')
-        q-btn-group(spread)
-          q-btn(:label='$t("search")' color='positive' @click='openSearchDialog')
-          q-btn(label='find' color='info' @click='openFindDialog')
-          q-btn(label='aggregate' color='warning' @click='openAggregateDialog')
-        q-space
-        q-icon(name='far fa-clock')
-        | {{duration}} {{$t('sec')}}
-        q-space
-        q-input(
-          v-model='perPageRecord'
-          style='width:100px'
-          :label='$t("pageSizeLabel")'
-          debounce='500'
-          dense
-          )
-        q-pagination(
-          :value='currentPage'
-          :max='pageMax'
-          input
-          @input='changePage'
-          )
-        q-separator(vertical inset)
-        q-btn(
-          flat
-          color='primary'
-          icon='las la-sync-alt'
-          size='sm'
-          @click='refreshPage'
-          )
-        q-separator(vertical inset)
-        q-btn-toggle(
-          v-model='displayMode'
-          :options='displayModes'
-          toggle-color='primary'
-          flat
-          )
-          template(v-slot:list)
-            q-icon(name='fas fa-list')
-          template(v-slot:table)
-            q-icon(name='fas fa-th')
-          template(v-slot:document)
-            q-icon(name='fas fa-file')
+q-page(:style-fn='myTweak')
+  q-resize-observer(@resize='onResize')
+  .q-pa-md(ref='mainContent')
+    my-navigation(ref='header')
+    //- q-breadcrumbs(ref='header')
+      //- q-breadcrumbs-el(:label='navigation.server' icon='fas fa-desktop' :to='`/app/${navigation.server}`')
+      //- q-breadcrumbs-el(:label='navigation.db' icon='fas fa-database' :to='`/app/${navigation.server}/${navigation.db}`')
+      //- q-breadcrumbs-el(:label='navigation.table' icon='fas fa-table')
 
-      .q-pa-md(ref='bodyContent')
-        list-view(
-          v-if='displayMode==="list"'
-          :dataRows='tableRows'
-          :contentHeight='contentHeight'
-          @updateItemClick='updateItem'
-          @removeItemClick='removeItem'
-          @refreshItemClick='refreshPage'
-          )
-        document-view(
-          v-if='displayMode==="document"'
-          :dataRows='tableRows'
-          :contentHeight='contentHeight'
-          @refreshItemClick='refreshPage'
-          )
-        table-view(
-          v-if='displayMode==="table"'
-          :dataRows='tableRows'
-          :contentHeight='contentHeight'
-          @updateItemClick='updateItem'
-          @removeItemClick='removeItem'
-          @refreshItemClick='refreshPage'
-          )
-    query-dialog(
-      v-if='openQuery'
-      v-model='openQuery'
-      :commandData.sync='commandData'
-      :commandMode='commandMode'
-      @submit='onQuerySubmit'
+    q-toolbar(ref='toolbar')
+      q-btn-group(spread)
+        q-btn(:label='$t("search")', color='positive', @click='openSearchDialog')
+        q-btn(label='find', color='info', @click='openFindDialog')
+        q-btn(label='aggregate', color='warning', @click='openAggregateDialog')
+      q-space
+      q-icon(name='far fa-clock')
+      | {{ duration }} {{ $t("sec") }}
+      q-space
+      q-input(v-model='perPageRecord', style='width:100px', :label='$t("pageSizeLabel")', debounce='500', dense)
+      q-pagination(:value='currentPage', :max='pageMax', input, @input='changePage')
+      q-separator(vertical, inset)
+      q-btn(flat, color='primary', icon='las la-sync-alt', size='sm', @click='refreshPage')
+      q-separator(vertical, inset)
+      q-btn-toggle(v-model='displayMode', :options='displayModes', toggle-color='primary', flat)
+        template(v-slot:list)
+          q-icon(name='fas fa-list')
+        template(v-slot:table)
+          q-icon(name='fas fa-th')
+        template(v-slot:document)
+          q-icon(name='fas fa-file')
+
+    .q-pa-md(ref='bodyContent')
+      list-view(
+        v-if='displayMode === "list"',
+        :dataRows='tableRows',
+        :contentHeight='contentHeight',
+        @updateItemClick='updateItem',
+        @browsItemClick='browsItem',
+        @insertItemClick='insertItem',
+        @removeItemClick='removeItem',
+        @refreshItemClick='refreshPage'
       )
-    search-dialog(
-      v-if='openSearch'
-      v-model='openSearch'
-      :commandData.sync='commandData'
-      @submit='onQuerySubmit'
+      document-view(
+        v-if='displayMode === "document"',
+        :dataRows='tableRows',
+        :contentHeight='contentHeight',
+        @refreshItemClick='refreshPage'
       )
-    edit-dialog(
-      v-if='openEdit'
-      v-model='openEdit'
-      :editTable='navigation.table'
-      :editKey='editing._id'
-      :editData='editing'
-      @submit='editSave'
+      table-view(
+        v-if='displayMode === "table"',
+        :dataRows='tableRows',
+        :contentHeight='contentHeight',
+        @updateItemClick='updateItem',
+        @browsItemClick='browsItem',
+        @insertItemClick='insertItem',
+        @removeItemClick='removeItem',
+        @refreshItemClick='refreshPage'
       )
+  query-dialog(
+    v-if='openQuery',
+    v-model='openQuery',
+    :commandData.sync='commandData',
+    :commandMode='commandMode',
+    @submit='onQuerySubmit'
+  )
+  search-dialog(v-if='openSearch', v-model='openSearch', :commandData.sync='commandData', @submit='onQuerySubmit')
+  edit-dialog(
+    v-if='openEdit',
+    v-model='openEdit',
+    :editTable='navigation.table',
+    :editKey='editing._id',
+    :editData='editing',
+    :readonly='!isEditData',
+    :navigation='navigation',
+    @submit='editSave'
+  )
 </template>
 
 <script>
@@ -108,6 +87,7 @@ import tableView from '../components/tableView'
 import queryDialog from '../components/queryDialog'
 import searchDialog from '../components/searchDialog'
 import editDialog from '../components/editDialog'
+import draggableDialog from '../components/dialogDraggable'
 import tools from '../util/tools'
 import notify from '../mixin/notify.js'
 export default {
@@ -121,6 +101,7 @@ export default {
     queryDialog,
     searchDialog,
     editDialog,
+    draggableDialog,
   },
   // preFetch({ store, currentRoute, previousRoute, redirect, ssrContext }) {
   //   // fetch data, validate route and optionally redirect to some other route...
@@ -149,6 +130,7 @@ export default {
       openQuery: false,
       openSearch: false,
       openEdit: false,
+      isEditData: true,
 
       editing: null,
     }
@@ -186,7 +168,7 @@ export default {
   },
   methods: {
     ...mapMutations('master', ['setPageSize', 'setCommandMode', 'setFindCommand', 'setAggregateCommand']),
-    ...mapActions('master', ['findTableData', 'aggregateTableData', 'deleteData', 'updateData']),
+    ...mapActions('master', ['findTableData', 'aggregateTableData', 'deleteData', 'updateData', 'insertData']),
     changePage(page) {
       if (page !== this.currentPage) {
         // console.debug('changePage')
@@ -222,10 +204,23 @@ export default {
       this.openQuery = true
       this.setCommandMode('aggregate')
     },
+    browsItem(_id, data) {
+      console.debug('browsItem', { _id, data })
+      this.openEdit = true
+      this.editing = data
+      this.isEditData = false
+    },
+    insertItem() {
+      console.debug('insertItem')
+      this.openEdit = true
+      this.editing = {}
+      this.isEditData = true
+    },
     updateItem(_id, updated) {
       console.debug('updateItem', { _id, updated })
       this.openEdit = true
       this.editing = updated
+      this.isEditData = true
     },
     removeItem(_id) {
       const { server, db, table } = _.get(this.$route, ['params'])
@@ -248,20 +243,29 @@ export default {
     editSave(_id, data, tb) {
       const { server, db, table } = _.get(this.$route, ['params'])
       console.debug('editSave', { server, db, table, _id, data })
-      this.updateData({ serverName: server, database: db, table, id: _id, data }).then(() => {
-        this.$q.notify({
-          type: 'positive',
-          message: _.template(this.$t('document_update_success'))({ id: _id }),
+      if (_id) {
+        this.updateData({ serverName: server, database: db, table, id: _id, data }).then(() => {
+          this.$q.notify({
+            type: 'positive',
+            message: _.template(this.$t('document_update_success'))({ id: _id }),
+          })
+          this.refreshPage()
+          // const alertOption = {
+          //   title: 'Correct',
+          //   type: 'positive',
+          //   autoClose: 1.5,
+          //   message: `Record (${_id}) delete success!`,
+          // }
+          // this.showAlert(alertOption).onDismiss(() => this.refreshPage()
         })
-        this.refreshPage()
-        // const alertOption = {
-        //   title: 'Correct',
-        //   type: 'positive',
-        //   autoClose: 1.5,
-        //   message: `Record (${_id}) delete success!`,
-        // }
-        // this.showAlert(alertOption).onDismiss(() => this.refreshPage()
-      })
+      } else {
+        this.insertData({ serverName: server, database: db, table, data }).then(() => {
+          this.$q.notify({
+            type: 'positive',
+            message: this.$t('document_insert_success'),
+          })
+        })
+      }
     },
     onQuerySubmit() {
       // console.debug('onQuerySubmit')

@@ -1,174 +1,132 @@
 <template lang="pug">
-  main
-    q-drawer(
-      :value='leftDrawerOpen'
-      show-if-above
-      bordered
-      content-class='bg-grey-2'
-      )
-      q-scroll-area.fit
-        q-list
-          q-expansion-item(
-            expand-icon-toggle
-            expand-separator
-            group="somegroup"
-            :value='!selectedServer'
-            :content-inset-level='0.3'
-            )
-            template(v-slot:header)
-              q-item-section(avatar)
-                q-icon(name='fas fa-server')
-              q-item-section
-                q-item-label Servers
-                q-item-label(caption)
-              q-item-section(top side)
-                .text-grey-8.q-gutter-xs
-                  q-btn.gt-xs(
-                    icon='add'
-                    size='12px' 
-                    flat 
-                    dense 
-                    round 
-                    @click='()=>showServerConfigDialog(true)'
-                    )
-            q-list
-              q-item(
-                v-for='server in serverList'
-                :key='server.name'
-                )
-                q-item-section(avatar)
-                  q-icon(name='fas fa-desktop')
-                q-item-section
-                  q-item-label {{server.name}}
-                  q-item-label(caption)
-                q-item-section(top side)
-                  .text-grey-8.q-gutter-xs
-                    q-btn.gt-xs(
-                      icon='fas fa-hands-helping'
-                      size='10px' 
-                      flat 
-                      dense 
-                      round 
-                      @click='()=>serverConnect(server.name)'
-                      )
-                    q-btn.gt-xs(size='12px' flat dense round icon='more_vert')
-                      q-menu(fit anchor='bottom left' self='top left')
-                        q-item(clickable)
-                          q-item-section
-                            .text-grey-8.q-gutter-xs
-                              q-btn.gt-xs(
-                                icon='delete'
-                                size='12px' 
-                                flat 
-                                dense 
-                                round 
-                                @click='()=>deleteServerConfig(server.name)'
-                                )
-                        q-item(clickable)
-                          q-item-section
-                            .text-grey-8.q-gutter-xs
-                              q-btn.gt-xs(
-                                icon='edit'
-                                size='12px' 
-                                flat 
-                                dense 
-                                round 
-                                @click='()=>showServerConfigDialog(false,server)'
-                                )
-                        q-item(clickable)
-                          q-item-section
-                            .text-grey-8.q-gutter-xs
-                              q-btn.gt-xs(
-                                size='10px' 
-                                flat 
-                                dense 
-                                round 
-                                icon='fas fa-clone'
-                                @click='()=>showServerConfigDialog(true,server)'
-                                )
-          q-expansion-item(
-            v-if='selectedServer'
-            expand-icon-toggle
-            expand-separator
-            group="somegroup"
-            :value='!!selectedServer'
-            :content-inset-level='0.3'
-            )
-            template(v-slot:header)
+main
+  q-drawer(:value='leftDrawerOpen', show-if-above, bordered, content-class='bg-grey-2')
+    q-scroll-area.fit
+      q-list
+        q-expansion-item(
+          expand-icon-toggle,
+          expand-separator,
+          group='somegroup',
+          :value='!selectedServer',
+          :content-inset-level='0.3'
+        )
+          template(v-slot:header)
+            q-item-section(avatar)
+              q-icon(name='fas fa-server')
+            q-item-section
+              q-item-label Servers
+              q-item-label(caption)
+            q-item-section(top, side)
+              .text-grey-8.q-gutter-xs
+                q-btn.gt-xs(icon='add', size='12px', flat, dense, round, @click='() => showServerConfigDialog(true)')
+          q-list
+            q-item(v-for='server in serverList', :key='server.name')
               q-item-section(avatar)
                 q-icon(name='fas fa-desktop')
-              q-item-section.cursor-pointer(@click='serverClick(selectedServer.name)')
-                q-item-label {{selectedServer.name}}
+              q-item-section
+                q-item-label {{ server.name }}
                 q-item-label(caption)
-              q-menu(
-                touch-position
-                context-menu
-                )
-                q-list(dense style="min-width: 100px")
-                  q-item(
-                    clickable 
-                    v-close-popup
-                    @click='()=>menuServerRefresh(selectedServer.name)'
-                    )
-                    q-item-section {{$t('menu.refresh')}}
-                  q-separator
-                  q-item(
-                    clickable 
-                    v-close-popup
-                    @click='()=>menuCreateDatabase(selectedServer.name)'
-                    )
-                    q-item-section {{$t('menu.createDatabase')}}
-                  q-separator
-                  q-item(
-                    clickable 
-                    v-close-popup
-                    @click='()=>menuServerStatus(selectedServer.name)'
-                    )
-                    q-item-section {{$t('menu.serverStatus')}}
-                  q-item(
-                    clickable 
-                    v-close-popup
-                    @click='()=>menuHostInfo(selectedServer.name)'
-                    )
-                    q-item-section {{$t('menu.hostInfo')}}
-                  q-separator
-                  q-item(
-                    clickable 
-                    v-close-popup
-                    @click='()=>menuShowLog(selectedServer.name)'
-                    )
-                    q-item-section {{$t('menu.showLog')}}
-            database-items(
-              :databases='selectedServerDBs'
-              @databaseClick='databaseClick'
-              @tableClick='tableClick'
-
-              @menuDatabaseRefresh='menuDatabaseRefresh'
-              @menuDatabaseStatistics='menuDatabaseStatistics'
-              @menuDropDatabase='menuDropDatabase'
-              @menuCreateCollection='menuCreateCollection'
-
-              @menuInsertDoc='menuInsertDoc'
-              @menuRemoveAllDoc='menuRemoveAllDoc'
-              @menuRenameCollection='menuRenameCollection'
-              @menuDuplicateCollection='menuDuplicateCollection'
-              @menuDropCollection='menuDropCollection'
-              @menuCollectionStatistics='menuCollectionStatistics'
-              )
-    q-page-container
-      router-view
-    server-config-dialog(
-      v-model='serverConfigShow'
-      :editData='editingConfig'
-      )
-    edit-dialog(
-      v-if='openEdit'
-      v-model='openEdit'
-      :editTable='editingTable'
-      :editKey='editing._id'
-      :editData='editing'
-      @submit='editSave'
-      )
+              q-item-section(top, side)
+                .text-grey-8.q-gutter-xs
+                  q-btn.gt-xs(
+                    icon='fas fa-hands-helping',
+                    size='10px',
+                    flat,
+                    dense,
+                    round,
+                    @click='() => serverConnect(server.name)'
+                  )
+                  q-btn.gt-xs(size='12px', flat, dense, round, icon='more_vert')
+                    q-menu(fit, anchor='bottom left', self='top left')
+                      q-item(clickable)
+                        q-item-section
+                          .text-grey-8.q-gutter-xs
+                            q-btn.gt-xs(
+                              icon='delete',
+                              size='12px',
+                              flat,
+                              dense,
+                              round,
+                              @click='() => deleteServerConfig(server.name)'
+                            )
+                      q-item(clickable)
+                        q-item-section
+                          .text-grey-8.q-gutter-xs
+                            q-btn.gt-xs(
+                              icon='edit',
+                              size='12px',
+                              flat,
+                              dense,
+                              round,
+                              @click='() => showServerConfigDialog(false, server)'
+                            )
+                      q-item(clickable)
+                        q-item-section
+                          .text-grey-8.q-gutter-xs
+                            q-btn.gt-xs(
+                              size='10px',
+                              flat,
+                              dense,
+                              round,
+                              icon='fas fa-clone',
+                              @click='() => showServerConfigDialog(true, server)'
+                            )
+        q-expansion-item(
+          v-if='selectedServer',
+          expand-icon-toggle,
+          expand-separator,
+          group='somegroup',
+          :value='!!selectedServer',
+          :content-inset-level='0.3'
+        )
+          template(v-slot:header)
+            q-item-section(avatar)
+              q-icon(name='fas fa-desktop')
+            q-item-section.cursor-pointer(@click='serverClick(selectedServer.name)')
+              q-item-label {{ selectedServer.name }}
+              q-item-label(caption)
+            q-menu(touch-position, context-menu)
+              q-list(dense, style='min-width: 100px')
+                q-item(clickable, v-close-popup, @click='() => menuServerRefresh(selectedServer.name)')
+                  q-item-section {{ $t("menu.refresh") }}
+                q-separator
+                q-item(clickable, v-close-popup, @click='() => menuCreateDatabase(selectedServer.name)')
+                  q-item-section {{ $t("menu.createDatabase") }}
+                q-separator
+                q-item(clickable, v-close-popup, @click='() => menuServerStatus(selectedServer.name)')
+                  q-item-section {{ $t("menu.serverStatus") }}
+                q-item(clickable, v-close-popup, @click='() => menuHostInfo(selectedServer.name)')
+                  q-item-section {{ $t("menu.hostInfo") }}
+                q-separator
+                q-item(clickable, v-close-popup, @click='() => menuShowLog(selectedServer.name)')
+                  q-item-section {{ $t("menu.showLog") }}
+          database-items(
+            :databases='selectedServerDBs',
+            @databaseClick='databaseClick',
+            @tableClick='tableClick',
+            @menuDatabaseRefresh='menuDatabaseRefresh',
+            @menuDatabaseStatistics='menuDatabaseStatistics',
+            @menuDropDatabase='menuDropDatabase',
+            @menuCreateCollection='menuCreateCollection',
+            @menuInsertDoc='menuInsertDoc',
+            @menuRemoveAllDoc='menuRemoveAllDoc',
+            @menuRenameCollection='menuRenameCollection',
+            @menuDuplicateCollection='menuDuplicateCollection',
+            @menuDropCollection='menuDropCollection',
+            @menuCollectionStatistics='menuCollectionStatistics'
+          )
+  q-page-container
+    router-view
+  server-config-dialog(v-model='serverConfigShow', :editData='editingConfig')
+  edit-dialog(
+    v-if='openEdit',
+    v-model='openEdit',
+    :editTable='editingTable',
+    :editKey='editing._id',
+    :editData='editing',
+    :navigation='getNavigation(editingTable)',
+    @submit='editSave'
+  )
 </template>
 
 <script>
@@ -252,6 +210,14 @@ export default {
       'createDatabase',
       'dropDatabase',
     ]),
+    getNavigation(selectedTable) {
+      const { server, db } = _.get(this.$route, ['params'])
+      return {
+        server,
+        db,
+        table: selectedTable,
+      }
+    },
     showServerConfigDialog(create, editData) {
       if (editData) {
         const { name, connString, options } = editData

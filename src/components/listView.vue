@@ -36,19 +36,23 @@ q-list(bordered)
                 v-if='hasId(row)',
                 clickable,
                 v-close-popup,
+                @click='$emit("browsItemClick", getIdValue(row), row._v)'
+              )
+                q-item-section {{ $t("menu.browseDocument") }}
+              q-item(clickable, v-close-popup, @click='$emit("insertItemClick")')
+                q-item-section {{ $t("menu.insertDocument") }}
+              q-item(
+                v-if='hasId(row)',
+                clickable,
+                v-close-popup,
                 @click='$emit("updateItemClick", getIdValue(row), row._v)'
               )
                 q-item-section {{ $t("menu.updateDocument") }}
-              q-item(v-if='hasId(row)', clickable, v-close-popup, @click='$emit("ItemClick", getIdValue(row))')
-                q-item-section 浏览记录(Not yet)
-              q-item(v-if='hasId(row)', clickable, v-close-popup, @click='$emit("ItemClick", getIdValue(row))')
-                q-item-section 插入记录(Not yet)
+              q-item(v-if='hasId(row)', clickable, v-close-popup, @click='$emit("removeItemClick", getIdValue(row))')
+                q-item-section {{ $t("menu.removeDocument") }}
               q-separator 
               q-item(v-if='hasId(row)', clickable, v-close-popup, @click='() => copyDocJsonClickHandling(row)')
                 q-item-section {{ $t("menu.copyValueJson") }}
-              q-separator 
-              q-item(v-if='hasId(row)', clickable, v-close-popup, @click='$emit("removeItemClick", getIdValue(row))')
-                q-item-section {{ $t("menu.removeDocument") }}
               q-separator 
               q-item(v-if='!hideFreshMenu', clickable, v-close-popup, @click='$emit("refreshItemClick")')
                 q-item-section {{ $t("menu.refresh") }}

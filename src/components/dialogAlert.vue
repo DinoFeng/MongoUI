@@ -1,45 +1,38 @@
 <template lang="pug">
-  q-dialog(
-    ref='dialog' 
-    :seamless='seamless'
-    :persistent='persistent'
-    :position='position'
-    @hide='onDialogHide'
-    )
-    q-card.q-dialog-plugin
-      q-card-section
-        .text-h6 {{title}}
-      q-card-section
-        .row
-          .col-1.q-ma-sm(v-if='!!icon')
-            q-icon(
-              v-if='!!icon' 
-              :name='icon'
-              :class='`text-${type}`'
-              style='font-size: 36px;'
-              )
-          .col.q-ma-sm.text-body1 {{message}}
-      q-card-section(v-if='!!detail' align='right')
-        a(
-          href='javascript:void(0)'
-          @click='()=>detailShow=!detailShow'
-          ) {{$t('detail')}}
-      q-card-section(v-if='!!detail && detailShow')
-        q-scroll-area.q-dialog-detail-section.text-caption {{detail}}
-      //- buttons example
-      q-card-actions(align='right')
-        q-btn(
-          color='primary'
-          flat
-          autofocus
-          :label='labelOK'
-          @click='onOKClick'
-          )
-        //- q-btn(color='primary', label='Cancel', @click='onCancelClick')
+q-dialog(
+  ref='dialog',
+  :seamless='seamless',
+  :persistent='persistent',
+  :position='position',
+  @hide='onDialogHide',
+  @show='onShow'
+)
+  q-card.q-dialog-plugin
+    q-bar.bg-primary.text-white(:class='draggable ? "cursor-move" : ""')
+      q-icon(v-if='titleIcon', :name='titleIcon')
+      .text-h6 {{ title }}
+      q-space
+    //- q-card-section
+      .text-h6 {{ title }}
+    q-card-section
+      .row
+        .col-1.q-ma-sm(v-if='!!icon')
+          q-icon(v-if='!!icon', :name='icon', :class='`text-${type}`', style='font-size: 36px;')
+        .col.q-ma-sm.text-body1 {{ message }}
+    q-card-section(v-if='!!detail', align='right')
+      a(href='javascript:void(0)', @click='() => (detailShow = !detailShow)') {{ $t("detail") }}
+    q-card-section(v-if='!!detail && detailShow')
+      q-scroll-area.q-dialog-detail-section.text-caption {{ detail }}
+    //- buttons example
+    q-card-actions(align='right')
+      q-btn(color='primary', flat, autofocus, :label='labelOK', @click='onOKClick')
+      //- q-btn(color='primary', label='Cancel', @click='onCancelClick')
 </template>
 
 <script>
+import draggable from '../mixin/draggable.js'
 export default {
+  mixins: [draggable],
   props: {
     title: String,
     message: String,
@@ -50,6 +43,8 @@ export default {
     closeTime: Number,
     seamless: Boolean,
     persistent: Boolean,
+    titleIcon: String,
+    draggable: { type: Boolean, default: true },
   },
   mounted() {
     if (this.closeTime > 0) {
@@ -105,6 +100,7 @@ export default {
       // required to be emitted
       // when QDialog emits "hide" event
       this.$emit('hide')
+      this.onHide()
     },
     onOKClick() {
       // on OK, it is REQUIRED to

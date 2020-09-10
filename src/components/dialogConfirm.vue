@@ -1,41 +1,34 @@
 <template lang="pug">
-  q-dialog(
-    ref='dialog' 
-    :seamless='seamless'
-    :persistent='persistent'
-    :position='position'
-    @hide='onDialogHide'
-    )
-    q-card.q-dialog-plugin
-      q-card-section
-        .text-h6 {{title}}
-      q-card-section
-        .row
-          .col-1.q-ma-sm
-            q-icon.text-secondary(
-              name='help'
-              style='font-size: 36px;'
-              )
-          .col.q-ma-sm.text-body1 {{message}}
-      //- buttons example
-      q-card-actions(align='right')
-        q-btn(
-          color='primary'
-          flat
-          :label='labelOK'
-          :autofocus='!defaultCancel'
-          @click='onOKClick')
-        q-btn(
-          color='primary'
-          flat
-          :label='labelCancel'
-          :autofocus='defaultCancel',
-          @click='onCancelClick'
-          )
+q-dialog(
+  ref='dialog',
+  :seamless='seamless',
+  :persistent='persistent',
+  :position='position',
+  @hide='onDialogHide',
+  @show='onShow'
+)
+  q-card.q-dialog-plugin
+    q-bar.bg-primary.text-white(:class='draggable ? "cursor-move" : ""')
+      q-icon(v-if='titleIcon', :name='titleIcon')
+      .text-h6 {{ title }}
+      q-space
+    //- q-card-section
+      .text-h6 {{ title }}
+    q-card-section
+      .row
+        .col-1.q-ma-sm
+          q-icon.text-secondary(name='help', style='font-size: 36px;')
+        .col.q-ma-sm.text-body1 {{ message }}
+    //- buttons example
+    q-card-actions(align='right')
+      q-btn(color='primary', flat, :label='labelOK', :autofocus='!defaultCancel', @click='onOKClick')
+      q-btn(color='primary', flat, :label='labelCancel', :autofocus='defaultCancel', @click='onCancelClick')
 </template>
 
 <script>
+import draggable from '../mixin/draggable.js'
 export default {
+  mixins: [draggable],
   props: {
     closeTime: Number,
     title: String,
@@ -46,6 +39,8 @@ export default {
     position: String,
     seamless: Boolean,
     persistent: Boolean,
+    titleIcon: String,
+    draggable: { type: Boolean, default: true },
   },
   mounted() {
     if (this.closeTime > 0) {
@@ -99,6 +94,7 @@ export default {
       // required to be emitted
       // when QDialog emits "hide" event
       this.$emit('hide')
+      this.onHide()
     },
     onOKClick() {
       // on OK, it is REQUIRED to
