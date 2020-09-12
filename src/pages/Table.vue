@@ -87,7 +87,6 @@ import tableView from '../components/tableView'
 import queryDialog from '../components/queryDialog'
 import searchDialog from '../components/searchDialog'
 import editDialog from '../components/editDialog'
-import draggableDialog from '../components/dialogDraggable'
 import tools from '../util/tools'
 import notify from '../mixin/notify.js'
 export default {
@@ -101,7 +100,6 @@ export default {
     queryDialog,
     searchDialog,
     editDialog,
-    draggableDialog,
   },
   // preFetch({ store, currentRoute, previousRoute, redirect, ssrContext }) {
   //   // fetch data, validate route and optionally redirect to some other route...
