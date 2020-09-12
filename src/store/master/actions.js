@@ -16,7 +16,7 @@ const actions = {
       commit('setLoading', 1)
       commit(`setSelectedServer`, serverName)
       const serverConfig = await gobalAction.connectServer(state.selectedServer)
-      console.info('connectServer', serverConfig, state.selectedServer)
+      // console.info('connectServer', serverConfig, state.selectedServer)
       commit(`saveConnectServer`, serverConfig)
       return serverConfig
     } catch (error) {

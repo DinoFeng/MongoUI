@@ -92,6 +92,8 @@ export default {
     updateDocument: '修改记录',
     browseDocument: '浏览记录',
     removeDocument: '删除记录',
+    expandedItem: '展开',
+    collapsedItem: '折叠',
     refresh: '刷新',
     databaseStatistics: '数据库统计数据',
     dropDatabase: '删除数据库',

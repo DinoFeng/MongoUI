@@ -88,7 +88,7 @@ const mutations = {
     const { rows: ejsonString, total } = data
     const eRows = eJson.parse(ejsonString, { relaxed: false })
     const rows = eRows.map(row => tools.parseBson(row))
-    console.debug({ rows })
+    // console.debug({ rows })
     state.tableResult = { rows, total, eRows }
     // state.tableResult = _.cloneDeep(data)
   },

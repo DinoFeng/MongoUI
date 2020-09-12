@@ -271,7 +271,7 @@ export default {
       this.getServerStats({ serverName })
     },
     menuCreateDatabase(serverName) {
-      console.debug('menuCreateDatabase', serverName)
+      // console.debug('menuCreateDatabase', serverName)
       this.showPrompt({
         title: this.$t('create_database.title'),
         message: this.$t('create_database.message'),

@@ -157,7 +157,7 @@ export default {
         return _.get(this, [this.commandMode])
       },
       set(v) {
-        console.debug(v)
+        // console.debug(v)
         if (this.commandMode === 'find') {
           this.setFindCommand(v)
         } else {
@@ -178,7 +178,7 @@ export default {
       }
     },
     changePageSize(pageSize) {
-      console.debug('pageSize', pageSize)
+      // console.debug('pageSize', pageSize)
       this.refreshPage()
     },
     refreshPage() {
@@ -205,26 +205,26 @@ export default {
       this.setCommandMode('aggregate')
     },
     browsItem(_id, data) {
-      console.debug('browsItem', { _id, data })
+      // console.debug('browsItem', { _id, data })
       this.openEdit = true
       this.editing = data
       this.isEditData = false
     },
     insertItem() {
-      console.debug('insertItem')
+      // console.debug('insertItem')
       this.openEdit = true
       this.editing = {}
       this.isEditData = true
     },
     updateItem(_id, updated) {
-      console.debug('updateItem', { _id, updated })
+      // console.debug('updateItem', { _id, updated })
       this.openEdit = true
       this.editing = updated
       this.isEditData = true
     },
     removeItem(_id) {
       const { server, db, table } = _.get(this.$route, ['params'])
-      console.debug('removeItem', { server, db, table, _id })
+      // console.debug('removeItem', { server, db, table, _id })
       this.deleteData({ serverName: server, database: db, table, id: _id }).then(() => {
         this.$q.notify({
           type: 'positive',
@@ -242,7 +242,7 @@ export default {
     },
     editSave(_id, data, tb) {
       const { server, db, table } = _.get(this.$route, ['params'])
-      console.debug('editSave', { server, db, table, _id, data })
+      // console.debug('editSave', { server, db, table, _id, data })
       if (_id) {
         this.updateData({ serverName: server, database: db, table, id: _id, data }).then(() => {
           this.$q.notify({

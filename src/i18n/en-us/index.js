@@ -90,6 +90,8 @@ export default {
     copyObject: 'Copy Item JSON',
     copyDocJson: 'Copy Document JSON',
     refresh: 'Refresh',
+    expandedItem: 'Expanded',
+    collapsedItem: 'Collapsed',
     insertDocument: 'Insert Documents',
     updateDocument: 'Update Document',
     browseDocument: 'View Document',

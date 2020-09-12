@@ -31,10 +31,10 @@ div
         q-item-section.col-2 {{ row.value.type }}
         q-menu(touch-position, context-menu)
           q-list(dense, style='min-width: 100px')
-            q-item(clickable, v-close-popup, @click='$emit("test")')
-              q-item-section 展开(Not yet)
-            q-item(clickable, v-close-popup, @click='$emit("test")')
-              q-item-section 折叠(Not yet)
+            q-item(clickable, v-close-popup, @click='expandedItem(row.key)')
+              q-item-section {{ $t("menu.expandedItem") }}
+            q-item(clickable, v-close-popup, @click='collapsedItem(row.key)')
+              q-item-section {{ $t("menu.collapsedItem") }}
             q-separator 
             q-item(clickable, v-close-popup, v-clipboard:copy='row.key')
               q-item-section {{ $t("menu.copyName") }}
@@ -48,6 +48,7 @@ div
         v-if='expandeds[row.key]',
         :data='row.value.value',
         :level='nextLevel',
+        :expandLevel='expandLevels[row.key] || 0',
         @copyPathClick='(childKeys) => copyPathClickHandling(row, childKeys)',
         @copyObjectClick='(childKeys, value) => copyObjectClickHandling(row, childKeys, value)'
       )
@@ -55,6 +56,7 @@ div
 
 <script>
 import _ from 'lodash'
+import Vue from 'vue'
 import eJson from 'mongodb-extjson'
 import tools from '../util/tools'
 export default {
@@ -62,19 +64,52 @@ export default {
   props: {
     data: [Object, Array],
     level: Number,
+    expandLevel: Number,
   },
   data() {
     return {
       expandeds: {},
+      expandLevels: {},
     }
   },
   mounted() {
-    this.expandeds = {}
+    if (this.expandLevel === 0) {
+      this.expandeds = {}
+      this.expandLevels = {}
+    } else {
+      this.expandeds = this.rows.reduce((pre, curRow) => {
+        if (curRow.ext) {
+          return _.merge(pre, { [curRow.key]: true })
+        } else {
+          return pre
+        }
+      }, {})
+      this.expandLevels = this.rows.reduce((pre, curRow) => {
+        if (curRow.ext) {
+          return _.merge(pre, { [curRow.key]: this.expandLevel - 1 })
+        } else {
+          return pre
+        }
+      }, {})
+    }
+    // console.debug('displayList mounted', {
+    //   expandeds: this.expandeds,
+    //   expandLevel: this.expandLevel,
+    //   expandLevels: this.expandLevels,
+    // })
+    // this.expandeds = {}
     // Object.keys(this.data).reduce((pre, cur) => {
     //   return _.merge(pre, { [cur]: false })
     // }, {})
   },
   computed: {
+    // subExpandLevel() {
+    //   if (this.expandLevel !== 0) {
+    //     return this.expandLevel - 1
+    //   } else {
+    //     return 0
+    //   }
+    // },
     nextLevel() {
       return this.level + 1
     },
@@ -103,6 +138,18 @@ export default {
     },
   },
   methods: {
+    expandedItem(rowKey) {
+      console.debug('expandedItem', { rowKey })
+      Vue.set(this.expandLevels, rowKey, this.expandLevel - 1)
+      Vue.set(this.expandeds, rowKey, true)
+      // this.expandeds=_.merge(this.expandeds)
+    },
+    collapsedItem(rowKey) {
+      console.debug('collapsedItem', { rowKey })
+      Vue.set(this.expandLevels, rowKey, 0)
+      Vue.set(this.expandeds, rowKey, false)
+      // this.expandeds=_.merge(this.expandeds)
+    },
     getExpIcon(v) {
       return v ? 'keyboard_arrow_down' : 'keyboard_arrow_right'
     },
@@ -115,15 +162,15 @@ export default {
       this.$copyText(eJson.stringify(value._v))
     },
     emitCopyPathClick(row) {
-      console.debug('emitCopyPathClick', { row })
+      // console.debug('emitCopyPathClick', { row })
       this.$emit('copyPathClick', [row.key])
     },
     emitCopyObjectClick(row) {
-      console.debug('emitCopyObjectClick', { row })
+      // console.debug('emitCopyObjectClick', { row })
       this.$emit('copyObjectClick', [row.key], row.value._v)
     },
     copyPathClickHandling(row, childKeys) {
-      console.debug('copyPathClickHandling', { row, childKeys })
+      // console.debug('copyPathClickHandling', { row, childKeys })
       if (row.value.type === 'Array') {
         childKeys.splice(0, 1)
       }
@@ -131,11 +178,36 @@ export default {
       // this.$copyText(JSON.stringify(value._v))
     },
     copyObjectClickHandling(row, childKeys, value) {
-      console.debug('copyObjectClickHandling', { row })
+      // console.debug('copyObjectClickHandling', { row })
       if (row.value.type === 'Array') {
         childKeys.splice(0, 1)
       }
       this.$emit('copyObjectClick', [row.key, ...childKeys], value)
+    },
+  },
+  watch: {
+    expandLevel: {
+      handler(val) {
+        if (val === 0) {
+          this.expandeds = {}
+          this.expandLevels = {}
+        } else {
+          this.expandeds = this.rows.reduce((pre, curRow) => {
+            if (curRow.isExt) {
+              return _.merge(pre, { [curRow.key]: true })
+            } else {
+              return pre
+            }
+          }, {})
+          this.expandLevels = this.rows.reduce((pre, curRow) => {
+            if (curRow.ext) {
+              return _.merge(pre, { [curRow.key]: this.expandLevel - 1 })
+            } else {
+              return pre
+            }
+          }, {})
+        }
+      },
     },
   },
 }

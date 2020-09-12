@@ -119,11 +119,11 @@ export default {
     },
     copyDocJsonClickHandling(row, index) {
       const rowData = this.dataRows[index]
-      console.debug('copyDocJsonClickHandling', { v: row, x: rowData._v })
+      // console.debug('copyDocJsonClickHandling', { v: row, x: rowData._v })
       this.$copyText(eJson.stringify(rowData._v))
     },
     copyValueClick(value) {
-      console.debug('copyValueClick', { value })
+      // console.debug('copyValueClick', { value })
       if (value.isExt) {
         this.$copyText(eJson.stringify(value._v))
       } else {
@@ -131,7 +131,7 @@ export default {
       }
     },
     copyObjectClick(name, value) {
-      console.debug('copyObjectClick', { name, value })
+      // console.debug('copyObjectClick', { name, value })
       this.$copyText(eJson.stringify({ [name]: value._v }))
     },
   },
