@@ -1,54 +1,37 @@
 <template lang="pug">
-  q-dialog(
-    ref='dialog' 
-    :seamless='seamless'
-    :persistent='persistent'
-    :position='position'
-    @hide='onDialogHide'
-    )
-    q-form(
-      @submit='onOKClick'
-      @reset='onCancelClick'
-      )
-    q-card.q-dialog-plugin
-      q-form(
-        @submit='onOKClick'
-        @reset='onCancelClick'
-        )
-        q-card-section
-          .text-h6 {{title}}
-        q-card-section
-          .row
-            .col.q-ma-sm.text-body1 {{message}}
-          .row
-            q-input.col(
-              v-model='text'
-              debounce='500'
-              :autofocus='!defaultValue'
-              :rules='rules'
-              @focus='onFocus'
-              )
-        //- buttons example
-        q-card-actions(align='right')
-          q-btn(
-            type='submit'
-            color='primary'
-            flat
-            :label='labelOK'
-            :autofocus='!defaultCancel'
-            )
-          q-btn(
-            type='reset'
-            color='primary'
-            flat
-            :label='labelCancel'
-            :autofocus='defaultCancel',
-            )
+q-dialog(
+  ref='dialog',
+  :seamless='seamless',
+  :persistent='persistent',
+  :position='position',
+  @hide='onDialogHide',
+  @show='onShow'
+)
+  //- q-form(@submit='onOKClick', @reset='onCancelClick')
+  q-card.q-dialog-plugin
+    q-bar.bg-primary.text-white(:class='draggable ? "cursor-move" : ""')
+      q-icon(v-if='titleIcon', :name='titleIcon')
+      .text-h6 {{ title }}
+      q-space
+    q-form(@submit='onOKClick', @reset='onCancelClick')
+      //- q-card-section
+        .text-h6 {{ title }}
+      q-card-section
+        .row
+          .col.q-ma-sm.text-body1 {{ message }}
+        .row
+          q-input.col(v-model='text', debounce='500', :autofocus='!defaultValue', :rules='rules', @focus='onFocus')
+      //- buttons example
+      q-card-actions(align='right')
+        q-btn(type='submit', color='primary', flat, :label='labelOK', :autofocus='!defaultCancel')
+        q-btn(type='reset', color='primary', flat, :label='labelCancel', :autofocus='defaultCancel')
 </template>
 
 <script>
 import _ from 'lodash'
+import draggable from '../mixin/draggable.js'
 export default {
+  mixins: [draggable],
   props: {
     closeTime: Number,
     title: String,
@@ -60,6 +43,8 @@ export default {
     position: String,
     seamless: Boolean,
     persistent: Boolean,
+    titleIcon: String,
+    draggable: { type: Boolean, default: true },
     validate: Function,
   },
   mounted() {
@@ -125,6 +110,7 @@ export default {
       // required to be emitted
       // when QDialog emits "hide" event
       this.$emit('hide')
+      this.onHide()
     },
     onOKClick() {
       // on OK, it is REQUIRED to
@@ -159,5 +145,9 @@ export default {
 .q-dialog-plugin {
   width: 500px;
   max-width: 80vw;
+}
+
+.cursor-move {
+  cursor: move;
 }
 </style>

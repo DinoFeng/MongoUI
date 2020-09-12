@@ -86,7 +86,7 @@ export default {
   },
   methods: {
     onItemClick(database) {
-      console.debug('onItemClick', database)
+      // console.debug('onItemClick', database)
       // this.dbSelected[database] = !this.dbSelected[database]
       this.dbSelected = { [database]: !this.dbSelected[database] }
       this.$emit('databaseClick', database)

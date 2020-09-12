@@ -1,80 +1,65 @@
 <template lang="pug">
-  q-dialog(
-    v-if='value'
-    v-model='value'
-    transition-show='none'
-    persistent
-    )
-    q-card(style='min-width:40vw')
-      q-toolbar
-        q-avatar
-          img(src='https://cdn.quasar.dev/logo/svg/quasar-logo.svg')
-        q-toolbar-title
-          span.text-uppercase.text-weight-bold {{ $t('search') }}
-      q-card-section
-        q-form(
-          @submit='onSubmit'
-          @reset='onReset'
-          )
-          q-select(
-            v-model='selectedField'
-            :options='fields'
-            :rules="[ val => val && val.length > 0 || `${$t('requestTip')}`]"
-            :label='$t("field")'
-            debounce='500'
-            filled
-            lazy-rules
-            use-input
-            hide-selected
-            fill-input
-            @input-value="setValue"
-            )
-          q-option-group(
-            v-model='inputType'
-            :options='valueTypes'
-            type='radio'
-            inline
-            dense
-          )
-          q-input(
-            v-if='!inputIsObject'
-            v-model='inputValue'
-            :rules="[ val => !isEmpty(val) || `${$t('requestTip')}`]"
-            :label='$t("value")'
-            debounce='500'
-            filled
-            lazy-rules
-            )
-          ace-editor(
-            v-if='inputIsObject'
-            v-model='inputValue'
-            :minLines='6'
-            :maxLines='6'
-            mode='json'
-            theme='tomorrow'
-            )
-          hr(style='filter: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15);')
-          q-toolbar
-            //- .col.remined.text-negative
-            //-   .row ObjectId("")=>{"$oid":""}
-            //-   .row Date("")=>{"$date":""}
-            q-space
-            q-btn.q-ml-sm(
-              :label='$t("search")'
-              type='submit'
-              color='primary'
-              )
-            q-btn.q-ml-sm(
-              :label='$t("cancel")'
-              type='reset'
-              color='primary'
-              flat
-              )
+draggable-dialog(
+  v-if='showDialog',
+  v-model='showDialog',
+  transition-show='none',
+  persistent,
+  titleIcon='search',
+  :title='$t("search")'
+)
+  q-card(style='min-width:40vw')
+    //- q-toolbar
+      q-avatar
+        img(src='https://cdn.quasar.dev/logo/svg/quasar-logo.svg')
+      q-toolbar-title
+        span.text-uppercase.text-weight-bold {{ $t("search") }}
+    q-card-section
+      q-form(@submit='onSubmit', @reset='onReset')
+        q-select(
+          v-model='selectedField',
+          :options='fields',
+          :rules='[(val) => (val && val.length > 0) || `${$t("requestTip")}`]',
+          :label='$t("field")',
+          debounce='500',
+          filled,
+          lazy-rules,
+          use-input,
+          hide-selected,
+          fill-input,
+          @input-value='setValue'
+        )
+        q-option-group(v-model='inputType', :options='valueTypes', type='radio', inline, dense)
+        q-input(
+          v-if='!inputIsObject',
+          v-model='inputValue',
+          :rules='[(val) => !isEmpty(val) || `${$t("requestTip")}`]',
+          :label='$t("value")',
+          debounce='500',
+          filled,
+          lazy-rules
+        )
+        ace-editor(
+          v-if='inputIsObject',
+          v-model='inputValue',
+          :minLines='6',
+          :maxLines='6',
+          mode='json',
+          theme='tomorrow'
+        )
+        hr(style='filter: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15);')
+        q-toolbar
+          //- .col.remined.text-negative
+          //-   .row ObjectId("")=>{"$oid":""}
+          //-   .row Date("")=>{"$date":""}
+          q-space
+          q-btn.q-ml-sm(:label='$t("search")', type='submit', color='primary')
+          q-btn.q-ml-sm(:label='$t("cancel")', type='reset', color='primary', flat)
 </template>
 
 <script>
 import _ from 'lodash'
 import { mapGetters } from 'vuex'
+import draggableDialog from './dialogDraggable'
 import eJson from 'mongodb-extjson'
 import aceEditor from './ace-editor'
 import vue from 'vue'
@@ -106,13 +91,17 @@ const typesMapping = {
 }
 export default {
   name: 'searchDialog',
-  components: { aceEditor },
+  components: {
+    aceEditor,
+    draggableDialog,
+  },
   props: {
     value: Boolean,
     commandData: Object,
   },
   data() {
     return {
+      showDialog: false,
       editing: {},
       inputType: 'string',
       valueTypes: [
@@ -137,6 +126,7 @@ export default {
       selectedField,
       inputValue,
     }
+    this.showDialog = this.value
   },
   computed: {
     ...mapGetters('master', ['resultFields']),
@@ -208,6 +198,12 @@ export default {
     },
   },
   watch: {
+    value(val) {
+      this.showDialog = val
+    },
+    showDialog(val) {
+      this.$emit('input', val)
+    },
     commandData: {
       deep: true,
       // immediate: true,

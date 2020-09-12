@@ -18,7 +18,7 @@ export default {
     //   `${this.calcHeight(this.tableHeight)}${this.heightUnit || 'px'}`,
     // )
     const tableBody = this.$el.getElementsByClassName('q-table__middle')
-    // console.debug('stickyHeaderTable mounted', tableBody)
+    // console.debug('stickyHeaderTable mounted', this)
     if (tableBody.length > 0) {
       tableBody[0].style.height = 0
       setTimeout(() => {
@@ -52,6 +52,10 @@ export default {
     }
   },
   computed: {
+    computedRows() {
+      return this.computedData.rows.map((row, index) => _.merge({}, row, { getIndex: () => index }))
+    },
+
     shtDataRowsCount() {
       return this.data.length
     },

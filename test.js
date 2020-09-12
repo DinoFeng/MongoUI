@@ -19,11 +19,20 @@ const test = async () => {}
 
 ;(async () => {
   // const x = await durationMs(test)()
-  const x = {
-    title: 'Update - Master Recap',
-    position: 1,
-    isCustomerMenu: true,
-    action: '\'Update "aaa"\'',
-  }
-  console.debug(JSON.stringify(JSON.stringify(x)).replace(/\\/g, '"'))
+  // const x = {
+  //   title: 'Update - Master Recap',
+  //   position: 1,
+  //   isCustomerMenu: true,
+  //   action: '\'Update "aaa"\'',
+  // }
+  // console.debug(JSON.stringify(JSON.stringify(x)).replace(/\\/g, '"'))
+  const now = new Date()
+  // now.toUTCString
+  console.debug(
+    now
+      .toISOString()
+      .replace(/-/g, '')
+      .replace(/:/g, '')
+      .replace(/\./g, ''),
+  )
 })()
