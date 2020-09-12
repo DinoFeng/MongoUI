@@ -88,6 +88,7 @@ export default {
     copyValueJson: 'Copy JSON',
     copyPath: 'Copy Path',
     copyObject: 'Copy Item JSON',
+    copyDocJson: 'Copy Document JSON',
     refresh: 'Refresh',
     insertDocument: 'Insert Documents',
     updateDocument: 'Update Document',

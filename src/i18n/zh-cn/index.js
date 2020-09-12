@@ -87,6 +87,7 @@ export default {
     copyValue: '复制值',
     copyValueJson: '复制JSON值',
     copyObject: '复制项目JSON值',
+    copyDocJson: '复制记录JSON值',
     copyPath: '复制名称路径',
     updateDocument: '修改记录',
     browseDocument: '浏览记录',

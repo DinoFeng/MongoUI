@@ -32,6 +32,8 @@ q-list(bordered)
               q-item(clickable, v-close-popup, @click='$emit("test")')
                 q-item-section 折叠(Not yet)
               q-separator 
+              q-item(clickable, v-close-popup, @click='$emit("insertItemClick")')
+                q-item-section {{ $t("menu.insertDocument") }}              
               q-item(
                 v-if='hasId(row)',
                 clickable,
@@ -39,8 +41,6 @@ q-list(bordered)
                 @click='$emit("browsItemClick", getIdValue(row), row._v)'
               )
                 q-item-section {{ $t("menu.browseDocument") }}
-              q-item(clickable, v-close-popup, @click='$emit("insertItemClick")')
-                q-item-section {{ $t("menu.insertDocument") }}
               q-item(
                 v-if='hasId(row)',
                 clickable,
@@ -52,7 +52,7 @@ q-list(bordered)
                 q-item-section {{ $t("menu.removeDocument") }}
               q-separator 
               q-item(v-if='hasId(row)', clickable, v-close-popup, @click='() => copyDocJsonClickHandling(row)')
-                q-item-section {{ $t("menu.copyValueJson") }}
+                q-item-section {{ $t("menu.copyDocJson") }}
               q-separator 
               q-item(v-if='!hideFreshMenu', clickable, v-close-popup, @click='$emit("refreshItemClick")')
                 q-item-section {{ $t("menu.refresh") }}
@@ -67,6 +67,7 @@ q-list(bordered)
 
 <script>
 import _ from 'lodash'
+import eJson from 'mongodb-extjson'
 import displayList from './displayList'
 import tools from '../util/tools'
 export default {
@@ -129,7 +130,7 @@ export default {
     },
     copyDocJsonClickHandling(row) {
       console.debug('copyDocJsonClickHandling', { v: row._v })
-      this.$copyText(JSON.stringify(row._v))
+      this.$copyText(eJson.stringify(row._v))
     },
   },
   watch: {

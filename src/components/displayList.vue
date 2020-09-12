@@ -55,6 +55,7 @@ div
 
 <script>
 import _ from 'lodash'
+import eJson from 'mongodb-extjson'
 import tools from '../util/tools'
 export default {
   name: 'displayList',
@@ -111,7 +112,7 @@ export default {
     },
     copyJsonClick(value) {
       // console.debug('copyJsonClick', { value: value._v })
-      this.$copyText(JSON.stringify(value._v))
+      this.$copyText(eJson.stringify(value._v))
     },
     emitCopyPathClick(row) {
       console.debug('emitCopyPathClick', { row })

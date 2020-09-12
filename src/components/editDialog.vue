@@ -8,11 +8,6 @@ draggable-dialog(
   :title='title'
 )
   q-card(style='min-width:80vw')
-    q-card-section(v-if='navigation')
-      q-breadcrumbs
-        q-breadcrumbs-el(v-if='navigation && navigation.server' :label='navigation.server', icon='fas fa-desktop')
-        q-breadcrumbs-el(v-if='navigation && navigation.db' :label='navigation.db', icon='fas fa-database')
-        q-breadcrumbs-el(v-if='navigation && navigation.table' :label='navigation.table', icon='fas fa-table')
     //- q-toolbar
       q-avatar
         img(src='https://cdn.quasar.dev/logo/svg/quasar-logo.svg')
@@ -20,6 +15,11 @@ draggable-dialog(
         .text-uppercase.text-weight-bold {{ title }}
         .text-caption {{ editTable }}
     q-card-section
+      .navigationBar(v-if='navigation')
+        q-breadcrumbs
+          q-breadcrumbs-el(v-if='navigation && navigation.server', :label='navigation.server', icon='fas fa-desktop')
+          q-breadcrumbs-el(v-if='navigation && navigation.db', :label='navigation.db', icon='fas fa-database')
+          q-breadcrumbs-el(v-if='navigation && navigation.table', :label='navigation.table', icon='fas fa-table')
       q-form(@submit='onSubmit', @reset='onReset')
         span {{ $t("record") }} *
         ace-editor(
@@ -130,5 +130,8 @@ export default {
 <style scoped>
 .remined {
   font-size: 12px;
+}
+.navigationBar {
+  padding: 0px 0px 12px 0px;
 }
 </style>
