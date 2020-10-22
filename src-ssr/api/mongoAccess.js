@@ -52,8 +52,21 @@ router.post(
     const { data } = body
     const client = await req.getMongoClient(server)
     if (client) {
+      const input = eJson.parse(data)
       // const data = await common.findData(client, db, table, findQuery, { page, pageSize }, options)
-      return await common.insertData(client, db, table, eJson.parse(data))
+      if (_.isArray(input)) {
+        // const res = []
+        // for (const item of input) {
+        //   // console.debug(item)
+        //   const r = await common.insertData(client, db, table, _.omit(item, '_id'))
+        //   res.push(r)
+        // }
+        // return res
+        // return await Promise.all(input.map(item => common.insertData(client, db, table, _.omit(item, '_id'))))
+        return await Promise.all(input.map(item => common.insertData(client, db, table, item)))
+      } else {
+        return await common.insertData(client, db, table, input)
+      }
     } else {
       throw new Error(`Mongo connection is null`)
     }

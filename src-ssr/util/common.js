@@ -250,7 +250,7 @@ const common = {
     // } else {
     //   return await table.insertOne(dataTransType(data, options))
     // }
-    console.debug('insertData', { db, collection, data })
+    // console.debug('insertData', { db, collection, data })
     return await table.insertOne(data)
   },
 
