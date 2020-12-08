@@ -2,6 +2,7 @@ const { ObjectID } = require('mongodb')
 const eJson = require('mongodb-extjson')
 // const parseSchema = require('mongodb-schema')
 const _ = require('lodash')
+const { logger } = require('./logger')
 
 const COLLECTION_EXISTS = 'Collection with same name already exists.'
 const SOURCE_NOT_EXISTS = `Source collection is't exists.`
@@ -10,10 +11,10 @@ const DATABASE_EXISTS = `<%=db%>.temp already exists.`
 // const genQuery = (orgQuery, fieldOptions) => {
 //   const objectIdFields = _.get(fieldOptions, ['objectIdFields'])
 //   if (objectIdFields && _.isArray(objectIdFields)) {
-//     // console.debug(objectIdFields)
+//     // logger.debug(objectIdFields)
 //     const q = objectIdFields.reduce((pre, cur) => _.merge(pre, { [cur]: ObjectID(orgQuery[cur]) }), {})
-//     // console.debug(JSON.stringify(q))
-//     // console.debug(_.merge({}, orgQuery, q))
+//     // logger.debug(JSON.stringify(q))
+//     // logger.debug(_.merge({}, orgQuery, q))
 //     return _.merge({}, orgQuery, q)
 //   } else {
 //     return orgQuery
@@ -21,19 +22,19 @@ const DATABASE_EXISTS = `<%=db%>.temp already exists.`
 // }
 
 // const dataTransType = (orgData, options) => {
-//   console.debug(JSON.stringify(options))
+//   logger.debug(JSON.stringify(options))
 //   const objectIdFields = _.get(options, ['objectIdFields'])
 //   const dateFields = _.get(options, ['dateFields'])
 //   const result = _.cloneDeep(orgData)
 //   if (objectIdFields && _.isArray(objectIdFields)) {
-//     console.debug(JSON.stringify(objectIdFields))
+//     logger.debug(JSON.stringify(objectIdFields))
 //     objectIdFields.forEach(field => _.set(result, field, ObjectID(_.get(orgData, field))))
 //   }
 //   if (dateFields && _.isArray(dateFields)) {
-//     console.debug(JSON.stringify(dateFields))
+//     logger.debug(JSON.stringify(dateFields))
 //     dateFields.forEach(field => _.set(result, field, new Date(_.get(orgData, field))))
 //   }
-//   console.debug(JSON.stringify(result))
+//   logger.debug(JSON.stringify(result))
 //   return result
 // }
 
@@ -42,7 +43,7 @@ const common = {
   //   return new Promise((resolve, reject) => {
   //     parseSchema(data, (error, schema) => {
   //       if (error) reject(error)
-  //       // console.debug({ s: schema })
+  //       // logger.debug({ s: schema })
   //       return resolve(schema)
   //     })
   //   })
@@ -66,7 +67,7 @@ const common = {
   // },
 
   // compressSchema(schema) {
-  //   // console.debug({ schema })
+  //   // logger.debug({ schema })
   //   const { fields } = schema
   //   return {
   //     fields: fields
@@ -112,12 +113,12 @@ const common = {
   //       },
   //     )
   //     .then(result => result.map(({ _id }) => _id))
-  //   // console.debug(result)
+  //   // logger.debug(result)
   //   return result
   // },
 
   async getServerStatusAndCollections(client) {
-    console.debug('getServerStatusAndCollections')
+    logger.debug('getServerStatusAndCollections')
     const status = await this.getServerStatus(client)
     const { host, version, process, pid, uptime, localTime } = status
     const { databases: dbs, totalSize, ok } = await this.getDBCollectionsStats(client)
@@ -134,13 +135,13 @@ const common = {
   },
 
   async getDefaultDBName(client) {
-    // console.debug({ getOptions: _.get(client, ['s', 'options']) })
+    // logger.debug({ getOptions: _.get(client, ['s', 'options']) })
     return _.get(client, ['s', 'options', 'dbName'])
   },
 
   async getServerStatus(client) {
     try {
-      console.debug('getServerStatus')
+      logger.debug('getServerStatus')
       return await client
         .db()
         .admin()
@@ -152,16 +153,16 @@ const common = {
 
   // client.db().stats()
   async getDBStats(client, dbName) {
-    console.debug('getDBStats', { dbName })
+    logger.debug('getDBStats', { dbName })
     const datas = client.db(dbName).stats()
     // const schema = await this.parseDataSchema(datas)
-    // console.debug({ schema })
+    // logger.debug({ schema })
     return datas
   },
 
   async getDBCollectionsStats(client) {
     const defaultDB = await this.getDefaultDBName(client)
-    // console.debug({ defaultDB })
+    // logger.debug({ defaultDB })
     const adminDB = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
     const dbList = await adminDB.listDatabases()
     if (dbList) {
@@ -178,13 +179,15 @@ const common = {
 
   async getCollections(client, dbName) {
     const db = client.db(dbName)
-    console.debug('getCollections', { dbName })
     try {
-      const collList = await db.listCollections().toArray()
+      logger.debug('getCollections', { dbName })
+      const collList = await db.listCollections(null, { nameOnly: true }).toArray()
+      logger.debug('getCollections:listCollections:Done', { dbName })
       const collStats = await Promise.all(collList.map(coll => this.getTableStats(client, dbName, coll.name)))
+      logger.debug('getCollections:getTableStats:Done', { dbName })
       return collStats
     } catch (e) {
-      console.error('getCollections', e)
+      logger.error('getCollections', e)
       return []
     }
   },
@@ -192,7 +195,7 @@ const common = {
   async getTableStats(client, db, collection) {
     const table = client.db(db).collection(collection)
     try {
-      // console.debug('getTableStats', { db, collection })
+      // logger.debug('getTableStats', { db, collection })
       return await table.stats().then(data => _.merge({ name: collection }, data))
     } catch (error) {
       return _.merge(error, { name: collection })
@@ -202,8 +205,8 @@ const common = {
   // async getHostInfo(client) {
   //   const defaultDB = await this.getDefaultDBName(client)
   //   const database = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
-  //   // console.debug('OK', database)
-  //   console.debug({ hostInfo: 1 })
+  //   // logger.debug('OK', database)
+  //   logger.debug({ hostInfo: 1 })
   //   return await database.command({ hostInfo: 1 })
   // },
 
@@ -212,10 +215,10 @@ const common = {
     const database = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
     // const table = client.db(db).collection(collection)
     try {
-      // console.debug('getTableStats', { db, collection })
+      // logger.debug('getTableStats', { db, collection })
       return await database.getUser('cabala_prd_t')
     } catch (error) {
-      console.error('getTableIndexes', error)
+      logger.error('getTableIndexes', error)
       return _.merge(error, { name: collection })
     }
   },
@@ -233,7 +236,7 @@ const common = {
     // } else {
     //   return await table.update({ _id }, dataTransType(data, options))
     // }
-    console.debug('updateData', { db, collection, _id, data })
+    logger.debug('updateData', { db, collection, _id, data })
     return await table.update(_id, data)
     // return await table.updateOne(_id, data)
   },
@@ -250,13 +253,13 @@ const common = {
     // } else {
     //   return await table.insertOne(dataTransType(data, options))
     // }
-    // console.debug('insertData', { db, collection, data })
+    // logger.debug('insertData', { db, collection, data })
     return await table.insertOne(data)
   },
 
   async deleteData(client, db, collection, _id) {
     const table = client.db(db).collection(collection)
-    console.debug('deleteData', { db, collection, _id })
+    logger.debug('deleteData', { db, collection, _id })
     if (_.isPlainObject(_id) && _.isEmpty(_id)) {
       return await table.deleteMany(_id)
     } else {
@@ -274,7 +277,7 @@ const common = {
       if (await this.tableIsExists(client, db, target)) {
         throw new Error(COLLECTION_EXISTS)
       } else {
-        console.debug('cloneTable', { db, source, target })
+        logger.debug('cloneTable', { db, source, target })
         const newTable = await table.aggregate([{ $match: {} }, { $out: target }]).next()
         return !!newTable
       }
@@ -284,7 +287,7 @@ const common = {
   },
 
   async tableIsExists(client, db, collection) {
-    console.debug('tableIsExists', { db })
+    logger.debug('tableIsExists', { db })
     const list = await client
       .db(db)
       .listCollections({ name: collection }, { nameOnly: true })
@@ -297,7 +300,7 @@ const common = {
       throw new Error(COLLECTION_EXISTS)
     } else {
       const database = client.db(db)
-      console.debug('createTable', { db, collection, options })
+      logger.debug('createTable', { db, collection, options })
       const table = await database.createCollection(collection, options)
       return !!table
     }
@@ -305,20 +308,20 @@ const common = {
 
   async dropTable(client, db, collection, options) {
     const database = client.db(db)
-    console.debug('dropTable', { db, collection, options })
+    logger.debug('dropTable', { db, collection, options })
     return await database.dropCollection(collection, options)
   },
 
   async renameTable(client, db, collection, newName, options) {
     const database = client.db(db)
-    console.debug('renameTable', { db, collection, newName, options })
+    logger.debug('renameTable', { db, collection, newName, options })
     const table = await database.renameCollection(collection, newName, options)
     return !!table
   },
 
   async dropDatabase(client, db, options) {
     const database = client.db(db)
-    console.debug('dropDatabase', { db, options })
+    logger.debug('dropDatabase', { db, options })
     return await database.dropDatabase(options)
   },
 
@@ -340,20 +343,20 @@ const common = {
   async getHostInfo(client) {
     const defaultDB = await this.getDefaultDBName(client)
     const database = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
-    // console.debug('OK', database)
-    console.debug({ hostInfo: 1 })
+    // logger.debug('OK', database)
+    logger.debug({ hostInfo: 1 })
     return await database.command({ hostInfo: 1 })
   },
 
   async getLogs(client) {
     const defaultDB = await this.getDefaultDBName(client)
     const database = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
-    console.debug({ getLog: 'global' })
+    logger.debug({ getLog: 'global' })
     return await database.command({ getLog: 'global' })
   },
 
   async findData(client, db, collection, query, pageOptoins, options) {
-    // console.debug({ db, collection, query, options })
+    // logger.debug({ db, collection, query, options })
     const limit = (pageOptoins && pageOptoins.pageSize) || 20
     const page = (pageOptoins && pageOptoins.page) || 1
     const skip = (page - 1) * limit
@@ -362,8 +365,8 @@ const common = {
     // const rows = await table.find(query, opt).toArray()
     // const total = await table.find(query).count()
     // const q = genQuery(query, fieldOptions)
-    console.debug('findData', { query, opt })
-    // console.debug(JSON.stringify({ q }))
+    logger.debug('findData', { query, opt })
+    // logger.debug(JSON.stringify({ q }))
     // const datas = table.find(query, opt)
     // .skip(skip)
     // .limit(limit)
@@ -379,7 +382,7 @@ const common = {
   },
 
   async aggregate(client, db, collection, aggregate, pageOptoins, options) {
-    // console.debug({ db, collection, aggregate, pageOptoins, options })
+    // logger.debug({ db, collection, aggregate, pageOptoins, options })
     const limit = (pageOptoins && pageOptoins.pageSize) || 20
     const page = (pageOptoins && pageOptoins.page) || 1
     const skip = (page - 1) * limit
@@ -399,10 +402,10 @@ const common = {
     pipeline.push({ $skip: skip })
     pipeline.push({ $limit: limit })
 
-    console.debug('aggregate', { pipeline, opt })
+    logger.debug('aggregate', { pipeline, opt })
 
     const table = client.db(db).collection(collection)
-    // console.debug({ pipeline, totalPipeLine })
+    // logger.debug({ pipeline, totalPipeLine })
     // const datas = table.aggregate(pipeline, opt)
     // const schema = await this.parseDataSchema(datas).then(s => this.compressSchema(s))
     const [rows, [{ total }]] = await Promise.all([
