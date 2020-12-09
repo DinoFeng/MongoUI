@@ -40,6 +40,7 @@ draggable-dialog(
         q-input(v-model='options', type='textarea', :label='$t("serverConfigDialog.optionsLabel")', filled, lazy-rules)
         hr(style='filter: progid:DXImageTransform.Microsoft.Shadow(color:#987cb9,direction:145,strength:15);')
         q-toolbar
+          q-toggle(v-model='includeAdmin' label='include admin collections.')
           q-space
           q-btn.q-ml-sm(:label='$t("save")', type='submit', color='primary')
           q-btn.q-ml-sm(:label='$t("cancel")', type='reset', color='primary', flat)
@@ -97,11 +98,24 @@ export default {
         vue.set(this.editing, 'options', val)
       },
     },
+    includeAdmin: {
+      get() {
+        return _.get(this.editing, ['includeAdmin']) || false
+      },
+      set(val) {
+        vue.set(this.editing, 'includeAdmin', val)
+      },
+    },
   },
   methods: {
     ...mapMutations('master', ['saveServerConfig']),
     onSubmit() {
-      this.saveServerConfig({ name: this.name, connString: this.connString, options: this.options })
+      this.saveServerConfig({
+        name: this.name,
+        connString: this.connString,
+        options: this.options,
+        includeAdmin: this.includeAdmin,
+      })
       this.$emit('input', false)
     },
     onReset() {

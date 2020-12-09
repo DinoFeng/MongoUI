@@ -41,6 +41,12 @@ module.exports.extendApp = ({
       const client = await connectionPool.createMongoClient(assignid, serverInfo)
       return client
     }
+    req.getMongoClientWithInfo = async serverInfo => {
+      const { assignid } = req.headers
+      const connectionPool = req.app.locals.connectionPool
+      const { client, connOptions } = await connectionPool.getMongoClientWithInfo(assignid, serverInfo)
+      return { client, connOptions }
+    }
     next()
   })
   app.use('/api', mongoAccessRouter)

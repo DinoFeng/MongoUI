@@ -61,8 +61,9 @@ class ConnectionPool {
     // console.info(`after appendClient ${id}`, this[pool])
   }
 
-  async [genConnection](assignId, { connString, options }) {
+  async [genConnection](assignId, serverInfo) {
     try {
+      const { connString, options, includeAdmin } = serverInfo
       // const objID = new ObjectID()
       // const assignId = objID.toHexString().toString()
       const client = new MongoClient(connString, _.merge({ useUnifiedTopology: true }, options))
@@ -85,7 +86,7 @@ class ConnectionPool {
       if (this[pool].size >= this[max]) {
         this[clearPool]()
       }
-      this[appendClient](assignId, connect, { connString, options })
+      this[appendClient](assignId, connect, { connString, options, extOptions: { includeAdmin } })
       return connect
     } catch (error) {
       console.error(error)
@@ -98,6 +99,16 @@ class ConnectionPool {
       const { client, connOptions } = this[pool].get(assignId)
       this[appendClient](assignId, client, connOptions)
       return client
+    } else {
+      return null
+    }
+  }
+
+  async getMongoClientWithInfo(assignId) {
+    if (assignId && this[pool].has(assignId)) {
+      const { client, connOptions } = this[pool].get(assignId)
+      this[appendClient](assignId, client, connOptions)
+      return { client, connOptions }
     } else {
       return null
     }

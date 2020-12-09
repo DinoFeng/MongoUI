@@ -4,6 +4,7 @@ const common = require('../util/common')
 const wrapAsync = require('./api').wrapAsync
 const _ = require('lodash')
 const eJson = require('mongodb-extjson')
+const { logger } = require('../util/logger')
 
 router.post('/assign', async (req, res) => {
   res.status(200).json(common.genObjectId())
@@ -368,9 +369,11 @@ router.get(
   wrapAsync(async req => {
     const { params } = req
     const { server } = params
-    const client = await req.getMongoClient(server)
+    const { client, connOptions } = await req.getMongoClientWithInfo(server)
+    logger.debug({ connOptions })
+    const includeAdmin = _.get(connOptions, ['extOptions', 'includeAdmin'])
     if (client) {
-      return await common.getServerStatusAndCollections(client)
+      return await common.getServerStatusAndCollections(client, includeAdmin)
     } else {
       throw new Error(`Mongo connection is null`)
     }
@@ -382,9 +385,10 @@ router.post(
   wrapAsync(async req => {
     const { params, body } = req
     const { server } = params
+    logger.debug({ body })
     const client = await req.createMongoClient(body, server)
     if (client) {
-      return await common.getServerStatusAndCollections(client)
+      return await common.getServerStatusAndCollections(client, body.includeAdmin)
       // const status = await common.getServerStatus(client)
       // const { host, version, process, pid, uptime, localTime } = status
       // const { databases: dbs, totalSize, ok } = await common.getDBCollectionsStats(client)

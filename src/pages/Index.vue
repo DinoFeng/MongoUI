@@ -164,7 +164,13 @@ export default {
         this.connectServer(server).then(() => {
           if (db) {
             if (table) {
-              this.findTableData({ page: 1, serverName: server, database: db, table, isReset: true })
+              this.findTableData({
+                page: 1,
+                serverName: server,
+                database: db,
+                table,
+                isReset: true,
+              })
               // .then(() =>
               //   this.$router.push({ name: 'table', params: { server, db, table } }),
               // )
@@ -220,11 +226,11 @@ export default {
     },
     showServerConfigDialog(create, editData) {
       if (editData) {
-        const { name, connString, options } = editData
+        const { name, connString, options, includeAdmin } = editData
         if (create) {
-          this.editingConfig = { connString, options }
+          this.editingConfig = { connString, options, includeAdmin }
         } else {
-          this.editingConfig = { name, connString, options }
+          this.editingConfig = { name, connString, options, includeAdmin }
         }
       } else {
         this.editingConfig = {}
@@ -262,9 +268,13 @@ export default {
       const { name } = this.selectedServer
       const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
       if (routeName != 'table' || server !== name || db !== oldDB || table !== oldTable) {
-        this.findTableData({ page: 1, serverName: name, database: db, table, isReset: true }).then(() =>
-          this.$router.push({ name: 'table', params: { server: name, db, table } }),
-        )
+        this.findTableData({
+          page: 1,
+          serverName: name,
+          database: db,
+          table,
+          isReset: true,
+        }).then(() => this.$router.push({ name: 'table', params: { server: name, db, table } }))
       }
     },
     menuServerRefresh(serverName) {
@@ -386,7 +396,9 @@ export default {
             // this.getDatabaseCollections({ serverName: server, database: db })
             this.$q.notify({
               type: 'positive',
-              message: _.template(this.$t('rename_collection.success'))({ table: newName }),
+              message: _.template(this.$t('rename_collection.success'))({
+                table: newName,
+              }),
             })
           })
         } else {
@@ -411,7 +423,9 @@ export default {
             // this.getDatabaseCollections({ serverName: server, database: db })
             this.$q.notify({
               type: 'positive',
-              message: _.template(this.$t('duplicate_collection.success'))({ table: newName }),
+              message: _.template(this.$t('duplicate_collection.success'))({
+                table: newName,
+              }),
             })
           })
         } else {
@@ -448,7 +462,10 @@ export default {
       const { server, db: oldDB, table: oldTable } = _.get(this.$route, ['params'])
       if (routeName != 'tableStatistics' || server !== name || db !== oldDB || table !== oldTable) {
         this.getTabelStats({ serverName: name, database: db, table }).then(() =>
-          this.$router.push({ name: 'tableStatistics', params: { server: name, db, table } }),
+          this.$router.push({
+            name: 'tableStatistics',
+            params: { server: name, db, table },
+          }),
         )
       }
     },

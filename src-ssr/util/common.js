@@ -117,11 +117,11 @@ const common = {
   //   return result
   // },
 
-  async getServerStatusAndCollections(client) {
+  async getServerStatusAndCollections(client, includeAdmin) {
     logger.debug('getServerStatusAndCollections')
     const status = await this.getServerStatus(client)
     const { host, version, process, pid, uptime, localTime } = status
-    const { databases: dbs, totalSize, ok } = await this.getDBCollectionsStats(client)
+    const { databases: dbs, totalSize, ok } = await this.getDBCollectionsStats(client, includeAdmin)
     const databases = dbs.map(({ name, sizeOnDisk, empty, tables }) => ({
       name,
       sizeOnDisk,
@@ -160,13 +160,13 @@ const common = {
     return datas
   },
 
-  async getDBCollectionsStats(client) {
+  async getDBCollectionsStats(client, includeAdmin) {
     const defaultDB = await this.getDefaultDBName(client)
     // logger.debug({ defaultDB })
     const adminDB = defaultDB ? client.db(defaultDB).admin() : client.db().admin()
     const dbList = await adminDB.listDatabases()
     if (dbList) {
-      const skippedDBs = ['null', 'admin', 'local']
+      const skippedDBs = includeAdmin ? [] : ['null', 'admin', 'local']
       const { databases: dbs, totalSize, ok } = dbList
       const databases = await Promise.all(
         dbs
